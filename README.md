@@ -1,23 +1,34 @@
 # SHIFT-DETA-NEW
 
-全店シフトの一元管理プロジェクト。
-
-- **表（データ）**: Googleスプレッドシート（DXチームのみ）
-- **表（画面）**: Webアプリ1URL（店舗ごとに絞り込み）
-- **処理**: GAS（カレンダー同期・勤怠出力など）
+全店シフト一元管理（ToDo List と同じ **Web＋GAS** / **Node で大きな index をビルド**）。
 
 ## 対象スプシ
 
 [新 シフト『キンタイ・カレンダー』管理](https://docs.google.com/spreadsheets/d/1mPb5xUeoDoT5--yEXqUw5bY0PBpQ2AWSo17zkWML4ww/edit)
 
+## 開発〜GAS反映（ToDo List と同じ流れ）
+
+```powershell
+npm install
+npm run build:gas
+```
+
+成果物:
+
+- `docs/gas/deployed/index.html` … GAS の `index` に貼る  
+- `docs/gas/deployed/Code.gs` … GAS の `Code` に貼る  
+
+手順詳細: [docs/gas/deployed/README.md](docs/gas/deployed/README.md)
+
+社用PCに Node が無いとき: GitHub Actions **Build GAS index**。
+
 ## ドキュメント
 
-- [シート構成たたき台](docs/シート構成.md)
-- [シートヘッダコピペ用](docs/シートヘッダ_コピペ用.md)
-- [GASセットアップ（コピペ用）](docs/gas/README.md) ← スプシを自動で整える
-- [Webアプリ骨格（貼り付け・デプロイ）](docs/gas/app/README.md) ← 次はここ
+- [シート構成](docs/シート構成.md)
+- [シート初期セットアップ GAS](docs/gas/README.md)
+- [デプロイ手順](docs/gas/deployed/README.md)
 
-## 参考（他リポジトリ・編集しない）
+## 参考（編集しない）
 
-- `taskmaster-pro` … TODOリスト型の Web＋GAS
-- `DXteam-task/gas-kyodo` … 勤怠貼付・カレンダー同期の既存実装
+- `taskmaster-pro` … TODOリストの型
+- `DXteam-task/gas-kyodo` … カレンダー／勤怠の既存実装

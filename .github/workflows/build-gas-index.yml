@@ -1,0 +1,28 @@
+name: Build GAS index
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Copy to docs/gas/deployed
+        run: cp dist/index.html docs/gas/deployed/index.html
+
+      - name: Upload index.html for GAS
+        uses: actions/upload-artifact@v4
+        with:
+          name: gas-index-html
+          path: dist/index.html
+          retention-days: 30

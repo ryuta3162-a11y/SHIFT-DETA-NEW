@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply antialiased text-slate-900;
+    background-color: #f2f2f7;
+    font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+  }
+  :root {
+    --acc-50: oklch(98.2% 0 0);
+    --acc-100: oklch(94.5% 0 0);
+    --acc-200: oklch(88% 0 0);
+    --acc-300: oklch(75% 0 0);
+    --acc-400: oklch(55% 0 0);
+    --acc-500: oklch(32% 0 0);
+    --acc-600: oklch(22% 0 0);
+    --acc-700: oklch(16% 0 0);
+    --acc-900: oklch(10% 0 0);
+  }
+}

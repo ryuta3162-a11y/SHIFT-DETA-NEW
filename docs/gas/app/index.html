@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -183,6 +183,56 @@
     .badge.off, .badge.pto, .badge.absent { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
     .badge.undef { background: #f1f5f9; color: #64748b; }
 
+    .login-screen {
+      min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px; position: relative; overflow: hidden;
+      background: #f2f2f7;
+    }
+    .login-orb {
+      position: absolute; border-radius: 999px; filter: blur(40px); opacity: 0.45; pointer-events: none;
+    }
+    .login-orb-a { width: 280px; height: 280px; background: var(--acc-200); top: -60px; left: -40px; }
+    .login-orb-b { width: 220px; height: 220px; background: var(--acc-100); bottom: 10%; right: -50px; }
+    .login-orb-c { width: 160px; height: 160px; background: #fff; top: 40%; left: 40%; opacity: 0.7; }
+    .login-card {
+      width: min(36rem, 100%); position: relative; z-index: 1;
+      background: #fff; border-radius: 16px; padding: 40px 28px;
+      border: 1px solid color-mix(in oklab, var(--acc-200) 50%, transparent);
+      box-shadow: 0 24px 64px -24px rgba(0,0,0,0.18);
+    }
+    .login-icon {
+      width: 84px; height: 84px; margin: 0 auto 28px;
+      border-radius: 18px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 36px; font-weight: 800;
+      background: linear-gradient(to bottom right, var(--acc-400), var(--acc-700));
+      box-shadow: 0 16px 32px color-mix(in oklab, var(--acc-500) 35%, transparent);
+      outline: 4px solid rgba(255,255,255,0.9);
+    }
+    .login-card h2 {
+      margin: 0; text-align: center; font-size: 2rem; font-weight: 800;
+      letter-spacing: -0.03em; color: #0f172a;
+    }
+    .login-card .lead {
+      margin: 16px 0 0; text-align: center; font-size: 1.05rem; font-weight: 700; color: #334155;
+    }
+    .login-note {
+      margin: 24px 0; padding: 14px 16px; border-radius: 16px; text-align: center;
+      background: linear-gradient(to bottom, color-mix(in oklab, var(--acc-50) 80%, #fff), #fff);
+      border: 1px solid color-mix(in oklab, var(--acc-200) 55%, transparent);
+      font-size: 14px; font-weight: 600; color: #475569; line-height: 1.6;
+    }
+    .login-note strong { color: var(--acc-700); }
+    .login-card input[type="email"] {
+      width: 100%; text-align: center; font-size: 1.05rem; padding: 16px; margin-bottom: 12px;
+    }
+    .login-card .btn-primary { width: 100%; padding: 16px; font-size: 1.05rem; }
+    .logout-btn {
+      width: 100%; margin-top: 0; border: 0; background: #fff; color: #be123c;
+      font-weight: 700; font-size: 13px; padding: 12px; cursor: pointer; text-align: left;
+      border-top: 1px solid #f1f5f9;
+    }
+    .logout-btn:hover { background: #fff1f2; }
+
     .relative { position: relative; }
     .hidden { display: none !important; }
     @media (max-width: 640px) {
@@ -192,7 +242,29 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <!-- ログイン（ToDo List と同じ方式） -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-orb login-orb-a"></div>
+    <div class="login-orb login-orb-b"></div>
+    <div class="login-orb login-orb-c"></div>
+    <div class="login-card">
+      <div class="login-icon">S</div>
+      <p class="eyebrow" style="text-align:center;margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#64748b;">Task Force Team</p>
+      <h2 id="loginTitle">シフト・キンタイ・カレンダー</h2>
+      <p class="lead">全店シフトを一元管理</p>
+      <div class="login-note">
+        必ず <strong id="loginDomain">@okamoto-group.co.jp</strong> のメールでログインしてください。<br />
+        「権限」シートに登録済みの方のみ利用できます。
+      </div>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" required placeholder="name@okamoto-group.co.jp" />
+        <p class="status err" id="loginError" style="margin:0 0 10px;text-align:center;"></p>
+        <button type="submit" class="btn btn-primary" id="loginBtn">ログイン</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="appScreen" class="wrap hidden">
     <div class="topbar">
       <div class="brand">
         <p class="eyebrow">Task Force Team</p>
@@ -222,6 +294,7 @@
               <div class="accent-grid" id="accentGrid"></div>
               <p class="accent-now">現在: <span id="accentLabel">ブラック</span></p>
             </div>
+            <button type="button" class="logout-btn" id="logoutBtn">ログアウト</button>
           </div>
         </div>
       </div>
@@ -303,8 +376,10 @@
     /* ToDo と同じ選択を引き継ぐ（あれば） */
     var SHARED_ACCENT_KEY = 'taskmaster_accent_id';
 
+    var EMAIL_KEY = 'shiftapp_user_email';
     var state = {
-      bootstrap: null,
+      user: null,
+      meta: null,
       canEdit: false,
       employees: [],
       shifts: [],
@@ -328,7 +403,7 @@
         localStorage.setItem(ACCENT_KEY, theme.id);
         localStorage.setItem(SHARED_ACCENT_KEY, theme.id);
       } catch (e) {}
-      $('accentLabel').textContent = theme.label;
+      if ($('accentLabel')) $('accentLabel').textContent = theme.label;
       renderAccentGrid();
     }
 
@@ -345,6 +420,7 @@
 
     function renderAccentGrid() {
       var grid = $('accentGrid');
+      if (!grid) return;
       grid.innerHTML = '';
       ACCENT_THEMES.forEach(function (t) {
         var b = document.createElement('button');
@@ -359,6 +435,7 @@
 
     function setStatus(msg, kind) {
       var el = $('statusLine');
+      if (!el) return;
       el.textContent = msg || '';
       el.className = 'status' + (kind ? ' ' + kind : '');
     }
@@ -377,13 +454,6 @@
           });
         runner[fn].apply(runner, args);
       });
-    }
-
-    function currentYm() {
-      var d = new Date();
-      var m = String(d.getMonth() + 1);
-      if (m.length < 2) m = '0' + m;
-      return d.getFullYear() + '-' + m;
     }
 
     function initialOf(name) {
@@ -405,8 +475,17 @@
 
     function roleLabel(role, isAdmin) {
       if (isAdmin) return 'admin';
-      var map = { admin: 'admin', editor: 'editor', viewer: 'viewer' };
-      return map[role] || role || '—';
+      return role || '—';
+    }
+
+    function showLogin() {
+      $('loginScreen').classList.remove('hidden');
+      $('appScreen').classList.add('hidden');
+    }
+
+    function showApp() {
+      $('loginScreen').classList.add('hidden');
+      $('appScreen').classList.remove('hidden');
     }
 
     function fillAccount(res) {
@@ -514,7 +593,45 @@
       $('fEnd').disabled = false;
     }
 
+    function enterApp(user) {
+      state.user = user;
+      try { localStorage.setItem(EMAIL_KEY, user.email); } catch (e) {}
+      $('appTitle').textContent = user.appTitle || (state.meta && state.meta.appTitle) || 'シフト・キンタイ・カレンダー';
+      fillAccount(user);
+      fillStores(user.stores || []);
+      $('monthInput').value = (state.meta && state.meta.serverYearMonth) || '';
+      showApp();
+      setStatus('店舗を選んで表示してください。');
+      if (user.stores && user.stores.length) loadShifts();
+    }
+
+    function doLogin(email) {
+      $('loginError').textContent = '';
+      $('loginBtn').disabled = true;
+      return api('loginWithEmail', email)
+        .then(function (res) {
+          enterApp(res);
+        })
+        .catch(function (e) {
+          $('loginError').textContent = e.message || String(e);
+          showLogin();
+        })
+        .then(function () {
+          $('loginBtn').disabled = false;
+        });
+    }
+
+    function logout() {
+      try { localStorage.removeItem(EMAIL_KEY); } catch (e) {}
+      state.user = null;
+      openAccount(false);
+      $('loginEmail').value = '';
+      $('loginError').textContent = '';
+      showLogin();
+    }
+
     function loadShifts() {
+      if (!state.user) return;
       var storeId = $('storeSelect').value;
       var ym = $('monthInput').value;
       if (!storeId || !ym) {
@@ -523,7 +640,7 @@
       }
       setStatus('読み込み中…');
       $('reloadBtn').disabled = true;
-      api('getShifts', storeId, ym)
+      api('getShifts', storeId, ym, state.user.email)
         .then(function (res) {
           state.canEdit = !!res.canEdit;
           state.employees = res.employees || [];
@@ -532,7 +649,7 @@
           $('editorCard').classList.toggle('hidden', !state.canEdit);
           renderTable();
           var storeName = '';
-          var stores = (state.bootstrap && state.bootstrap.stores) || [];
+          var stores = state.user.stores || [];
           for (var i = 0; i < stores.length; i++) {
             if (stores[i].store_id === storeId) { storeName = stores[i].store_name; break; }
           }
@@ -552,7 +669,9 @@
     }
 
     function saveShift() {
+      if (!state.user) return;
       var payload = {
+        user_email: state.user.email,
         shift_id: $('fShiftId').value || '',
         store_id: $('storeSelect').value,
         date: $('fDate').value,
@@ -579,9 +698,10 @@
     }
 
     function removeShift(id) {
+      if (!state.user) return;
       if (!confirm('このシフトを削除しますか？')) return;
       setStatus('削除中…');
-      api('deleteShift', id, $('storeSelect').value)
+      api('deleteShift', id, $('storeSelect').value, state.user.email)
         .then(function () {
           setStatus('削除しました', 'ok');
           return loadShifts();
@@ -597,26 +717,35 @@
 
     function boot() {
       applyAccent(readAccentId());
-      $('monthInput').value = currentYm();
       api('getBootstrap')
-        .then(function (res) {
-          state.bootstrap = res;
-          $('appTitle').textContent = res.appTitle || 'シフト・キンタイ・カレンダー';
-          fillAccount(res);
-          fillStores(res.stores || []);
-          setStatus('店舗を選んで表示してください。');
-          if (res.stores && res.stores.length) loadShifts();
+        .then(function (meta) {
+          state.meta = meta;
+          $('loginTitle').textContent = meta.appTitle || 'シフト・キンタイ・カレンダー';
+          var domain = meta.companyDomain || 'okamoto-group.co.jp';
+          $('loginDomain').textContent = '@' + domain;
+          $('loginEmail').placeholder = 'name@' + domain;
+          if (meta.sessionEmail) $('loginEmail').value = meta.sessionEmail;
+
+          var saved = '';
+          try { saved = localStorage.getItem(EMAIL_KEY) || ''; } catch (e) {}
+          if (saved) return doLogin(saved);
+          showLogin();
         })
         .catch(function (e) {
-          fillAccount({ name: '未ログイン', email: '権限エラー', roleMax: '', stores: [] });
-          setStatus(e.message || String(e), 'err');
+          $('loginError').textContent = e.message || String(e);
+          showLogin();
         });
     }
 
+    $('loginForm').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      doLogin($('loginEmail').value);
+    });
     $('avatarBtn').addEventListener('click', function () {
       openAccount($('accountLayer').classList.contains('hidden'));
     });
     $('accountBackdrop').addEventListener('click', function () { openAccount(false); });
+    $('logoutBtn').addEventListener('click', logout);
     $('reloadBtn').addEventListener('click', loadShifts);
     $('saveBtn').addEventListener('click', saveShift);
     $('resetBtn').addEventListener('click', resetForm);
