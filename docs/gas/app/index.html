@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>シフト・キンタイ・カレンダー</title>
+  <style>
+    /* ToDo List (taskmaster-pro) と同じアクセント変数・雰囲気 */
+    :root {
+      --acc-50: oklch(98.2% 0 0);
+      --acc-100: oklch(94.5% 0 0);
+      --acc-200: oklch(88% 0 0);
+      --acc-300: oklch(75% 0 0);
+      --acc-400: oklch(55% 0 0);
+      --acc-500: oklch(32% 0 0);
+      --acc-600: oklch(22% 0 0);
+      --acc-700: oklch(16% 0 0);
+      --acc-900: oklch(10% 0 0);
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+      color: #0f172a;
+      background: #f2f2f7;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 16px 16px 56px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .brand { min-width: 0; }
+    .brand .eyebrow {
+      margin: 0 0 2px; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase; color: #64748b;
+    }
+    .brand h1 {
+      margin: 0; font-size: 1.15rem; font-weight: 700; color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .brand .sub {
+      margin: 2px 0 0; font-size: 12px; font-weight: 600; color: #64748b;
+    }
+
+    .avatar-btn {
+      width: 36px; height: 36px; border-radius: 999px; border: none; cursor: pointer;
+      color: #fff; font-size: 14px; font-weight: 700;
+      background: linear-gradient(to bottom right, var(--acc-500), var(--acc-700));
+      box-shadow: 0 4px 12px color-mix(in oklab, var(--acc-500) 35%, transparent);
+      ring: 2px solid #fff;
+      outline: 2px solid #fff;
+      transition: transform 0.15s;
+    }
+    .avatar-btn:active { transform: scale(0.95); }
+
+    .account-backdrop {
+      position: fixed; inset: 0; z-index: 40;
+      background: rgba(0,0,0,0.2); backdrop-filter: blur(2px);
+    }
+    .account-menu {
+      position: absolute; right: 0; top: calc(100% + 8px); z-index: 50;
+      width: min(18rem, 92vw); max-height: min(88vh, 36rem);
+      display: flex; flex-direction: column;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(16px);
+      border-radius: 16px; border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18); overflow: hidden;
+    }
+    .account-head {
+      padding: 16px; border-bottom: 1px solid #f1f5f9;
+      display: flex; gap: 12px; align-items: center;
+    }
+    .account-head .big {
+      width: 44px; height: 44px; border-radius: 999px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700;
+      background: linear-gradient(to bottom right, var(--acc-500), var(--acc-700));
+    }
+    .account-head .name { margin: 0; font-weight: 600; color: #0f172a; font-size: 14px; }
+    .account-head .mail { margin: 2px 0 0; font-size: 11px; color: #64748b; word-break: break-all; }
+    .account-body { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; overflow: auto; }
+    .meta-label {
+      margin: 0 0 2px; font-size: 9px; font-weight: 900;
+      color: var(--acc-600); letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .meta-value { margin: 0 0 12px; font-size: 12px; font-weight: 700; color: #0f172a; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .chip {
+      background: #f3f4f6; border: 1px solid #94a3b8; color: #0f172a;
+      font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    }
+    .accent-panel {
+      padding: 10px 12px; border-top: 1px solid #e2e8f0;
+      background: linear-gradient(to bottom, #f8fafc, #fff);
+    }
+    .accent-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .accent-swatch {
+      height: 32px; border-radius: 8px; border: 2px solid #e2e8f0;
+      cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .accent-swatch.on {
+      border-color: #000; outline: 2px solid rgba(0,0,0,0.25); outline-offset: 1px;
+      transform: scale(1.02);
+    }
+    .accent-now {
+      margin: 8px 0 0; text-align: center; font-size: 10px;
+      font-weight: 700; color: #64748b;
+    }
+    .accent-now span { color: var(--acc-700); }
+
+    .card {
+      background: #fff; border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 16px; padding: 18px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+    }
+    .card.accented {
+      border-color: color-mix(in oklab, var(--acc-200) 70%, transparent);
+      box-shadow: 0 4px 24px -10px rgba(0,0,0,0.08);
+      background: linear-gradient(to bottom right, color-mix(in oklab, var(--acc-50) 55%, #fff), #fff);
+    }
+    .section-title {
+      margin: 0 0 10px; font-size: 13px; font-weight: 700;
+      color: var(--acc-600); border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+    label.field {
+      display: flex; flex-direction: column; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--acc-600);
+    }
+    select, input[type="month"], input[type="date"], input[type="time"], input[type="number"], input[type="text"] {
+      font: inherit; border: 0; border-radius: 12px;
+      padding: 12px 14px; background: rgba(241,245,249,0.9);
+      color: #0f172a; font-weight: 500; min-width: 140px;
+      outline: none;
+    }
+    select:focus, input:focus {
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--acc-500) 35%, transparent);
+    }
+    button.btn {
+      font: inherit; border: 0; border-radius: 16px; cursor: pointer;
+      font-weight: 700; padding: 12px 18px;
+      transition: transform 0.12s, background 0.15s;
+    }
+    button.btn:active { transform: scale(0.98); }
+    button.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.btn-primary {
+      background: var(--acc-500); color: #fff;
+      box-shadow: 0 10px 20px color-mix(in oklab, var(--acc-500) 25%, transparent);
+    }
+    button.btn-primary:hover { background: var(--acc-600); }
+    button.btn-secondary {
+      background: #fff; color: #334155;
+      border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    button.btn-danger { background: #e11d48; color: #fff; }
+    button.btn-sm { padding: 8px 12px; border-radius: 12px; font-size: 12px; }
+
+    .status { font-size: 13px; font-weight: 600; color: #64748b; min-height: 1.2em; margin: 10px 0 0; white-space: pre-wrap; }
+    .status.err { color: #e11d48; }
+    .status.ok { color: #059669; }
+
+    .form-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px; margin-top: 4px;
+    }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .empty { padding: 28px 12px; text-align: center; color: #64748b; font-weight: 600; font-size: 14px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 12px 8px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: middle; }
+    th { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.04em; }
+    tr:hover td { background: color-mix(in oklab, var(--acc-50) 70%, #fff); }
+
+    .badge {
+      display: inline-block; padding: 3px 8px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; border: 1px solid rgba(0,0,0,0.06);
+      background: var(--acc-50); color: var(--acc-700);
+    }
+    .badge.work { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .badge.off, .badge.pto, .badge.absent { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+    .badge.undef { background: #f1f5f9; color: #64748b; }
+
+    .relative { position: relative; }
+    .hidden { display: none !important; }
+    @media (max-width: 640px) {
+      select, input { min-width: 0; width: 100%; }
+      .row > * { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <p class="eyebrow">Task Force Team</p>
+        <h1 id="appTitle">シフト・キンタイ・カレンダー</h1>
+        <p class="sub" id="pageSub">店舗シフト</p>
+      </div>
+      <div class="relative shrink-0">
+        <button type="button" class="avatar-btn" id="avatarBtn" aria-label="アカウント">?</button>
+        <div id="accountLayer" class="hidden">
+          <div class="account-backdrop" id="accountBackdrop"></div>
+          <div class="account-menu" id="accountMenu">
+            <div class="account-head">
+              <div class="big" id="accountAvatar">?</div>
+              <div>
+                <p class="name" id="accountName">—</p>
+                <p class="mail" id="accountEmail">—</p>
+              </div>
+            </div>
+            <div class="account-body">
+              <p class="meta-label">権限</p>
+              <p class="meta-value" id="accountRole">—</p>
+              <p class="meta-label">担当店舗</p>
+              <div class="chip-row" id="accountStores"></div>
+            </div>
+            <div class="accent-panel">
+              <p class="meta-label">アクセントカラー</p>
+              <div class="accent-grid" id="accentGrid"></div>
+              <p class="accent-now">現在: <span id="accentLabel">ブラック</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card accented">
+      <div class="row">
+        <label class="field">店舗
+          <select id="storeSelect"></select>
+        </label>
+        <label class="field">年月
+          <input type="month" id="monthInput" />
+        </label>
+        <button type="button" class="btn btn-primary" id="reloadBtn">表示</button>
+      </div>
+      <p class="status" id="statusLine"></p>
+    </div>
+
+    <div class="card hidden" id="editorCard">
+      <p class="section-title">シフトを追加／更新</p>
+      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#64748b;">同じ人・同じ日・同じ店舗なら上書きされます。</p>
+      <div class="form-grid">
+        <label class="field">日付
+          <input type="date" id="fDate" />
+        </label>
+        <label class="field">従業員
+          <select id="fEmployee"></select>
+        </label>
+        <label class="field">区分
+          <select id="fStatus">
+            <option value="work">勤務 (work)</option>
+            <option value="off">公休など (off)</option>
+            <option value="pto">有休 (pto)</option>
+            <option value="absent">欠勤 (absent)</option>
+            <option value="undef">未定 (undef)</option>
+          </select>
+        </label>
+        <label class="field">開始
+          <input type="time" id="fStart" value="12:00" />
+        </label>
+        <label class="field">終了
+          <input type="time" id="fEnd" value="21:00" />
+        </label>
+        <label class="field">休憩(分)
+          <input type="number" id="fBreak" min="0" step="15" placeholder="任意" />
+        </label>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="saveBtn">保存</button>
+        <button type="button" class="btn btn-secondary" id="resetBtn">クリア</button>
+      </div>
+      <input type="hidden" id="fShiftId" value="" />
+    </div>
+
+    <div class="card">
+      <p class="section-title">シフト一覧</p>
+      <div id="tableWrap">
+        <div class="empty">店舗と年月を選んで「表示」を押してください。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* taskmaster-pro と同じアクセント一覧（既定ブラック） */
+    var ACCENT_THEMES = [
+      { id: 'black', label: 'ブラック', 50: 'oklch(98.2% 0 0)', 100: 'oklch(94.5% 0 0)', 200: 'oklch(88% 0 0)', 300: 'oklch(75% 0 0)', 400: 'oklch(55% 0 0)', 500: 'oklch(32% 0 0)', 600: 'oklch(22% 0 0)', 700: 'oklch(16% 0 0)', 900: 'oklch(10% 0 0)' },
+      { id: 'indigo', label: 'インディゴ', 50: 'oklch(96.2% 0.018 272.314)', 100: 'oklch(93% 0.034 272.788)', 200: 'oklch(87% 0.065 274.039)', 300: 'oklch(78.5% 0.115 274.713)', 400: 'oklch(67.3% 0.182 276.935)', 500: 'oklch(58.5% 0.233 277.117)', 600: 'oklch(51.1% 0.262 276.966)', 700: 'oklch(45.7% 0.24 277.023)', 900: 'oklch(35.9% 0.144 278.697)' },
+      { id: 'violet', label: 'バイオレット', 50: 'oklch(96.9% 0.016 293.756)', 100: 'oklch(94.3% 0.029 294.588)', 200: 'oklch(89.4% 0.057 293.283)', 300: 'oklch(81.1% 0.111 293.571)', 400: 'oklch(70.2% 0.183 293.541)', 500: 'oklch(60.6% 0.25 292.717)', 600: 'oklch(54.1% 0.281 293.009)', 700: 'oklch(49.1% 0.27 292.581)', 900: 'oklch(38% 0.189 293.745)' },
+      { id: 'blue', label: 'ブルー', 50: 'oklch(97% 0.014 254.604)', 100: 'oklch(93.2% 0.032 255.585)', 200: 'oklch(88.2% 0.059 254.128)', 300: 'oklch(80.9% 0.105 251.813)', 400: 'oklch(70.7% 0.165 254.624)', 500: 'oklch(62.3% 0.214 259.815)', 600: 'oklch(54.6% 0.245 262.881)', 700: 'oklch(48.8% 0.243 264.376)', 900: 'oklch(37.9% 0.146 265.522)' },
+      { id: 'sky', label: 'スカイ', 50: 'oklch(97.7% 0.013 236.62)', 100: 'oklch(95.1% 0.026 236.824)', 200: 'oklch(90.1% 0.058 230.902)', 300: 'oklch(82.8% 0.111 230.318)', 400: 'oklch(74.6% 0.16 232.661)', 500: 'oklch(68.5% 0.169 237.323)', 600: 'oklch(58.8% 0.158 241.966)', 700: 'oklch(50% 0.134 242.749)', 900: 'oklch(39.1% 0.09 240.876)' },
+      { id: 'cyan', label: 'シアン', 50: 'oklch(98.4% 0.019 200.873)', 100: 'oklch(95.6% 0.045 203.388)', 200: 'oklch(91.7% 0.08 205.041)', 300: 'oklch(86.5% 0.127 207.078)', 400: 'oklch(78.9% 0.154 211.53)', 500: 'oklch(71.5% 0.143 215.221)', 600: 'oklch(60.9% 0.126 221.723)', 700: 'oklch(52% 0.105 223.128)', 900: 'oklch(39.8% 0.07 227.392)' },
+      { id: 'teal', label: 'ティール', 50: 'oklch(98.4% 0.014 180.72)', 100: 'oklch(95.3% 0.051 180.801)', 200: 'oklch(91% 0.096 180.426)', 300: 'oklch(85.5% 0.138 181.071)', 400: 'oklch(77.7% 0.152 181.912)', 500: 'oklch(70.4% 0.14 182.503)', 600: 'oklch(60% 0.118 184.704)', 700: 'oklch(51.1% 0.096 186.391)', 900: 'oklch(38.6% 0.063 188.416)' },
+      { id: 'emerald', label: 'エメラルド', 50: 'oklch(97.9% 0.021 166.113)', 100: 'oklch(95% 0.052 163.051)', 200: 'oklch(90.5% 0.093 164.15)', 300: 'oklch(84.5% 0.143 164.978)', 400: 'oklch(76.5% 0.177 163.223)', 500: 'oklch(69.6% 0.17 162.48)', 600: 'oklch(59.6% 0.145 163.225)', 700: 'oklch(50.8% 0.118 165.612)', 900: 'oklch(37.8% 0.077 168.94)' },
+      { id: 'amber', label: 'アンバー', 50: 'oklch(98.7% 0.022 95.277)', 100: 'oklch(96.2% 0.059 95.617)', 200: 'oklch(92.4% 0.12 95.746)', 300: 'oklch(87.9% 0.169 91.605)', 400: 'oklch(82.8% 0.189 84.429)', 500: 'oklch(76.9% 0.188 70.08)', 600: 'oklch(66.6% 0.179 58.318)', 700: 'oklch(55.5% 0.163 48.998)', 900: 'oklch(41.4% 0.112 45.904)' },
+      { id: 'orange', label: 'オレンジ', 50: 'oklch(98% 0.016 73.684)', 100: 'oklch(95.4% 0.038 75.164)', 200: 'oklch(90.1% 0.076 70.697)', 300: 'oklch(83.7% 0.128 66.29)', 400: 'oklch(75% 0.183 55.934)', 500: 'oklch(70.5% 0.213 47.604)', 600: 'oklch(64.6% 0.222 41.116)', 700: 'oklch(55.3% 0.195 38.402)', 900: 'oklch(40.8% 0.123 38.172)' },
+      { id: 'rose', label: 'ローズ', 50: 'oklch(96.9% 0.015 12.422)', 100: 'oklch(94.1% 0.03 12.58)', 200: 'oklch(89.2% 0.058 10.001)', 300: 'oklch(81% 0.117 11.638)', 400: 'oklch(71.2% 0.194 13.428)', 500: 'oklch(64.5% 0.246 16.439)', 600: 'oklch(58.6% 0.253 17.585)', 700: 'oklch(51.4% 0.222 16.935)', 900: 'oklch(41% 0.159 10.272)' }
+    ];
+    var ACCENT_KEY = 'shiftapp_accent_id';
+    /* ToDo と同じ選択を引き継ぐ（あれば） */
+    var SHARED_ACCENT_KEY = 'taskmaster_accent_id';
+
+    var state = {
+      bootstrap: null,
+      canEdit: false,
+      employees: [],
+      shifts: [],
+      accentId: 'black'
+    };
+
+    function $(id) { return document.getElementById(id); }
+
+    function applyAccent(id) {
+      var theme = null;
+      for (var i = 0; i < ACCENT_THEMES.length; i++) {
+        if (ACCENT_THEMES[i].id === id) { theme = ACCENT_THEMES[i]; break; }
+      }
+      if (!theme) theme = ACCENT_THEMES[0];
+      var keys = ['50', '100', '200', '300', '400', '500', '600', '700', '900'];
+      keys.forEach(function (k) {
+        document.documentElement.style.setProperty('--acc-' + k, theme[k]);
+      });
+      state.accentId = theme.id;
+      try {
+        localStorage.setItem(ACCENT_KEY, theme.id);
+        localStorage.setItem(SHARED_ACCENT_KEY, theme.id);
+      } catch (e) {}
+      $('accentLabel').textContent = theme.label;
+      renderAccentGrid();
+    }
+
+    function readAccentId() {
+      try {
+        var v = localStorage.getItem(ACCENT_KEY) || localStorage.getItem(SHARED_ACCENT_KEY);
+        if (v === 'indigo') return 'black';
+        for (var i = 0; i < ACCENT_THEMES.length; i++) {
+          if (ACCENT_THEMES[i].id === v) return v;
+        }
+      } catch (e) {}
+      return 'black';
+    }
+
+    function renderAccentGrid() {
+      var grid = $('accentGrid');
+      grid.innerHTML = '';
+      ACCENT_THEMES.forEach(function (t) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.title = t.label;
+        b.className = 'accent-swatch' + (state.accentId === t.id ? ' on' : '');
+        b.style.background = t['500'];
+        b.addEventListener('click', function () { applyAccent(t.id); });
+        grid.appendChild(b);
+      });
+    }
+
+    function setStatus(msg, kind) {
+      var el = $('statusLine');
+      el.textContent = msg || '';
+      el.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function api(fn) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      return new Promise(function (resolve, reject) {
+        if (typeof google === 'undefined' || !google.script || !google.script.run) {
+          reject(new Error('GAS 上で開いてください'));
+          return;
+        }
+        var runner = google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(function (err) {
+            reject(err && err.message ? err : new Error(String(err)));
+          });
+        runner[fn].apply(runner, args);
+      });
+    }
+
+    function currentYm() {
+      var d = new Date();
+      var m = String(d.getMonth() + 1);
+      if (m.length < 2) m = '0' + m;
+      return d.getFullYear() + '-' + m;
+    }
+
+    function initialOf(name) {
+      var s = String(name || '?').trim();
+      return s ? s.charAt(0) : '?';
+    }
+
+    function statusLabel(s) {
+      var map = { work: '勤務', off: '公休', pto: '有休', absent: '欠勤', undef: '未定' };
+      return map[s] || s;
+    }
+
+    function empName(id) {
+      for (var i = 0; i < state.employees.length; i++) {
+        if (state.employees[i].employee_id === id) return state.employees[i].name;
+      }
+      return id;
+    }
+
+    function roleLabel(role, isAdmin) {
+      if (isAdmin) return 'admin';
+      var map = { admin: 'admin', editor: 'editor', viewer: 'viewer' };
+      return map[role] || role || '—';
+    }
+
+    function fillAccount(res) {
+      var name = res.name || res.email || '—';
+      var initial = initialOf(name);
+      $('avatarBtn').textContent = initial;
+      $('accountAvatar').textContent = initial;
+      $('accountName').textContent = name;
+      $('accountEmail').textContent = res.email || '—';
+      $('accountRole').textContent = roleLabel(res.roleMax, res.isAdmin);
+      var storesEl = $('accountStores');
+      storesEl.innerHTML = '';
+      (res.stores || []).forEach(function (s) {
+        var span = document.createElement('span');
+        span.className = 'chip';
+        span.textContent = s.store_name;
+        storesEl.appendChild(span);
+      });
+      if (!(res.stores || []).length) {
+        storesEl.innerHTML = '<span style="font-size:11px;color:#64748b;font-weight:600;">店舗なし</span>';
+      }
+    }
+
+    function fillStores(stores) {
+      var sel = $('storeSelect');
+      sel.innerHTML = '';
+      if (!stores.length) {
+        sel.innerHTML = '<option value="">（権限のある店舗がありません）</option>';
+        return;
+      }
+      stores.forEach(function (s) {
+        var opt = document.createElement('option');
+        opt.value = s.store_id;
+        opt.textContent = s.store_name + (s.area ? '（' + s.area + '）' : '');
+        sel.appendChild(opt);
+      });
+    }
+
+    function fillEmployees(list) {
+      var sel = $('fEmployee');
+      sel.innerHTML = '';
+      list.forEach(function (e) {
+        var opt = document.createElement('option');
+        opt.value = e.employee_id;
+        opt.textContent = e.name + (e.is_primary ? '' : '（他店）');
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderTable() {
+      var wrap = $('tableWrap');
+      if (!state.shifts.length) {
+        wrap.innerHTML = '<div class="empty">この月のシフトはまだありません。</div>';
+        return;
+      }
+      var html = '<table><thead><tr><th>日付</th><th>従業員</th><th>区分</th><th>時間</th><th></th></tr></thead><tbody>';
+      state.shifts.forEach(function (s) {
+        var time = s.status === 'work' ? (s.start_time + '–' + s.end_time) : '—';
+        html += '<tr>' +
+          '<td>' + s.date + '</td>' +
+          '<td>' + empName(s.employee_id) + '</td>' +
+          '<td><span class="badge ' + s.status + '">' + statusLabel(s.status) + '</span></td>' +
+          '<td>' + time + '</td>' +
+          '<td>' +
+            (state.canEdit
+              ? '<button type="button" class="btn btn-secondary btn-sm" data-edit="' + s.shift_id + '">編集</button> ' +
+                '<button type="button" class="btn btn-danger btn-sm" data-del="' + s.shift_id + '">削除</button>'
+              : '') +
+          '</td></tr>';
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+      wrap.querySelectorAll('[data-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () { startEdit(btn.getAttribute('data-edit')); });
+      });
+      wrap.querySelectorAll('[data-del]').forEach(function (btn) {
+        btn.addEventListener('click', function () { removeShift(btn.getAttribute('data-del')); });
+      });
+    }
+
+    function startEdit(id) {
+      var s = null;
+      for (var i = 0; i < state.shifts.length; i++) {
+        if (state.shifts[i].shift_id === id) { s = state.shifts[i]; break; }
+      }
+      if (!s) return;
+      $('fShiftId').value = s.shift_id;
+      $('fDate').value = s.date;
+      $('fEmployee').value = s.employee_id;
+      $('fStatus').value = s.status;
+      $('fStart').value = s.start_time || '12:00';
+      $('fEnd').value = s.end_time || '21:00';
+      $('fBreak').value = s.break_minutes === '' || s.break_minutes == null ? '' : s.break_minutes;
+      setStatus('編集中: ' + empName(s.employee_id) + ' / ' + s.date);
+    }
+
+    function resetForm() {
+      $('fShiftId').value = '';
+      $('fDate').value = '';
+      $('fStatus').value = 'work';
+      $('fStart').value = '12:00';
+      $('fEnd').value = '21:00';
+      $('fBreak').value = '';
+      $('fStart').disabled = false;
+      $('fEnd').disabled = false;
+    }
+
+    function loadShifts() {
+      var storeId = $('storeSelect').value;
+      var ym = $('monthInput').value;
+      if (!storeId || !ym) {
+        setStatus('店舗と年月を選んでください。', 'err');
+        return;
+      }
+      setStatus('読み込み中…');
+      $('reloadBtn').disabled = true;
+      api('getShifts', storeId, ym)
+        .then(function (res) {
+          state.canEdit = !!res.canEdit;
+          state.employees = res.employees || [];
+          state.shifts = res.shifts || [];
+          fillEmployees(state.employees);
+          $('editorCard').classList.toggle('hidden', !state.canEdit);
+          renderTable();
+          var storeName = '';
+          var stores = (state.bootstrap && state.bootstrap.stores) || [];
+          for (var i = 0; i < stores.length; i++) {
+            if (stores[i].store_id === storeId) { storeName = stores[i].store_name; break; }
+          }
+          $('pageSub').textContent = storeName || '店舗シフト';
+          setStatus(
+            res.yearMonth + ' / ' + state.shifts.length + '件' +
+            (state.canEdit ? '（編集可）' : '（閲覧のみ）'),
+            'ok'
+          );
+        })
+        .catch(function (e) {
+          setStatus(e.message || String(e), 'err');
+        })
+        .then(function () {
+          $('reloadBtn').disabled = false;
+        });
+    }
+
+    function saveShift() {
+      var payload = {
+        shift_id: $('fShiftId').value || '',
+        store_id: $('storeSelect').value,
+        date: $('fDate').value,
+        employee_id: $('fEmployee').value,
+        status: $('fStatus').value,
+        start_time: ($('fStart').value || '').slice(0, 5),
+        end_time: ($('fEnd').value || '').slice(0, 5),
+        break_minutes: $('fBreak').value
+      };
+      setStatus('保存中…');
+      $('saveBtn').disabled = true;
+      api('upsertShift', payload)
+        .then(function () {
+          resetForm();
+          setStatus('保存しました', 'ok');
+          return loadShifts();
+        })
+        .catch(function (e) {
+          setStatus(e.message || String(e), 'err');
+        })
+        .then(function () {
+          $('saveBtn').disabled = false;
+        });
+    }
+
+    function removeShift(id) {
+      if (!confirm('このシフトを削除しますか？')) return;
+      setStatus('削除中…');
+      api('deleteShift', id, $('storeSelect').value)
+        .then(function () {
+          setStatus('削除しました', 'ok');
+          return loadShifts();
+        })
+        .catch(function (e) {
+          setStatus(e.message || String(e), 'err');
+        });
+    }
+
+    function openAccount(open) {
+      $('accountLayer').classList.toggle('hidden', !open);
+    }
+
+    function boot() {
+      applyAccent(readAccentId());
+      $('monthInput').value = currentYm();
+      api('getBootstrap')
+        .then(function (res) {
+          state.bootstrap = res;
+          $('appTitle').textContent = res.appTitle || 'シフト・キンタイ・カレンダー';
+          fillAccount(res);
+          fillStores(res.stores || []);
+          setStatus('店舗を選んで表示してください。');
+          if (res.stores && res.stores.length) loadShifts();
+        })
+        .catch(function (e) {
+          fillAccount({ name: '未ログイン', email: '権限エラー', roleMax: '', stores: [] });
+          setStatus(e.message || String(e), 'err');
+        });
+    }
+
+    $('avatarBtn').addEventListener('click', function () {
+      openAccount($('accountLayer').classList.contains('hidden'));
+    });
+    $('accountBackdrop').addEventListener('click', function () { openAccount(false); });
+    $('reloadBtn').addEventListener('click', loadShifts);
+    $('saveBtn').addEventListener('click', saveShift);
+    $('resetBtn').addEventListener('click', resetForm);
+    $('fStatus').addEventListener('change', function () {
+      var work = $('fStatus').value === 'work';
+      $('fStart').disabled = !work;
+      $('fEnd').disabled = !work;
+    });
+
+    boot();
+  </script>
+</body>
+</html>
