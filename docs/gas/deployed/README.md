@@ -29,17 +29,39 @@ npm run build:gas
 2. Actions → **Build GAS index** → Run workflow  
 3. Artifacts の `gas-index-html` から `index.html` をダウンロード  
 
-## GAS への貼り付け
+## GAS への反映（clasp）
+
+コピペ不要。このフォルダから push → デプロイできます。
+
+```powershell
+# リポジトリ直下
+npm run build:gas
+cd docs\gas\deployed
+clasp push --force
+clasp deploy -i AKfycbxp0HBE4-akd-bbMFzvkaAbFiBkxlK-m8W7HugP9nkYx0LEs8kwu1sjdo54AABZuijv -d "update"
+```
+
+scriptId: `15loL8q7-ODEgzBIhGS2Xa4w_FbDvU1_xf3_grVLiv9JoxB8hNdhAEikI`
+
+## 旧: 手貼り付け
 
 1. スプシ → 拡張機能 → Apps Script  
-2. `Code.gs` を **全部差し替え**（重要: 古い「ログインメール取得」版のままだと今のエラーが続く）  
+2. `Code.gs` を **全部差し替え**（重要）  
 3. `index` HTML をビルドした `index.html` で **全部差し替え**  
-4. デプロイ → 管理 → 編集  
+4. スプレッドシートでメニュー **シフト基盤 → シート構成を初期セットアップ**（または「週間固定」シートを追加）  
+5. デプロイ → 管理 → 編集  
    - **実行ユーザー: 自分**  
    - **アクセス: 組織内の全員**  
-5. **新しいバージョン** でデプロイ → `/exec` を開き直す  
+6. **新しいバージョン** でデプロイ → `/exec` を開き直す  
+
+## アプリ導線
+
+1. ログイン（会社メール）  
+2. 管轄店舗登録（エリア・店舗。同じ管轄の人は同じ店舗データを共有）  
+3. 従業員登録（フルネーム・社員コード）  
+4. 週間スケジュール（固定出勤）  
+5. 月間シフト作成（グリッド表示・セル編集）
 
 ## ログイン
 
-ToDo List と同じく **会社メール入力** です。  
-「権限」シートに自分のメール（admin）があること。
+ToDo List と同じく **会社メール入力** です。

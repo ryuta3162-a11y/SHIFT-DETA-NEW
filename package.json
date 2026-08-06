@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:gas": "vite build && powershell -NoProfile -Command \"Copy-Item -Force dist/index.html docs/gas/deployed/index.html\"",
+    "push:gas": "npm run build:gas && powershell -NoProfile -Command \"Set-Location docs/gas/deployed; clasp push --force\"",
+    "deploy:gas": "npm run push:gas && powershell -NoProfile -Command \"Set-Location docs/gas/deployed; clasp deploy -i AKfycbxp0HBE4-akd-bbMFzvkaAbFiBkxlK-m8W7HugP9nkYx0LEs8kwu1sjdo54AABZuijv -d auto\"",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @layer base {
@@ -6,8 +7,26 @@
   }
   body {
     @apply antialiased text-slate-900;
-    background-color: #f2f2f7;
-    font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+    background-color: #f4f4f5;
+    font-family: "Noto Sans JP", "Hiragino Sans", "Segoe UI", Meiryo, sans-serif;
+    letter-spacing: 0.01em;
+  }
+  .sheet-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sheet-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .sheet-scroll::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 999px;
+    border: 2px solid #fafafa;
+  }
+  .sheet-scroll::-webkit-scrollbar-track {
+    background: transparent;
   }
   :root {
     --acc-50: oklch(98.2% 0 0);
@@ -19,5 +38,22 @@
     --acc-600: oklch(22% 0 0);
     --acc-700: oklch(16% 0 0);
     --acc-900: oklch(10% 0 0);
+    --sheet-line: #e4e4e7;
+    --sheet-line-strong: #d4d4d8;
+  }
+}
+
+@layer components {
+  .sheet-chip {
+    @apply h-8 px-3 rounded-full text-[11px] font-semibold tracking-wide transition border disabled:opacity-40;
+  }
+  .sheet-chip-on {
+    @apply bg-zinc-900 text-white border-zinc-900;
+  }
+  .sheet-chip-off {
+    @apply bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50;
+  }
+  .sheet-chip-ghost {
+    @apply bg-transparent text-zinc-600 border-transparent hover:bg-zinc-100;
   }
 }

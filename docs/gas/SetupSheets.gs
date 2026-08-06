@@ -30,7 +30,7 @@ function menuSetupSheets() {
   const res = ui.alert(
     'シート構成の初期セットアップ',
     '次のシートを作成／再作成します。\n\n' +
-      '・使い方（規則）\n・店舗マスタ\n・従業員マスタ\n・シフト\n・シフトメモ\n・権限\n・設定\n・同期ログ\n\n' +
+      '・使い方（規則）\n・店舗マスタ\n・従業員マスタ\n・シフト\n・シフトメモ\n・週間固定\n・権限\n・設定\n・同期ログ\n\n' +
       '同名シートがある場合は中身を消して作り直します。よろしいですか？',
     ui.ButtonSet.YES_NO
   );
@@ -136,6 +136,26 @@ const SHEET_DEFS = [
     rules: [
       '会議・タスク・備考用（旧シフト表のメモ行に相当）',
       '時間が空なら終日／時間未定として扱ってよい'
+    ]
+  },
+  {
+    name: '週間固定',
+    tabColor: '#3d85c6',
+    headers: [
+      'weekly_id', 'employee_id', 'store_id', 'weekday', 'status',
+      'start_time', 'end_time', 'break_minutes', 'is_active', 'updated_at', 'updated_by'
+    ],
+    widths: [140, 110, 100, 90, 90, 90, 90, 110, 90, 150, 200],
+    boolCols: [9],
+    numberCols: [4, 8],
+    listValidations: {
+      5: ['work', 'off', 'pto', 'absent', 'undef']
+    },
+    samples: [],
+    rules: [
+      '1行 = 従業員×店舗×曜日（0=日 … 6=土）の固定パターン',
+      '月間シフト作成はこの表を展開して作る',
+      '後から変更可（次回の月間作成から反映）'
     ]
   },
   {

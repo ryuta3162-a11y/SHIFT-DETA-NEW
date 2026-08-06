@@ -26,6 +26,7 @@ npm run build:gas
 
 - [シート構成](docs/シート構成.md)
 - [シート初期セットアップ GAS](docs/gas/README.md)
+- [レイアウト更新専用 GAS（データ保持）](docs/gas/LayoutUpdate_README.md)
 - [デプロイ手順](docs/gas/deployed/README.md)
 
 ## 参考（編集しない）
