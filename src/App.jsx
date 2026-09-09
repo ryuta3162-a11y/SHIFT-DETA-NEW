@@ -26,18 +26,18 @@ import {
 } from './leaveCodes.js';
 
 const EMAIL_KEY = 'shiftapp_user_email';
-const STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E };
-const WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];
-/** ?E????????????E???????E? weekday ? 0=??6=??E???E?E*/
+const STATUS_LABEL = { work: '出勤', off: '公休', pto: '有休', absent: '欠勤', undef: '未定' };
+const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
+/** 週間テンプレの並び順（月曜始まり）。weekday は 0=日〜6=土 */
 const WEEKDAY_TEMPLATE_ORDER = [1, 2, 3, 4, 5, 6, 0];
-/** ???E??????E??????????????E*/
+/** 曜日ごとの文字色クラスを返す */
 function weekdayTextClass(wd) {
   if (wd === 0) return 'text-[#b71c1c]';
   if (wd === 6) return 'text-[#1565c0]';
   return 'text-slate-700';
 }
 
-/** ?7??? / ?E?????2 / ??E?E?E-2??????E???E*/
+/** 例: 「7-2 店名　スタッフ」のような掲示用の見出しを作る */
 function formatStoreStaffHeader(store) {
   return formatStoreStaffHeaderParts(store).label;
 }
@@ -50,11 +50,11 @@ function formatStoreStaffHeaderParts(store) {
   if (areaNum && terrNum) code = `${areaNum}-${terrNum}`;
   else if (areaNum) code = areaNum;
   const label = code && name
-    ? `${code}${name}????E??`
+    ? `${code}${name}　スタッフ`
     : name
-      ? `${name}????E??`
-      : '???';
-  return { code, name, suffix: name || code ? '???E??' : '', label };
+      ? `${name}　スタッフ`
+      : '従業員';
+  return { code, name, suffix: name || code ? 'スタッフ' : '', label };
 }
 
 function formatDateJa(ymd) {
@@ -62,7 +62,7 @@ function formatDateJa(ymd) {
   const wd = new Date(`${s}T00:00:00`).getDay();
   if (!s || Number.isNaN(wd)) return s;
   const parts = s.split('-');
-  return `${Number(parts[1])}?E{Number(parts[2])}??E?E{WEEKDAY_LABELS[wd]}?E?`;
+  return `${Number(parts[1])}月${Number(parts[2])}日（${WEEKDAY_LABELS[wd]}）`;
 }
 
 function IconArrowDown({ className = 'w-4 h-4' }) {
@@ -107,15 +107,15 @@ function IconClock({ className = 'w-4 h-4' }) {
 }
 
 const ACCOUNT_MENU = [
-  { id: 'jurisdiction', label: '??E???E??' },
-  { id: 'employees', label: '???E???E?? ?????' },
-  { id: 'weekly', label: '??????????E' },
+  { id: 'jurisdiction', label: '管轄店舗変更' },
+  { id: 'employees', label: 'スタッフ情報 追加・変更' },
+  { id: 'weekly', label: '週間テンプレート作成' },
 ];
 
 const SETTINGS_TITLES = {
-  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },
-  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E },
-  weekly: { kicker: '??E, title: '??????????E', sub: '1???E??????' },
+  jurisdiction: { kicker: '設定', title: '管轄店舗変更', sub: '表示名・社員番号・担当店舗を選ぶ' },
+  employees: { kicker: '設定', title: 'スタッフ情報 追加・変更', sub: '氏名・社員番号・勤務時間' },
+  weekly: { kicker: '設定', title: '週間テンプレート作成', sub: '1週間の固定パターン' },
 };
 
 function IconMenuStore({ className = 'w-4 h-4' }) {
@@ -162,9 +162,9 @@ function ConfirmDialog({ box, onCancel }) {
         <p className="mt-3 text-[15px] font-semibold text-slate-800 leading-relaxed">{box.message}</p>
         {box.detail && <p className="mt-2 text-[13px] text-slate-500 leading-relaxed">{box.detail}</p>}
         <div className="mt-5 flex gap-2 justify-end">
-          <button type="button" onClick={onCancel} className="px-5 py-3 rounded-2xl bg-white border border-black/5 font-bold text-slate-700">{(box.cancelLabel || '?E???E)}</button>
+          <button type="button" onClick={onCancel} className="px-5 py-3 rounded-2xl bg-white border border-black/5 font-bold text-slate-700">{(box.cancelLabel || 'いいえ')}</button>
           <button type="button" onClick={box.onConfirm} className="px-5 py-3 rounded-2xl bg-rose-600 text-white font-bold shadow-lg shadow-rose-600/25 hover:bg-rose-700">
-            {box.confirmLabel || '??E}
+            {box.confirmLabel || 'はい'}
           </button>
         </div>
       </div>
@@ -213,8 +213,8 @@ function LeaveCodePicker({
             <button
               type="button"
               disabled={disabled}
-              title="???E?????E??E
-              aria-label="???E?????E??E
+              title="上へ（よく使う）"
+              aria-label="上へ（よく使う）"
               onClick={() => onMoveToUsed(c.code)}
               className="km-code-act"
             >
@@ -224,8 +224,8 @@ function LeaveCodePicker({
             <button
               type="button"
               disabled={disabled}
-              title="???E?????E?E
-              aria-label="???E?????E?E
+              title="下へ（未使用）"
+              aria-label="下へ（未使用）"
               onClick={() => onMoveToUnused(c.code)}
               className="km-code-act"
             >
@@ -235,8 +235,8 @@ function LeaveCodePicker({
           <button
             type="button"
             disabled={disabled}
-            title="????"
-            aria-label="????"
+            title="非表示へ"
+            aria-label="非表示へ"
             onClick={() => onHide(c.code)}
             className="km-code-act km-code-act-trash"
           >
@@ -250,36 +250,36 @@ function LeaveCodePicker({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2 mb-2">
-        <p className="text-[16px] font-bold text-slate-800">???????E/p>
+        <p className="text-[16px] font-bold text-slate-800">休日休暇コード</p>
       </div>
       <input
         type="search"
         value={query}
         onChange={(e) => onQuery(e.target.value)}
-        placeholder="????E?????"
+        placeholder="コード・名称で検索"
         className="w-full h-11 mb-2 border border-[#9db4c8] bg-[#eef3f8] px-3 text-[15px] outline-none"
         style={{ borderRadius: 2 }}
       />
       <div className="km-code-table max-h-[16.5rem] overflow-y-auto">
         <div className="km-code-head sticky top-0 z-10">
-          <span>???E/span>
-          <span>??</span>
+          <span>コード</span>
+          <span>名称</span>
           <span aria-hidden="true" />
         </div>
         {used.length > 0 && (
           <>
-            <div className="km-code-sep bg-[#e8f1fa] text-[#2f7ec4]">????E/div>
+            <div className="km-code-sep bg-[#e8f1fa] text-[#2f7ec4]">よく使う</div>
             {used.map((c) => row(c, 'used'))}
           </>
         )}
         {unused.length > 0 && (
           <>
-            {used.length > 0 && <div className="km-code-sep">???</div>}
+            {used.length > 0 && <div className="km-code-sep">未使用</div>}
             {unused.map((c) => row(c, 'unused'))}
           </>
         )}
         {!used.length && !unused.length && (
-          <p className="px-3 py-4 text-[14px] text-slate-500">?????????????</p>
+          <p className="px-3 py-4 text-[14px] text-slate-500">該当するコードがありません</p>
         )}
       </div>
       <div className="mt-1.5 flex justify-end gap-2">
@@ -288,21 +288,21 @@ function LeaveCodePicker({
           disabled={disabled || !onOpenPtoHours}
           onClick={onOpenPtoHours}
           className="km-code-trash-toggle"
-          title="??????IN?OUT??"
-          aria-label="??????IN?OUT??"
+          title="有休取得時のIN・OUT時間"
+          aria-label="有休取得時のIN・OUT時間"
         >
           <IconClock className="w-3.5 h-3.5" />
-          <span>{ptoHoursLabel || 'IN?OUT'}</span>
+          <span>{ptoHoursLabel || 'IN・OUT'}</span>
         </button>
         <button
           type="button"
           disabled={disabled || !hidden.length}
           onClick={() => setTrashOpen((v) => !v)}
           className={`km-code-trash-toggle ${trashOpen ? 'is-open' : ''} ${hidden.length ? '' : 'is-empty'}`}
-          title="?????????E
+          title="非表示にしたコード"
         >
           <IconTrash className="w-3.5 h-3.5" />
-          <span>???{hidden.length ? ` (${hidden.length})` : ''}</span>
+          <span>非表示{hidden.length ? ` (${hidden.length})` : ''}</span>
         </button>
       </div>
       {trashOpen && hidden.length > 0 && (
@@ -314,18 +314,18 @@ function LeaveCodePicker({
               <button
                 type="button"
                 disabled={disabled}
-                title="?E????E
-                aria-label="?E????E
+                title="元に戻す"
+                aria-label="元に戻す"
                 onClick={() => onRestore(c.code)}
                 className="km-code-restore"
               >
                 <IconRestore />
-                <span>??E/span>
+                <span>戻す</span>
               </button>
             </div>
           ))}
           {q && !hiddenFiltered.length && (
-            <p className="px-3 py-3 text-[13px] text-slate-500">????????????????</p>
+            <p className="px-3 py-3 text-[13px] text-slate-500">該当する非表示コードがありません</p>
           )}
         </div>
       )}
@@ -349,19 +349,20 @@ function hm5(v) {
   return m ? `${pad2(m[1])}:${m[2]}` : '';
 }
 
-/** ???????: ????E?????????E??E??E*/
+/** 掲示用の氏名: 姓と名の間に全角スペースを入れる */
 function formatByeByePersonName(name) {
-  let s = String(name || '').trim().replace(/[ ?]+/g, '?');
+  let s = String(name || '').trim().replace(/[ 　]+/g, '　');
   if (!s) return '';
-  if (s.includes('?')) return s;
-  // ???E???E?E3?E????????????E2?E?????E???E????????????E?E  const three = ['???E, '???E, '???', '???', '??E??E, '??E??', '???'];
+  if (s.includes('　')) return s;
+  // よくある3文字姓を先に判定し、それ以外は2文字目のうしろで区切る
+  const three = ['長谷川', '五十嵐', '諏訪部', '小野寺', '大久保', '佐々木', '仲村渠'];
   for (let i = 0; i < three.length; i += 1) {
     const sur = three[i];
     if (s.length > sur.length && s.startsWith(sur)) {
-      return `${sur}?${s.slice(sur.length)}`;
+      return `${sur}　${s.slice(sur.length)}`;
     }
   }
-  if (s.length >= 3) return `${s.slice(0, 2)}?${s.slice(2)}`;
+  if (s.length >= 3) return `${s.slice(0, 2)}　${s.slice(2)}`;
   return s;
 }
 
@@ -376,31 +377,32 @@ function formatByeShift(start, end, breakMinutes) {
   let breakStr = '';
   if (breakMinutes !== '' && breakMinutes != null && !Number.isNaN(Number(breakMinutes))) {
     const bm = Number(breakMinutes);
-    // ?7???GAS???: R1:00 / R0:00?E??????????E??E    breakStr = `R${Math.floor(bm / 60)}:${pad2(bm % 60)}`;
+    // 休憩はGASの書式に合わせる: R1:00 / R0:00 の形で出す
+    breakStr = `R${Math.floor(bm / 60)}:${pad2(bm % 60)}`;
   } else {
     breakStr = duration > 360 ? 'R1:00' : 'R0:00';
   }
   return `${s}-${e}${breakStr}`;
 }
 
-/** ????E??????????E??????E?TSV??? */
+/** バイバイ勤務表に貼り付けるTSVを作る */
 function buildByeByeTsv(employees, shifts, yearMonth) {
   const ym = String(yearMonth || '').trim();
   const parts = ym.split('-').map(Number);
   const year = parts[0];
   const month = parts[1];
-  if (!year || !month) return { tsv: '', staffCount: 0, rowCount: 0, warnings: ['???????E] };
+  if (!year || !month) return { tsv: '', staffCount: 0, rowCount: 0, warnings: ['年月が不正です'] };
   const daysInMonth = new Date(year, month, 0).getDate();
   const warnings = [];
   const withCode = (employees || []).filter((e) => {
     const code = String(e.bye_code || e.employee_id || '').trim();
     if (!code) {
-      warnings.push(`${e.name}?E??????????E????E?E?E?`);
+      warnings.push(`${e.name}：社員コード未登録（スキップ）`);
       return false;
     }
     return true;
   });
-  if (!withCode.length) return { tsv: '', staffCount: 0, rowCount: 0, warnings: warnings.length ? warnings : ['????????????????'] };
+  if (!withCode.length) return { tsv: '', staffCount: 0, rowCount: 0, warnings: warnings.length ? warnings : ['社員コード付きの従業員がいません'] };
 
   const byEmpDate = {};
   (shifts || []).forEach((s) => {
@@ -414,12 +416,13 @@ function buildByeByeTsv(employees, shifts, yearMonth) {
     const t = new Date(year, month - 1, d);
     dateHeaders.push(`${t.getMonth() + 1}/${t.getDate()}(${WEEKDAY_LABELS[t.getDay()]})`);
   }
-  // ?7???GAS??: D??E??1?E?????????E??E???E ?E????E???E?E  const headerRow = [`${year}/${month}/1`, '?E?E, `${year}/${month}/${daysInMonth}`, ' '].concat(dateHeaders);
+  // ヘッダー行はGAS仕様: 開始日 / 「～」 / 終了日 / 空白 のあとに日付が並ぶ
+  const headerRow = [`${year}/${month}/1`, '～', `${year}/${month}/${daysInMonth}`, ' '].concat(dateHeaders);
   const rowTypes = [
-    { code: 215001, name: '?????' },
-    { code: 215201, name: '???' },
-    { code: 215013, name: '?????(????)' },
-    { code: 215231, name: '???(????)' },
+    { code: 215001, name: '休日・休暇' },
+    { code: 215201, name: 'シフト' },
+    { code: 215013, name: '休日・休暇(自動展開)' },
+    { code: 215231, name: 'シフト(自動展開)' },
   ];
   const outputData = [];
 
@@ -447,7 +450,7 @@ function buildByeByeTsv(employees, shifts, yearMonth) {
         rowsForStaff[0][4 + idx] = leaveCode;
         if (leaveCodeNeedsShiftTime(leaveCode)) {
           valForShift = formatByeShift(s.start_time, s.end_time, s.break_minutes);
-          if (!valForShift) warnings.push(`${emp.name} ${date}?E?E{leaveCodeLabel(leaveCode)}???????`);
+          if (!valForShift) warnings.push(`${emp.name} ${date}：${leaveCodeLabel(leaveCode)}なのに時刻不正`);
         } else if (leaveCodeNeedsDummyShift(leaveCode)) {
           valForShift = formatByeShift(s.start_time, s.end_time, s.break_minutes) || '8:30-17:30R1:00';
         }
@@ -460,13 +463,14 @@ function buildByeByeTsv(employees, shifts, yearMonth) {
         valForShift = formatByeShift(s?.start_time, s?.end_time, s?.break_minutes) || '8:30-17:30R1:00';
       } else if (status === 'work') {
         valForShift = formatByeShift(s.start_time, s.end_time, s.break_minutes);
-        if (!valForShift) warnings.push(`${emp.name} ${date}?E??????????`);
+        if (!valForShift) warnings.push(`${emp.name} ${date}：勤務なのに時刻不正`);
       }
 
       if (valForShift) rowsForStaff[1][4 + idx] = valForShift;
     }
 
-    // ????2??E?????E??7???GAS???????????????E?E    rowsForStaff.forEach((rr) => outputData.push(rr));
+    // 1人あたり4行（GASの行種別）をまとめて出力する
+    rowsForStaff.forEach((rr) => outputData.push(rr));
   });
 
   const colCount = 4 + daysInMonth;
@@ -513,10 +517,10 @@ function shiftYearMonth(ym, deltaMonths) {
 function formatYmJa(ym) {
   const [y, m] = String(ym || '').split('-');
   if (!y || !m) return '';
-  return `${y}?${Number(m)}?E;
+  return `${y}年${Number(m)}月`;
 }
 
-/** ???????E ??E?????E "8"?????? "8:30" */
+/** 印刷用の時刻表示: 分が00なら "8"、それ以外は "8:30" */
 function formatPrintTimePart(hm) {
   const m = String(hm || '').trim().match(/^(\d{1,2}):(\d{2})/);
   if (!m) return '';
@@ -524,7 +528,7 @@ function formatPrintTimePart(hm) {
   return m[2] === '00' ? h : `${h}:${m[2]}`;
 }
 
-/** ?E 8-17 / 8:30-17 / 8-17:30 / 8:30-17:30 */
+/** 例: 8-17 / 8:30-17 / 8-17:30 / 8:30-17:30 */
 function formatPrintTimeRange(startHm, endHm) {
   const a = formatPrintTimePart(startHm);
   const b = formatPrintTimePart(endHm);
@@ -532,7 +536,7 @@ function formatPrintTimeRange(startHm, endHm) {
   return a || b || '';
 }
 
-/** 0:00?E4:00 ?Estep ?E??????E */
+/** 0:00〜24:00 を step 分刻みで作る */
 function buildTimeOptions(stepMin = 30) {
   const step = stepMin === 15 ? 15 : 30;
   const out = [];
@@ -562,11 +566,11 @@ function snapToStep(hm, stepMin = 30) {
 const NAME_COL_W = 280;
 const DAY_COL_W = 118;
 const SHIFT_ROW_H = 80;
-/** ??????????????????E*/
+/** MEMO行の高さ（px） */
 const MEMO_ROW_H = 80;
 const MEMO_MAX_LINES = 5;
 const CELL_FOCUS_RING = 'inset 0 0 0 2px #18181b';
-/** ?????E?Eeparate + 1px?E?????E? sheet-name-cell ???E*/
+/** 罫線を separate + 1px で描くためのセル用クラス */
 const SHEET_DAY = 'sheet-day-cell';
 const SHEET_NAME = 'sheet-name-cell';
 
@@ -582,9 +586,9 @@ function monthDays(daysInMonth) {
 }
 
 const SHIFT_STATUS_OPTIONS = [
-  { id: 'blank', label: '??E, title: '??E????' },
-  { id: 'work', label: '?E, title: '??' },
-  { id: 'off', label: '�E, title: '??' },
+  { id: 'blank', label: '空欄', title: '空欄にする' },
+  { id: 'work', label: '○', title: '出勤' },
+  { id: 'off', label: '×', title: '休み' },
 ];
 
 function shiftCategoryId(shift, autoLeaveCode = 0) {
@@ -597,25 +601,25 @@ function shiftCategoryId(shift, autoLeaveCode = 0) {
   return '';
 }
 
-/** ??????????E????E????E*/
+/** アルバイトの勤務時間の選択肢 */
 const PART_HOUR_OPTIONS = [3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];
-/** ???????E????E?????????E????????E*/
+/** 社員の勤務時間の選択肢 */
 const FULL_HOUR_OPTIONS = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
 const TIME_STEP_MIN = 30;
-/** ?????E ??8h + ??E1h = ??9h */
+/** 社員の基本: 実働8h + 休憩1h = 拘束9h */
 const FULLTIME_SPAN_HOURS = 9;
 
 function normalizeEmpType(type) {
-  const t = String(type || '??').trim();
-  if (t === '??E?E || t === '?????E) return '?????E;
-  return '??';
+  const t = String(type || '社員').trim();
+  if (t === 'パート' || t === 'アルバイト') return 'アルバイト';
+  return '社員';
 }
 
 function isFullTimeEmp(emp) {
-  return normalizeEmpType(emp?.employment_type) === '??';
+  return normalizeEmpType(emp?.employment_type) === '社員';
 }
 
-/** ??E??????Ework_hours ????E?????E??????E????????E??E*/
+/** 従業員の work_hours から1日の拘束時間（休憩込み）を求める */
 function spanHoursForEmp(emp) {
   const wh = Number(emp?.work_hours);
   if (wh > 0) return wh;
@@ -626,10 +630,10 @@ function hourOptionsForEmp(emp) {
   return isFullTimeEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;
 }
 
-/** ??E???E?????????E???E??????E????E??????????E*/
+/** 雇用区分を切り替えたときに勤務時間を引き継ぐ */
 function carryOverHours(emp, nextType) {
   const wh = Number(emp?.work_hours);
-  const allowed = nextType === '??' ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;
+  const allowed = nextType === '社員' ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;
   return allowed.includes(wh) ? wh : '';
 }
 
@@ -655,7 +659,7 @@ function hmToMinutes(hm) {
   return Number(m[1]) * 60 + Number(m[2]);
 }
 
-/** ?????E?E?????E???E???0.5h???E*/
+/** 開始と終了から拘束時間を求める（0.5h単位） */
 function spanHoursBetweenHm(start, end) {
   const a = hmToMinutes(start);
   const b = hmToMinutes(end);
@@ -665,7 +669,7 @@ function spanHoursBetweenHm(start, end) {
   return Math.round((diff / 60) * 10) / 10;
 }
 
-/** ????E?????E??????E???????????E???? */
+/** 週間テンプレートで選べる拘束時間の候補 */
 const WEEKLY_SPAN_OPTIONS = [4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
 
 const PTO_TEMPLATE_KEY = 'shiftapp_pto_time_template_v1';
@@ -731,15 +735,15 @@ function savePtoTemplate(employeeId, tpl) {
   }
 }
 
-/** ????E???????????????E???E?E0-16 / 12:30-21:30 ???E?E*/
-const SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~??E?E??E?E?]\s*(\d{1,2})(?::(\d{2}))?/;
+/** 勤務時間の入力を読み取る正規表現（例: 10-16 / 12:30-21:30） */
+const SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~〜ー－—/／]\s*(\d{1,2})(?::(\d{2}))?/;
 const SHIFT_TIME_ONLY_RE = /^(\d{1,2})(?::(\d{2}))?$/;
 
 function normalizeShiftRaw(raw) {
   return String(raw ?? '')
-    .replace(/[?E?E?E?]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
-    .replace(/[?E?]/g, ':')
-    .replace(/[?E?????]/g, '-');
+    .replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/[：]/g, ':')
+    .replace(/[－—–〜～]/g, '-');
 }
 
 function shiftFromTimeMatch(range) {
@@ -748,7 +752,7 @@ function shiftFromTimeMatch(range) {
   return { status: 'work', start_time: start, end_time: end, leave_code: '' };
 }
 
-/** ?E3:00\\n22:00??E???????? IN/OUT ????? */
+/** 「13:00 と 22:00」のような2行入力から IN/OUT を取り出す */
 function parseStackedTimes(original) {
   const lines = String(original || '')
     .split(/\r?\n/)
@@ -766,19 +770,21 @@ function looksLikeStackedTimesCell(text) {
   return !!parseStackedTimes(normalizeShiftRaw(text));
 }
 
-/** ??????E???????: ?E0-16??E2:00-21:00???E???????? */
+/** 入力文字列をシフトに変換する（例: 10-16 / 12:00-21:00） */
 function parseShiftDraft(raw, emp) {
   const original = normalizeShiftRaw(raw).trim();
   if (!original) return { status: 'undef', start_time: '', end_time: '', leave_code: '' };
 
-  // ????E??? IN / OUT?E?E3:00\\n22:00?E?E  const stacked = parseStackedTimes(original);
+  // まず2行入力の IN / OUT を試す
+  const stacked = parseStackedTimes(original);
   if (stacked) return stacked;
 
-  // ?E?????????????????????????E  const firstLine = original.split(/\r?\n/).map((s) => s.trim()).find(Boolean) || '';
+  // 1行目だけを見て判定する
+  const firstLine = original.split(/\r?\n/).map((s) => s.trim()).find(Boolean) || '';
   const text = firstLine.replace(/\s+/g, '');
 
-  if (text === '?E || text === '?' || text === '?E) return workTimesFromIn(emp, '12:00');
-  if (text === '�E || text === '?E || text === '?E || text.toLowerCase() === 'x') {
+  if (text === '○' || text === '◯' || text === '〇') return workTimesFromIn(emp, '12:00');
+  if (text === '×' || text === '✕' || text === '✖' || text.toLowerCase() === 'x') {
     return { status: 'off', start_time: '', end_time: '', leave_code: '' };
   }
 
@@ -792,20 +798,20 @@ function parseShiftDraft(raw, emp) {
   }
 
   const leaveMap = [
-    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },
-    { keys: ['??E, '??', 'pto'], status: 'pto', leave_code: 61 },
-    { keys: ['??', 'absent'], status: 'absent', leave_code: 80 },
+    { keys: ['公休', '休み', '休', '不在', 'off'], status: 'off' },
+    { keys: ['有休', '有給', 'pto'], status: 'pto', leave_code: 61 },
+    { keys: ['欠勤', 'absent'], status: 'absent', leave_code: 80 },
   ];
   for (const row of leaveMap) {
     if (row.keys.some((k) => text === k || text.toLowerCase() === k)) {
       return { status: row.status, leave_code: row.leave_code || '', start_time: '', end_time: '' };
     }
   }
-  if (text === '??E || text.toLowerCase() === 'work') {
+  if (text === '勤務' || text.toLowerCase() === 'work') {
     return workTimesFromIn(emp, '12:00');
   }
 
-  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~??E?E??E?E?](\d{1,2})(?::(\d{2}))?$/);
+  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~〜ー－—/／](\d{1,2})(?::(\d{2}))?$/);
   if (range) return shiftFromTimeMatch(range);
 
   const single = text.match(SHIFT_TIME_ONLY_RE);
@@ -813,7 +819,8 @@ function parseShiftDraft(raw, emp) {
     return workTimesFromIn(emp, `${pad2(Number(single[1]))}:${single[2] || '00'}`);
   }
 
-  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  const embedded = original.match(SHIFT_TIME_RANGE_RE);
+  // 文章の中に「10-16」のような時刻があれば拾う
+  const embedded = original.match(SHIFT_TIME_RANGE_RE);
   if (embedded) {
     const idx = original.search(SHIFT_TIME_RANGE_RE);
     const prefix = original.slice(0, idx).replace(/\s+/g, '');
@@ -825,7 +832,7 @@ function parseShiftDraft(raw, emp) {
 }
 
 /**
- * Sheets/Excel ? TSV????E????E "..." ?????????? split('\\n') ????????E */
+ * Sheets/Excel の TSV は "..." で囲まれることがあるため、単純な split では分割できない */
 function parseTsvGrid(text) {
   const src = String(text ?? '');
   const rows = [];
@@ -877,14 +884,16 @@ function parseTsvGrid(text) {
   return rows;
 }
 
-/** ???E?E??E??Eheets/Excel?E???�?E???E? */
+/** クリップボード（Sheets/Excel）の表を○×グリッドとして読む */
 function parseClipboardGrid(text) {
   const normalized = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   if (!normalized.trim()) return [];
-  // ???E??????E IN/OUT ? 1 ???????E  if (looksLikeStackedTimesCell(normalized)) {
+  // 1セルに IN/OUT が縦2行で入っている場合
+  if (looksLikeStackedTimesCell(normalized)) {
     return [[normalized.trim()]];
   }
-  // ??????E????Eheets ??????E?E  return parseTsvGrid(normalized.replace(/\n+$/, ''));
+  // 末尾の空行は Sheets 由来なので落とす
+  return parseTsvGrid(normalized.replace(/\n+$/, ''));
 }
 
 function clipboardGridIsMulti(grid) {
@@ -893,7 +902,7 @@ function clipboardGridIsMulti(grid) {
   return (grid[0]?.length || 0) > 1;
 }
 
-/** ?????????????????E?E */
+/** 貼り付けたグリッドのラベル列を推定する */
 function detectPasteLabelColumn(grid, emp) {
   if (!grid[0] || grid[0].length < 2) return 0;
   const head = String(grid[0][0] ?? '').trim();
@@ -911,9 +920,9 @@ function draftFromShift(s) {
     const b = String(s.end_time || '').slice(0, 5);
     return a && b ? `${a}-${b}` : a || '';
   }
-  if (status === 'off') return '�E;
-  if (status === 'pto') return '??E;
-  if (status === 'absent') return '??';
+  if (status === 'off') return '×';
+  if (status === 'pto') return '有休';
+  if (status === 'absent') return '欠勤';
   return '';
 }
 
@@ -953,7 +962,7 @@ export default function App() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [confirmBox, setConfirmBox] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [busyText, setBusyText] = useState('??E???');
+  const [busyText, setBusyText] = useState('処理中…');
   const [msg, setMsg] = useState('');
   const [msgKind, setMsgKind] = useState('');
   const [progress, setProgress] = useState(null); // null | 0-100
@@ -973,13 +982,14 @@ export default function App() {
 
   // employees
   const [employees, setEmployees] = useState([]);
-  const [empForm, setEmpForm] = useState({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });
+  const [empForm, setEmpForm] = useState({ employee_id: '', name: '', bye_code: '', employment_type: '社員', work_hours: 4 });
   const [empFormOpen, setEmpFormOpen] = useState(false);
 
   // weekly
   const [weekly, setWeekly] = useState([]); // map-like array
   const [weeklyEmpId, setWeeklyEmpId] = useState('');
-  const [weeklySpanH, setWeeklySpanH] = useState(null); // ???E?????E?Eull=?????????E?E  const [weeklyStatus, setWeeklyStatus] = useState('idle'); // idle | saving | saved
+  const [weeklySpanH, setWeeklySpanH] = useState(null); // 拘束時間の上書き（null=従業員設定のまま）
+  const [weeklyStatus, setWeeklyStatus] = useState('idle'); // idle | saving | saved
   const [weeklyBulkStart, setWeeklyBulkStart] = useState('10:00');
 
   // monthly grid
@@ -990,7 +1000,8 @@ export default function App() {
   const [dirtyMemoKeys, setDirtyMemoKeys] = useState(() => new Set());
   const [focusCell, setFocusCell] = useState(null); // { employee_id, date, layer?: 'shift'|'memo', editing?: boolean }
   const [shiftEditor, setShiftEditor] = useState(null); // { employee_id, date }
-  const [empEditorId, setEmpEditorId] = useState(null); // employee_id ?E?????E????E  const [memoOpenIds, setMemoOpenIds] = useState(() => new Set()); // employee_id ?EMEMO??E??
+  const [empEditorId, setEmpEditorId] = useState(null); // 従業員編集ダイアログの対象
+  const [memoOpenIds, setMemoOpenIds] = useState(() => new Set()); // employee_id ごとのMEMO展開状態
   const [editDraft, setEditDraft] = useState('');
   const sheetAreaRef = useRef(null);
   const cellEditRef = useRef(null);
@@ -1035,7 +1046,8 @@ export default function App() {
     applyAccentTheme(readStoredAccentId());
   }, []);
 
-  // ????????????????????E??scrollIntoView ????????E  useEffect(() => {
+  // 選択セルが画面外なら scrollIntoView で寄せる
+  useEffect(() => {
     if (!focusCell || focusCell.editing || focusCell.layer === 'memo') return undefined;
     const key = `${focusCell.employee_id}__${focusCell.date}`;
     const id = window.setTimeout(() => {
@@ -1052,7 +1064,8 @@ export default function App() {
     if (!total) return undefined;
     setSaveState('pending');
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    // ???????E??????E???????E???????E    const delay = total > 40 ? 1800 : 600;
+    // 人数が多いときは自動保存の間隔を長めにする
+    const delay = total > 40 ? 1800 : 600;
     autoSaveTimer.current = setTimeout(() => {
       flushDirtyShifts({ quiet: true });
     }, delay);
@@ -1065,7 +1078,6 @@ export default function App() {
     if (user?.email) setLeavePrefs(readLeavePrefs(user.email));
   }, [user?.email]);
 
-  /** ??E???E??E????????????E???E????????????E??E*/
   useEffect(() => {
     if (authStep !== 'ready' || !user?.stores?.length || monthlyLoading) return;
     const allowed = user.stores.map((s) => s.store_id);
@@ -1085,7 +1097,6 @@ export default function App() {
     weeklySaveTimer.current = setTimeout(() => saveWeekly({ quiet: true }), 400);
   }
 
-  /** ????????????E???????? */
   useEffect(() => {
     if (settingsPanel === 'weekly') return;
     if (!weeklySaveTimer.current) return;
@@ -1137,17 +1148,19 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey, true);
   }, [authStep, busy, historyTick, shifts, memos, dirtyKeys, dirtyMemoKeys]);
 
-  // ?????????E?E?????????????E??????????E?E  useEffect(() => {
+  // タブのタイトルを店舗名と年月に合わせる
+  useEffect(() => {
     if (authStep !== 'app' || !yearMonth) return;
     const [yStr, mStr] = String(yearMonth).split('-');
     const y = Number(yStr) || '';
     const m = Number(mStr) || '';
-    const storeLabel = String(storeName || '???').trim();
+    const storeLabel = String(storeName || 'シフト').trim();
     if (!y || !m) return;
-    document.title = `${storeLabel}${y}?E?E{m}????`;
+    document.title = `${storeLabel}${y}／${m}月シフト`;
   }, [authStep, yearMonth, storeName]);
 
-  // Ctrl+P / ????????????????E????????E?E  useEffect(() => {
+  // Ctrl+P と印刷イベントに合わせて印刷用の設定を切り替える
+  useEffect(() => {
     if (authStep !== 'app') return undefined;
     const onBeforePrint = () => {
       if (!employees.length || !yearMonth) return;
@@ -1165,8 +1178,8 @@ export default function App() {
       const [yStr, mStr] = String(yearMonth).split('-');
       const y = Number(yStr) || '';
       const m = Number(mStr) || '';
-      const storeLabel = String(storeName || '???').trim();
-      if (y && m) document.title = `${storeLabel}${y}?E?E{m}????`;
+      const storeLabel = String(storeName || 'シフト').trim();
+      if (y && m) document.title = `${storeLabel}${y}／${m}月シフト`;
     };
     const onAfterPrint = () => {
       document.documentElement.classList.remove('is-printing');
@@ -1191,7 +1204,8 @@ export default function App() {
         setMeta(boot);
         setYearMonth(boot.serverYearMonth || '');
         if (boot.sessionEmail) setLoginEmail(boot.sessionEmail);
-        // GAS ?????????E????E???????E???????E        localStorage.removeItem(STAFF_TOKEN_KEY);
+        // GAS 側で無効になったトークンは捨てる
+        localStorage.removeItem(STAFF_TOKEN_KEY);
         const saved = localStorage.getItem(EMAIL_KEY) || '';
         if (saved) {
           await login(saved, boot);
@@ -1207,7 +1221,7 @@ export default function App() {
     return () => { cancelled = true; };
   }, []);
 
-  /** ????E?????????E???????????E??????????????E*/
+  /** 画面上部に短いメッセージを出す */
   function notify(text, kind = '') {
     if (kind === 'ok') {
       setMsg('');
@@ -1244,7 +1258,7 @@ export default function App() {
     progressHideTimer.current = setTimeout(() => setProgress(null), 420);
   }
 
-  /** ??E?E?????E????????E??E?E??????E*/
+  /** 店舗や年月を切り替えるときに編集状態を捨てる */
   function resetWorkspaceState() {
     setShifts([]);
     setMemos([]);
@@ -1269,7 +1283,7 @@ export default function App() {
     setKintaiToast(null);
     setMsg('');
     setMsgKind('');
-    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });
+    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '社員', work_hours: 4 });
     setEmpFormOpen(false);
   }
 
@@ -1284,7 +1298,7 @@ export default function App() {
   }
 
   async function withBusy(label, fn) {
-    setBusyText(label || '??E???');
+    setBusyText(label || '処理中…');
     setBusy(true);
     startProgress();
     try {
@@ -1297,14 +1311,14 @@ export default function App() {
 
   async function login(email, bootMeta = meta) {
     setLoginError('');
-    setBusyText('??????');
+    setBusyText('ログイン中…');
     setBusy(true);
     startProgress();
     try {
       localStorage.removeItem(STAFF_TOKEN_KEY);
       const res = await api.loginWithEmail(email);
       if (res.needsJurisdiction) {
-        throw new Error('???????E????E??????????????E????????E);
+        throw new Error('まだ登録が完了していません。「登録」タブから入力してください。');
       }
       localStorage.setItem(EMAIL_KEY, res.email);
       setUser(res);
@@ -1336,18 +1350,18 @@ export default function App() {
     const name = String(regDisplayName || '').trim() || email.split('@')[0];
     const code = String(regByeCode || '').trim();
     if (!email) {
-      setLoginError('?????????E???????');
+      setLoginError('メールアドレスを入力してください');
       return;
     }
     if (!code) {
-      setLoginError('??????E???????');
+      setLoginError('社員番号を入力してください');
       return;
     }
     if (!regStores.length) {
-      setLoginError('??E???E?E??????????');
+      setLoginError('管轄店舗を1つ以上選んでください');
       return;
     }
-    setBusyText('????');
+    setBusyText('登録中…');
     setBusy(true);
     try {
       localStorage.removeItem(STAFF_TOKEN_KEY);
@@ -1373,7 +1387,7 @@ export default function App() {
         setBusy(false);
         await loadMonthly(firstStore, ym, { quiet: true, userEmail: res.email });
       }
-      notify('?????E?????', 'ok');
+      notify('登録が完了しました', 'ok');
     } catch (e) {
       setLoginError(e.message || String(e));
       setAuthStep('login');
@@ -1411,9 +1425,10 @@ export default function App() {
         territory: s.territory || '',
       }));
     }
-    // ??????????E???E?E?E??????????????????E?E    return [
-      { store_id: 'S001', store_name: '??E, area: '?7???', territory: '' },
-      { store_id: 'S002', store_name: '?????E, area: '?7???', territory: '' },
+    // 店舗一覧が取れないときの最低限のフォールバック
+    return [
+      { store_id: 'S001', store_name: '経堂', area: '第7エリア', territory: '' },
+      { store_id: 'S002', store_name: 'ひばりが丘', area: '第7エリア', territory: '' },
     ];
   }, [user]);
 
@@ -1465,8 +1480,8 @@ export default function App() {
   }, [catalogStores, selectedArea]);
 
   const areaStores = useMemo(() => {
-    const area = selectedArea && selectedArea !== '???' ? selectedArea : '';
-    const territory = selectedTerritory && selectedTerritory !== '???' ? selectedTerritory : '';
+    const area = selectedArea && selectedArea !== 'すべて' ? selectedArea : '';
+    const territory = selectedTerritory && selectedTerritory !== 'すべて' ? selectedTerritory : '';
     return catalogStores.filter((s) => {
       if (area && s.area !== area) return false;
       if (usesTerritory && territory && s.territory !== territory) return false;
@@ -1476,11 +1491,11 @@ export default function App() {
 
   useEffect(() => {
     if (settingsPanel !== 'jurisdiction') return;
-    if (selectedArea === '???') setSelectedArea('');
+    if (selectedArea === 'すべて') setSelectedArea('');
   }, [settingsPanel, selectedArea]);
 
   function onAreaChange(area) {
-    setSelectedArea(area === '???' ? '' : area);
+    setSelectedArea(area === 'すべて' ? '' : area);
     setSelectedTerritory('');
   }
 
@@ -1504,15 +1519,15 @@ export default function App() {
     const name = String(displayName || '').trim() || String(user?.email || '').split('@')[0] || '';
     const code = String(byeCode || '').trim();
     if (!code) {
-      notify('??????E????????E, 'err');
+      notify('社員番号を入力してください。', 'err');
       return;
     }
     if (!selectedStores.length) {
-      notify('??E???E?E???????????E, 'err');
+      notify('管轄店舗を1つ以上選んでください。', 'err');
       return;
     }
     try {
-      await withBusy('????', async () => {
+      await withBusy('保存中…', async () => {
         if (dirtyKeys.size || dirtyMemoKeys.size) {
           await flushDirtyShifts({ quiet: true });
         }
@@ -1533,9 +1548,9 @@ export default function App() {
         setYearMonth(ym);
         const sid = allowed[0] || '';
         setStoreId(sid);
-        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');
+        notify(user?.needsJurisdiction ? '初回登録が完了しました' : '管轄店舗を更新しました', 'ok');
         if (sid && ym) {
-          setBusyText('????????????');
+          setBusyText('月間シフトを読み込み中…');
           await loadMonthly(sid, ym, { quiet: true });
         }
         setSettingsPanel(null);
@@ -1555,7 +1570,7 @@ export default function App() {
     };
     try {
       if (opts.quiet) await run();
-      else await withBusy('??????', run);
+      else await withBusy('読み込み中…', run);
     } catch (e) {
       notify(e.message || String(e), 'err');
     }
@@ -1565,12 +1580,12 @@ export default function App() {
     const name = String(empForm.name || '').trim();
     const byeCode = String(empForm.bye_code || '').trim();
     if (!name || !byeCode) {
-      notify('?????????E?E????E, 'err');
+      notify('氏名と社員コードは必須です', 'err');
       return;
     }
     const isUpdate = !!empForm.employee_id;
     try {
-      await withBusy('????????', async () => {
+      await withBusy('従業員を保存中…', async () => {
         await api.upsertEmployee({
           user_email: user.email,
           store_id: storeId,
@@ -1580,7 +1595,7 @@ export default function App() {
         });
         resetEmpForm();
         await loadEmployees(storeId, { quiet: true });
-        notify(isUpdate ? '??????????' : '???E?????????', 'ok');
+        notify(isUpdate ? '従業員を更新しました' : 'スタッフを追加しました', 'ok');
       });
     } catch (e) {
       notify(e.message || String(e), 'err');
@@ -1588,7 +1603,7 @@ export default function App() {
   }
 
   function resetEmpForm() {
-    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });
+    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '社員', work_hours: 4 });
     setEmpFormOpen(false);
   }
 
@@ -1617,12 +1632,12 @@ export default function App() {
   async function unregisterEmployee() {
     if (!empForm.employee_id) return;
     try {
-      await withBusy('???????', async () => {
+      await withBusy('登録を解除中…', async () => {
         await api.deactivateEmployee(empForm.employee_id, storeId, user.email);
         resetEmpForm();
         await loadEmployees(storeId, { quiet: true });
         if (yearMonth) await loadMonthly(storeId, yearMonth, { quiet: true });
-        notify('?????????', 'ok');
+        notify('登録を解除しました', 'ok');
       });
     } catch (e) {
       notify(e.message || String(e), 'err');
@@ -1633,11 +1648,11 @@ export default function App() {
     if (!empForm.employee_id) return;
     const label = String(empForm.name || empForm.bye_code).trim();
     setConfirmBox({
-      title: '?????',
-      message: `${label} ???????E???????????????E?`,
-      detail: '?????????????E?????E????????????E????????????????E,
-      confirmLabel: '??E??????',
-      cancelLabel: '?E???E,
+      title: '登録を解除',
+      message: `${label} さんを、今後の登録から外しても大丈夫ですか？`,
+      detail: '退職・異動などのときに使います。マスタから削除され、以降の月間表には表示されなくなります。',
+      confirmLabel: 'はい、解除する',
+      cancelLabel: 'いいえ',
       onConfirm: () => {
         setConfirmBox(null);
         unregisterEmployee();
@@ -1647,7 +1662,8 @@ export default function App() {
 
   async function loadWeekly(sid = storeId, opts = {}) {
     if (!user?.email || !sid) return;
-    // ????E??E????????????????E?????????E?E    if (weeklySaveTimer.current) {
+    // 予約済みの自動保存があれば取り消す
+    if (weeklySaveTimer.current) {
       clearTimeout(weeklySaveTimer.current);
       weeklySaveTimer.current = null;
       try { await saveWeekly({ quiet: true }); } catch { /* ignore */ }
@@ -1659,7 +1675,8 @@ export default function App() {
       const res = await api.getWeeklySchedule(sid, user.email);
       setEmployees(res.employees || []);
       setCanEdit(!!res.canEdit);
-      // ????????E?????E?E????E      if (weeklyEditSeq.current === seqBefore) {
+      // 保存中に編集がなければ結果を反映する
+      if (weeklyEditSeq.current === seqBefore) {
         weeklyRef.current = res.weekly || [];
         setWeekly(res.weekly || []);
       }
@@ -1668,7 +1685,7 @@ export default function App() {
     };
     try {
       if (opts.quiet) await run();
-      else await withBusy('??????', run);
+      else await withBusy('読み込み中…', run);
     } catch (e) {
       notify(e.message || String(e), 'err');
     }
@@ -1683,14 +1700,14 @@ export default function App() {
   const weeklyEmp = employees.find((x) => x.employee_id === weeklyEmpId) || null;
   const weeklySpan = weeklySpanH != null ? Number(weeklySpanH) : spanHoursForEmp(weeklyEmp);
 
-  /** ?????E?????????????E????E?E?E*/
+  /** 出勤時刻と拘束時間から週間テンプレの1日分を作る */
   function weeklyWorkPatch(startHm, spanH) {
     const start = snapToStep(startHm || weeklyBulkStart, TIME_STEP_MIN);
     const span = Number(spanH) > 0 ? Number(spanH) : weeklySpan;
     return { status: 'work', start_time: start, end_time: addHoursToHm(start, span), leave_code: '' };
   }
 
-  /** ????????????/???/????/???E*/
+  /** 平日一括・全休など、まとめて設定する */
   function applyWeeklyBulk(kind) {
     if (!weeklyEmpId || !canEdit) return;
     const offPatch = { status: 'off', start_time: '', end_time: '', leave_code: '' };
@@ -1741,16 +1758,18 @@ export default function App() {
   }
 
   async function saveWeekly(opts = {}) {
-    // ???????E?E????????????E???E??????
+    // 保存中のリクエストがあれば先に待つ
     const pending = weeklySavePromise.current;
     if (pending) {
       try { await pending; } catch { /* ignore */ }
     }
-    // ??????????????E?????????????????????????????E    if (!weeklyLoadedRef.current) return;
+    // 読み込み前は保存しない（空データで上書きしないため）
+    if (!weeklyLoadedRef.current) return;
     const seqAtStart = weeklyEditSeq.current;
     const source = weeklyRef.current || [];
     const touched = Array.from(weeklyTouchedEmps.current || []);
-    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];
+    // 保存対象の employee_id を重複なく集める
+    const empIds = [];
     const seen = {};
     const pushId = (raw) => {
       const id = String(raw || '');
@@ -1788,10 +1807,11 @@ export default function App() {
         items,
         employee_ids: empIds,
       });
-      // ??E????????????????E?????E???????E???????????E      if (weeklyEditSeq.current === seqAtStart) setWeeklyStatus('saved');
+      // 保存後に編集がなければ「保存済み」にする
+      if (weeklyEditSeq.current === seqAtStart) setWeeklyStatus('saved');
       else setWeeklyStatus('dirty');
     };
-    const exec = opts.quiet ? run() : withBusy('????', run);
+    const exec = opts.quiet ? run() : withBusy('保存中…', run);
     weeklySavePromise.current = exec;
     try {
       await exec;
@@ -1803,14 +1823,14 @@ export default function App() {
     }
   }
 
-  /** ?E?E???E: ??????????????????E????????????E?????E?E???E?E*/
+  /** ツールバーの「テンプレ反映」: 表示中の月に週間テンプレートを反映する */
   async function applyWeeklyTemplateToMonth() {
     if (!canEdit || !storeId || !yearMonth) return;
     const monthNum = Number(yearMonth.slice(5, 7));
-    if (!confirm(`${monthNum}?????????????????En?E???????????E?????E?E?????En????????????????????E?????E?`)) return;
+    if (!confirm(`${monthNum}月に週間テンプレートを反映します。\nテンプレ未登録のスタッフは空欄のままです。\n個別に直した日は上書きされます。よろしいですか？`)) return;
     try {
       if (dirtyKeys.size || dirtyMemoKeys.size) await flushDirtyShifts({ quiet: true });
-      await withBusy(`${monthNum}???E????????????E????`, async () => {
+      await withBusy(`${monthNum}月にテンプレートを反映しています…`, async () => {
         const res = await api.generateMonthlyShifts({
           user_email: user.email,
           store_id: storeId,
@@ -1832,24 +1852,24 @@ export default function App() {
         const g = res.generated || {};
         const filled = g.filled || 0;
         const cleared = g.cleared || 0;
-        if (filled) notify(`${monthNum}?????????E?E{filled}?${cleared ? ` / ??E?? ${cleared}?` : ''}?E?`, 'ok');
-        else notify('?????E????????????E????????????????E, 'err');
+        if (filled) notify(`${monthNum}月に反映しました（${filled}件${cleared ? ` / 空欄化 ${cleared}件` : ''}）`, 'ok');
+        else notify('反映する内容がありませんでした（週間テンプレートが未登録です）', 'err');
       });
     } catch (e) {
       notify(e.message || String(e), 'err');
     }
   }
 
-  /** ?E?????????????????????????????E???????E?????E?E*/
+  /** 週間テンプレートを保存してから、その月に反映する */
   async function saveWeeklyAndApply(scope = 'employee') {
-    if (scope === 'all' && !confirm('???E????????????????????????????????????E?????E?E)) return;
+    if (scope === 'all' && !confirm('全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？')) return;
     if (scope === 'employee') {
       const hasTemplate = (weeklyRef.current || []).some(
         (w) => String(w.employee_id) === String(weeklyEmpId) && w.status && w.status !== 'undef'
       );
       if (!hasTemplate) {
-        const nm = weeklyEmp?.name || '??E???E??';
-        if (!confirm(`${nm}????????????????En????E??????????????En\n??E????????????E?????????????E?`)) return;
+        const nm = weeklyEmp?.name || 'このスタッフ';
+        if (!confirm(`${nm}の週間テンプレートが未登録です。\n先に「出」「休」を入力してください。\n\nこのまま進めると該当月は空欄に戻ります。続けますか？`)) return;
       }
     }
     if (weeklySaveTimer.current) {
@@ -1859,13 +1879,13 @@ export default function App() {
     try {
       await saveWeekly({ quiet: true });
       if (!yearMonth) {
-        notify('???????????????', 'ok');
+        notify('週間テンプレートを保存しました', 'ok');
         setSettingsPanel(null);
         return;
       }
-      const targetName = scope === 'all' ? '??' : (weeklyEmp?.name || '???????E??');
+      const targetName = scope === 'all' ? '全員' : (weeklyEmp?.name || '選択中のスタッフ');
       const monthNum = Number(yearMonth.slice(5, 7));
-      await withBusy(`${targetName}?${monthNum}???????E????`, async () => {
+      await withBusy(`${targetName}の${monthNum}月に反映しています…`, async () => {
         const res = await api.generateMonthlyShifts({
           user_email: user.email,
           store_id: storeId,
@@ -1888,9 +1908,9 @@ export default function App() {
         const g = res.generated || {};
         const filled = g.filled || 0;
         const cleared = g.cleared || 0;
-        if (filled) notify(`${targetName}?${monthNum}?????????E?E{filled}??E?`, 'ok');
-        else if (cleared) notify(`?E????????????${monthNum}????E????????E?E{cleared}??E?`, 'err');
-        else notify('??????????????', 'ok');
+        if (filled) notify(`${targetName}の${monthNum}月に反映しました（${filled}日）`, 'ok');
+        else if (cleared) notify(`テンプレート未登録のため${monthNum}月を空欄に戻しました（${cleared}日）`, 'err');
+        else notify('反映する日がありませんでした', 'ok');
       });
       setSettingsPanel(null);
     } catch (e) {
@@ -1921,7 +1941,8 @@ export default function App() {
 
     const applyPayload = (res, { notifyOk }) => {
       if (gen !== loadMonthGenRef.current) return false;
-      // ???????E??????E?????????E      if (dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size) {
+      // 未保存の編集があるときはキャッシュだけ更新する
+      if (dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size) {
         writeMonthCache(sid, ym, {
           employees: res.employees || [],
           shifts: res.shifts || [],
@@ -1948,22 +1969,23 @@ export default function App() {
       const applied = res.appliedFromWeekly;
       if (notifyOk && !opts.quiet) {
         if (applied?.reason === 'already_filled') {
-          notify(`${ym} / ${(res.shifts || []).length}?`, 'ok');
+          notify(`${ym} / ${(res.shifts || []).length}件`, 'ok');
         } else if (applied?.applied && applied.created) {
-          notify(`${ym}?E?????E??????????E?E{applied.created}??E?`, 'ok');
+          notify(`${ym}：シフトテンプレートを反映（${applied.created}件）`, 'ok');
         } else if (applied && applied.applied === false && applied.reason === 'no_weekly') {
-          notify('????E??????????????E??E????????E? ??�E??????????E, 'err');
+          notify('シフトテンプレートが未保存です。先にテンプレート作成で ○／× を保存してください。', 'err');
         } else if (applied && applied.applied === false && applied.reason === 'no_pattern') {
-          notify('?E????????E???????�??????????????E, 'err');
+          notify('テンプレート作成で出勤○／休み×を設定して保存してください。', 'err');
         } else {
-          notify(`${ym} / ${(res.shifts || []).length}?`, 'ok');
+          notify(`${ym} / ${(res.shifts || []).length}件`, 'ok');
         }
       }
       return true;
     };
 
     const run = async () => {
-      // ????????????????E?E???E?????????E?????E      const res = await api.getShifts(sid, ym, email, false);
+      // 週間テンプレートの自動反映はしない（明示操作のときだけ）
+      const res = await api.getShifts(sid, ym, email, false);
       applyPayload(res, { notifyOk: !fromCache });
       scheduleMonthPrefetch(sid, ym, email);
     };
@@ -1973,12 +1995,13 @@ export default function App() {
         setMonthlyLoading(true);
         setMonthlyRefreshing(false);
         if (opts.quiet) await run();
-        else await withBusy('???????', run);
+        else await withBusy('月間を準備中…', run);
       } else {
         try {
           await run();
         } catch (e) {
-          // ???E????????????E??????E          if (!opts.quiet) notify(e.message || String(e), 'err');
+          // 静かに読み込むときはエラーを出さない
+          if (!opts.quiet) notify(e.message || String(e), 'err');
         }
       }
     } catch (e) {
@@ -2019,9 +2042,9 @@ export default function App() {
   }
 
   async function resetMonthFromWeekly() {
-    if (!confirm('??E??????E????????E???????????????????????E?????E?E)) return;
+    if (!confirm('全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？')) return;
     try {
-      await withBusy('????E????????E??????E????', async () => {
+      await withBusy('週間テンプレートから作り直しています…', async () => {
         const res = await api.generateMonthlyShifts({
           user_email: user.email,
           store_id: storeId,
@@ -2041,7 +2064,7 @@ export default function App() {
           canEdit: !!res.canEdit,
         });
         const g = res.generated || {};
-        notify(`????E??????????E?????E?E{g.created || 0}??E?`, 'ok');
+        notify(`週間テンプレートから作成しました（${g.created || 0}件）`, 'ok');
       });
     } catch (e) {
       notify(e.message || String(e), 'err');
@@ -2056,19 +2079,19 @@ export default function App() {
 
   async function copyByeBye() {
     if (!storeId || !yearMonth) {
-      showKintaiToast('err', '??E????????????E);
+      showKintaiToast('err', '店舗と年月を選んでください。');
       return;
     }
     const local = buildByeByeTsv(employees, shifts, yearMonth);
     if (!local.tsv) {
-      showKintaiToast('err', local.warnings.join(' / ') || '???E???E?E??????E);
+      showKintaiToast('err', local.warnings.join(' / ') || 'コピーするデータが空です。');
       return;
     }
     const copied = await copyTextSafe(local.tsv);
     if (copied) {
-      showKintaiToast('ok', '???E???????EnCtrl?E?Shift?E?V?????????E??E);
+      showKintaiToast('ok', 'コピーができました。\nCtrl＋Shift＋Vで貼り付けて下さい。');
     } else {
-      showKintaiToast('err', '???E???????????E???????????E);
+      showKintaiToast('err', 'コピーできませんでした。もう一度お試しください。');
     }
     if (user?.email) {
       api.buildByeByePaste(storeId, yearMonth, user.email).catch(() => {});
@@ -2077,11 +2100,11 @@ export default function App() {
 
   async function syncCalendar() {
     if (!storeId || !yearMonth || !user?.email) {
-      notify('??E????????????E, 'err');
+      notify('店舗と年月を選んでください。', 'err');
       return;
     }
     if (calendarJobRef.current) {
-      notify('???????E?????', 'err');
+      notify('カレンダー処理中です…', 'err');
       return;
     }
     calendarJobRef.current = true;
@@ -2092,16 +2115,16 @@ export default function App() {
       year_month: yearMonth,
     };
     try {
-      setCalendarProgress({ percent: 2, label: '????' });
+      setCalendarProgress({ percent: 2, label: '準備中…' });
       const prep = await api.syncCalendarMonth({ ...base, phase: 'prepare' });
       if (!prep?.ok) {
-        throw new Error(prep?.message || '??????????????');
+        throw new Error(prep?.message || 'カレンダー準備に失敗しました');
       }
       const daysInMonth = Number(prep.daysInMonth) || (() => {
         const [y, m] = yearMonth.split('-').map(Number);
         return new Date(y, m, 0).getDate();
       })();
-      setCalendarProgress({ percent: 8, label: '????' });
+      setCalendarProgress({ percent: 8, label: '登録中…' });
 
       let day = 1;
       let totalCreated = 0;
@@ -2114,22 +2137,22 @@ export default function App() {
           day_to: dayTo,
         });
         if (!chunk?.ok) {
-          throw new Error(chunk?.message || `${day}?E{dayTo}???????????`);
+          throw new Error(chunk?.message || `${day}〜${dayTo}日の登録に失敗しました`);
         }
         totalCreated += Number(chunk.created) || 0;
         const pct = Math.min(99, Math.round(8 + (dayTo / daysInMonth) * 91));
-        setCalendarProgress({ percent: pct, label: `${dayTo}/${daysInMonth}?` });
+        setCalendarProgress({ percent: pct, label: `${dayTo}/${daysInMonth}日` });
         day = dayTo + 1;
       }
 
-      setCalendarProgress({ percent: 100, label: '??E });
-      notify(`${formatYmJa(yearMonth)} ?????????????E?E{totalCreated}??E?`, 'ok');
+      setCalendarProgress({ percent: 100, label: '完了' });
+      notify(`${formatYmJa(yearMonth)} をカレンダー登録しました（${totalCreated}件）`, 'ok');
       window.setTimeout(() => setCalendarProgress(null), 1600);
     } catch (e) {
       const m = e.message || String(e);
       setCalendarProgress(null);
-      if (/permission|??|auth\/calendar|Authorization/i.test(m)) {
-        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');
+      if (/permission|権限|auth\/calendar|Authorization/i.test(m)) {
+        notify('カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。', 'err');
       } else {
         notify(m, 'err');
       }
@@ -2140,37 +2163,37 @@ export default function App() {
 
   async function clearCalendar() {
     if (!storeId || !yearMonth || !user?.email) {
-      notify('??E????????????E, 'err');
+      notify('店舗と年月を選んでください。', 'err');
       return;
     }
     if (calendarJobRef.current) {
-      notify('???????E?????', 'err');
+      notify('カレンダー処理中です…', 'err');
       return;
     }
     calendarJobRef.current = true;
     try {
-      setCalendarProgress({ percent: 15, label: '?????' });
+      setCalendarProgress({ percent: 15, label: 'クリア中…' });
       const res = await api.clearCalendarMonth({
         user_email: user.email,
         store_id: storeId,
         year_month: yearMonth,
       });
-      setCalendarProgress({ percent: 100, label: '??E });
+      setCalendarProgress({ percent: 100, label: '完了' });
       const fails = (res.results || []).filter((r) => !r.ok);
       if (!res.ok || fails.length) {
         notify(
-          `${res.message || '??E} / ${fails.slice(0, 2).map((f) => f.message || '').join(' / ')}`,
+          `${res.message || '失敗'} / ${fails.slice(0, 2).map((f) => f.message || '').join(' / ')}`,
           'err'
         );
       } else {
-        notify(res.message || `${formatYmJa(yearMonth)} ????????`, 'ok');
+        notify(res.message || `${formatYmJa(yearMonth)} をクリアしました`, 'ok');
       }
       window.setTimeout(() => setCalendarProgress(null), 1200);
     } catch (e) {
       const m = e.message || String(e);
       setCalendarProgress(null);
-      if (/permission|??|auth\/calendar|Authorization/i.test(m)) {
-        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');
+      if (/permission|権限|auth\/calendar|Authorization/i.test(m)) {
+        notify('カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。', 'err');
       } else {
         notify(m, 'err');
       }
@@ -2183,9 +2206,9 @@ export default function App() {
     const [yStr, mStr] = String(yearMonth || '').split('-');
     const y = Number(yStr) || '';
     const m = Number(mStr) || '';
-    const storeLabel = String(storeName || staffColLabel || '???').trim();
-    if (!y || !m) return storeLabel || '???';
-    return `${storeLabel}${y}?E?E{m}????`;
+    const storeLabel = String(storeName || staffColLabel || 'シフト').trim();
+    if (!y || !m) return storeLabel || 'シフト';
+    return `${storeLabel}${y}／${m}月シフト`;
   }
 
   function applyDocumentTitle(name) {
@@ -2193,7 +2216,7 @@ export default function App() {
     try {
       if (window.parent && window.parent !== window) window.parent.document.title = name;
     } catch {
-      /* GAS??? cross-origin ??????? ?E?????ESHIFT_ONE ???E??????E*/
+      /* 親フレームが別オリジンのときは触れないので無視する */
     }
   }
 
@@ -2204,7 +2227,8 @@ export default function App() {
     else if (n <= 10) scale = 'md';
     else if (n <= 14) scale = 'sm';
     else scale = 'xs';
-    // ??/?????? ?E95mm?E??E?E???????????E???E?????????????E    const rowHmm = Math.max(5.5, Math.min(9.5, (78 / n)));
+    // 人数に応じて行の高さを決める（A4横1枚に収める）
+    const rowHmm = Math.max(5.5, Math.min(9.5, (78 / n)));
     document.documentElement.setAttribute('data-print-scale', scale);
     document.documentElement.style.setProperty('--print-emps', String(n));
     document.documentElement.style.setProperty('--print-row-h', `${rowHmm.toFixed(2)}mm`);
@@ -2223,12 +2247,12 @@ export default function App() {
 
   function printShiftSheet() {
     if (!employees.length || !yearMonth) {
-      notify('??????????????E, 'err');
+      notify('印刷するシフトがありません。', 'err');
       return;
     }
     const prevTitle = document.title;
     preparePrintLayout();
-    notify('????????????????????????', 'ok');
+    notify('印刷ダイアログでレイアウトを「横」にしてください', 'ok');
 
     const cleanup = () => {
       window.removeEventListener('afterprint', cleanup);
@@ -2245,7 +2269,7 @@ export default function App() {
     }, 80);
   }
 
-  /** ???????E????E 8-17 / 8:30-17????2?E??E*/
+  /** 印刷セルの表示: 8-17 / 8:30-17 のように詰めて出す */
   function printCellContent(employeeId, date) {
     const s = getCellShift(employeeId, date);
     const status = s.status || 'undef';
@@ -2258,14 +2282,14 @@ export default function App() {
       if (status === 'work' && timeLine) {
         return { lines: [printLeave, timeLine], leave: true };
       }
-      return { lines: [printLeave || '??E], leave: true };
+      return { lines: [printLeave || '公休'], leave: true };
     }
     if (status === 'work' && timeLine) {
       return { lines: [timeLine], leave: false };
     }
-    if (status === 'pto') return { lines: ['??E], leave: true };
-    if (status === 'absent') return { lines: ['??'], leave: true };
-    if (status === 'off') return { lines: ['??E], leave: true };
+    if (status === 'pto') return { lines: ['有休'], leave: true };
+    if (status === 'absent') return { lines: ['欠勤'], leave: true };
+    if (status === 'off') return { lines: ['公休'], leave: true };
     return { lines: [], leave: false };
   }
 
@@ -2357,7 +2381,8 @@ export default function App() {
         if (!nextRow.start_time) nextRow = { ...nextRow, start_time: '12:00' };
         if (!nextRow.end_time) nextRow = { ...nextRow, end_time: '21:00' };
       } else if (leaveCodeNeedsDummyShift(parseLeaveCode(nextRow.leave_code))) {
-        // ??????????????E????????????E??E??????E???E?E      } else if (patch.status && patch.status !== 'work') {
+        // 出勤以外にしたら時刻を消す
+      } else if (patch.status && patch.status !== 'work') {
         nextRow = { ...nextRow, start_time: '', end_time: '' };
       }
       const next = idx >= 0 ? prev.map((row, i) => (i === idx ? nextRow : row)) : [...prev, nextRow];
@@ -2414,7 +2439,7 @@ export default function App() {
     setShiftEditor({ employee_id: employeeId, date });
   }
 
-  /** ???E???E????E??E???E???????????E???????????E?? */
+  /** セルを選択する（ダブルクリックで編集に入る） */
   function selectShiftCell(employeeId, date) {
     if (!canEdit) return;
     startTransition(() => {
@@ -2555,7 +2580,7 @@ export default function App() {
     const emp = employees.find((x) => x.employee_id === eid);
     const parsed = parseShiftDraft(editDraft, emp);
     if (!parsed) {
-      notify('???E 13-22 / 13:00?22:00 / ??E/ ??E, 'err');
+      notify('入力例: 13-22 / 13:00↵22:00 / 公休 / 有休', 'err');
       setTimeout(() => cellEditRef.current?.focus(), 10);
       return null;
     }
@@ -2571,7 +2596,9 @@ export default function App() {
   }
 
   /**
-   * ????E????????????E   * 1???E????E???E????E????E??E???E??????????????????????E   */
+   * 貼り付けたデータをシフトに反映する
+   * 1行目から順に、対象スタッフの日付へ割り当てる
+   */
   function applySpreadsheetPaste(text, origin = focusCell) {
     if (!canEdit || busy || !origin || !employees.length || !visibleDays.length) return false;
     const grid = parseClipboardGrid(text);
@@ -2634,7 +2661,7 @@ export default function App() {
     }
 
     if (!shiftCount && !memoCount) {
-      notify('??????????????????', 'err');
+      notify('貼り付けできる勤務データがありません', 'err');
       return finish(false);
     }
 
@@ -2661,7 +2688,7 @@ export default function App() {
             if (!nextRow.start_time) nextRow = { ...nextRow, start_time: '12:00' };
             if (!nextRow.end_time) nextRow = { ...nextRow, end_time: '21:00' };
           } else if (leaveCodeNeedsDummyShift(parseLeaveCode(nextRow.leave_code))) {
-            // ????E?????
+            // 出勤以外は時刻を消す
           } else if (item.patch.status && item.patch.status !== 'work') {
             nextRow = { ...nextRow, start_time: '', end_time: '' };
           }
@@ -2723,13 +2750,13 @@ export default function App() {
     setEditDraft('');
 
     const parts = [];
-    if (shiftCount) parts.push(`??E${shiftCount}`);
-    if (memoCount) parts.push(`?? ${memoCount}`);
-    const skipNote = skipCount ? `?E????? ${skipCount}?E?` : '';
+    if (shiftCount) parts.push(`勤務 ${shiftCount}`);
+    if (memoCount) parts.push(`メモ ${memoCount}`);
+    const skipNote = skipCount ? `（読取不可 ${skipCount}）` : '';
     const colNote = grid[0]
-      ? ` � ${Math.max(0, (grid[0].length || 0) - colOffset)}?`
+      ? ` · ${Math.max(0, (grid[0].length || 0) - colOffset)}列`
       : '';
-    notify(`${parts.join('?')} ????????${skipNote}${colNote}`, 'ok');
+    notify(`${parts.join('・')} を貼り付けました${skipNote}${colNote}`, 'ok');
     return finish(true);
   }
 
@@ -2742,7 +2769,7 @@ export default function App() {
     const tag = String(ev.target?.tagName || '').toUpperCase();
     const inField = tag === 'INPUT' || tag === 'TEXTAREA';
 
-    // ????E??E???????E????????
+    // 単一セルの貼り付けは入力欄にそのまま任せる
     if (!multi && inField) return;
 
     if (!multi && focusCell.layer === 'memo' && inField) return;
@@ -2786,7 +2813,7 @@ export default function App() {
         store_id: storeId,
         employee_ids: ordered.map((e) => e.employee_id),
       }).catch((err) => {
-        notify(err?.message || '???E?E?????????', 'err');
+        notify(err?.message || '並び順の保存に失敗しました', 'err');
       });
     }
   }
@@ -2807,7 +2834,8 @@ export default function App() {
   function onEmpNamePointerDown(ev, employeeId, opts = {}) {
     if (!canEdit) return;
     if (ev.button != null && ev.button !== 0) return;
-    const instant = !!opts.instant; // ??????????????????E    const pointerId = ev.pointerId;
+    const instant = !!opts.instant; // 押した直後に並べ替えを開始するか
+    const pointerId = ev.pointerId;
     endEmpDrag_(false);
 
     const onMove = (e) => {
@@ -2901,7 +2929,9 @@ export default function App() {
   }
 
   /**
-   * ??????E?E????????????E   * ??????E???E????????????????E??????E??E   * ????E?????????E?????????????????E   */
+   * 従業員の区分・勤務時間を更新する
+   * 保存後はマスタを読み直し、月間表にも反映する
+   */
   async function updateEmployeeProfile(employeeId, patch) {
     if (!user?.email || !canEdit) return;
     const emp = employees.find((x) => x.employee_id === employeeId);
@@ -2913,7 +2943,7 @@ export default function App() {
     const next = {
       ...merged,
       employment_type: typ,
-      work_hours: wh > 0 ? wh : (typ === '?????E ? 4 : ''),
+      work_hours: wh > 0 ? wh : (typ === 'アルバイト' ? 4 : ''),
     };
 
     setEmployees((prev) => prev.map((e) => (e.employee_id === employeeId ? next : e)));
@@ -3035,7 +3065,7 @@ export default function App() {
     });
   }
 
-  /** ???????????E???????EOUT ??E???????E??????E??E*/
+  /** 有休などのときの IN・OUT を時間指定で入れる */
   async function applyEditorPartHours(hours) {
     if (!shiftEditor) return;
     const { employee_id: eid, date } = shiftEditor;
@@ -3056,7 +3086,7 @@ export default function App() {
     const shiftCount = dirtyKeys.size;
     const memoCount = dirtyMemoKeys.size;
     if (!shiftCount && !memoCount) {
-      if (!quiet) notify('????????');
+      if (!quiet) notify('変更はありません');
       return true;
     }
     const shiftItems = shiftCount
@@ -3133,14 +3163,14 @@ export default function App() {
         memos: latestMemos,
         canEdit: latestCanEdit,
       });
-      if (!quiet) notify('??????', 'ok');
+      if (!quiet) notify('保存しました', 'ok');
     };
     try {
       if (quiet) {
         setSaveState('saving');
         await run();
       } else {
-        await withBusy('????', run);
+        await withBusy('保存中…', run);
       }
       return true;
     } catch (e) {
@@ -3154,10 +3184,10 @@ export default function App() {
     const name = leaveCodeLabel(leaveCode);
     if (name) return name;
     switch (status) {
-      case 'work': return '?E;
-      case 'off': return '�E;
-      case 'pto': return '??E;
-      case 'absent': return '??';
+      case 'work': return '○';
+      case 'off': return '×';
+      case 'pto': return '有休';
+      case 'absent': return '欠勤';
       default: return '';
     }
   }
@@ -3197,8 +3227,8 @@ export default function App() {
     if (!daysInMonth) return [];
     const mid = Math.ceil(daysInMonth / 2);
     return [
-      { key: 'a', label: `1?E{mid}?`, days: monthDays(mid) },
-      { key: 'b', label: `${mid + 1}?E{daysInMonth}?`, days: Array.from({ length: daysInMonth - mid }, (_, i) => mid + 1 + i) },
+      { key: 'a', label: `1〜${mid}日`, days: monthDays(mid) },
+      { key: 'b', label: `${mid + 1}〜${daysInMonth}日`, days: Array.from({ length: daysInMonth - mid }, (_, i) => mid + 1 + i) },
     ];
   }, [daysInMonth]);
   const sheetTableW = NAME_COL_W + DAY_COL_W * Math.max(visibleDays.length, 1);
@@ -3257,7 +3287,7 @@ export default function App() {
     setAccountOpen(false);
     if (panel === 'jurisdiction') {
       try {
-        await withBusy('??????', async () => {
+        await withBusy('読み込み中…', async () => {
           const res = await api.loginWithEmail(user.email);
           setUser((prev) => ({
             ...prev,
@@ -3277,7 +3307,8 @@ export default function App() {
       }
       return;
     }
-    // ?????????????????????E?E?????????E??E?????E??E    setSettingsPanel(panel);
+    // パネルを開くタイミングで必要なデータを読み込む
+    setSettingsPanel(panel);
     if (panel === 'employees' || panel === 'weekly') {
       startProgress();
       const task = panel === 'employees'
@@ -3313,7 +3344,7 @@ export default function App() {
         </div>
         {busy && (
           <div className="fixed inset-0 z-[100] bg-[#000b2b]/75 backdrop-blur-sm flex items-center justify-center p-6">
-            <LoginLoadingPanel message={busyText || '??E???'} />
+            <LoginLoadingPanel message={busyText || '処理中…'} />
           </div>
         )}
 
@@ -3328,36 +3359,36 @@ export default function App() {
                   className={`login-mode-tab ${managerAuthMode === 'login' ? 'login-mode-tab--on' : ''}`}
                   onClick={() => { setManagerAuthMode('login'); setLoginError(''); }}
                 >
-                  ????
+                  ログイン
                 </button>
                 <button
                   type="button"
                   className={`login-mode-tab ${managerAuthMode === 'register' ? 'login-mode-tab--on' : ''}`}
                   onClick={() => { setManagerAuthMode('register'); setLoginError(''); }}
                 >
-                  ??
+                  登録
                 </button>
               </div>
-              <h2 className="login-card-title">{managerAuthMode === 'register' ? '??' : '????'}</h2>
+              <h2 className="login-card-title">{managerAuthMode === 'register' ? '登録' : 'ログイン'}</h2>
               {managerAuthMode === 'register' ? (
                 <form className="space-y-3.5 mt-5" onSubmit={(e) => { e.preventDefault(); registerManager(); }}>
                   <div>
-                    <label className="login-form-label" htmlFor="login-email">???????</label>
+                    <label className="login-form-label" htmlFor="login-email">メールアドレス</label>
                     <input id="login-email" type="email" required autoComplete="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder={`name@${domain}`} className="login-form-input" />
                   </div>
                   <div>
-                    <label className="login-form-label" htmlFor="login-name">???E/label>
-                    <input id="login-name" type="text" autoComplete="name" value={regDisplayName} onChange={(e) => setRegDisplayName(e.target.value)} placeholder="??E??" className="login-form-input" />
+                    <label className="login-form-label" htmlFor="login-name">表示名</label>
+                    <input id="login-name" type="text" autoComplete="name" value={regDisplayName} onChange={(e) => setRegDisplayName(e.target.value)} placeholder="日下 竜汰" className="login-form-input" />
                   </div>
                   <div>
-                    <label className="login-form-label" htmlFor="login-code">????</label>
+                    <label className="login-form-label" htmlFor="login-code">社員番号</label>
                     <input id="login-code" type="text" inputMode="numeric" required autoComplete="off" spellCheck={false} value={regByeCode} onChange={(e) => setRegByeCode(e.target.value)} placeholder="304642" className="login-form-input" />
                   </div>
                   {(meta?.areas || []).length > 0 && (
                     <div>
-                      <label className="login-form-label" htmlFor="login-area">???</label>
+                      <label className="login-form-label" htmlFor="login-area">エリア</label>
                       <select id="login-area" className="login-form-input" value={regArea} onChange={(e) => { setRegArea(e.target.value); setRegTerritory(''); }}>
-                        <option value="">???</option>
+                        <option value="">すべて</option>
                         {(meta.areas || []).map((a) => <option key={a} value={a}>{a}</option>)}
                       </select>
                     </div>
@@ -3368,18 +3399,18 @@ export default function App() {
                     if (!territories.length) return null;
                     return (
                       <div>
-                        <label className="login-form-label" htmlFor="login-territory">?E?????</label>
+                        <label className="login-form-label" htmlFor="login-territory">テリトリー</label>
                         <select id="login-territory" className="login-form-input" value={regTerritory} onChange={(e) => setRegTerritory(e.target.value)}>
-                          <option value="">???</option>
+                          <option value="">すべて</option>
                           {territories.map((t) => <option key={t} value={t}>{t}</option>)}
                         </select>
                       </div>
                     );
                   })()}
                   <div>
-                    <p className="login-form-label">??E???E</p>
+                    <p className="login-form-label">管轄店舗</p>
                     <div className="flex flex-wrap gap-2 mt-1.5 max-h-40 overflow-y-auto">
-                      {(meta?.allStores || [{ store_id: 'S001', store_name: '??E, area: '?7???' }, { store_id: 'S002', store_name: '?????E, area: '?7???' }])
+                      {(meta?.allStores || [{ store_id: 'S001', store_name: '経堂', area: '第7エリア' }, { store_id: 'S002', store_name: 'ひばりが丘', area: '第7エリア' }])
                         .filter((s) => (!regArea || s.area === regArea) && (!regTerritory || s.territory === regTerritory))
                         .map((s) => {
                           const on = regStores.includes(s.store_id);
@@ -3392,16 +3423,16 @@ export default function App() {
                     </div>
                   </div>
                   {loginError && <p className="text-rose-600 text-sm font-semibold leading-relaxed whitespace-pre-wrap">{loginError}</p>}
-                  <button type="submit" disabled={busy} className="login-submit"><span>????</span><IconLoginArrow /></button>
+                  <button type="submit" disabled={busy} className="login-submit"><span>登録する</span><IconLoginArrow /></button>
                 </form>
               ) : (
                 <form className="space-y-4 mt-5" onSubmit={(e) => { e.preventDefault(); login(loginEmail); }}>
                   <div>
-                    <label className="login-form-label" htmlFor="login-email-only">???????</label>
+                    <label className="login-form-label" htmlFor="login-email-only">メールアドレス</label>
                     <input id="login-email-only" type="email" required autoComplete="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder={`name@${domain}`} className="login-form-input" />
                   </div>
                   {loginError && <p className="text-rose-600 text-sm font-semibold leading-relaxed whitespace-pre-wrap">{loginError}</p>}
-                  <button type="submit" disabled={busy} className="login-submit"><span>????</span><IconLoginArrow /></button>
+                  <button type="submit" disabled={busy} className="login-submit"><span>ログイン</span><IconLoginArrow /></button>
                 </form>
               )}
             </div>
@@ -3413,9 +3444,9 @@ export default function App() {
 
   return (
     <div className="h-[100dvh] bg-white relative flex flex-col overflow-hidden">
-      {/* ===== ??????E???????E?E===== */}
+      {/* ===== ヘッダー（ツールバー） ===== */}
       <div className="absolute inset-0 z-10 flex flex-col bg-white text-zinc-900">
-          {/* ?? ?E?E???E ?? */}
+          {/* 左: 年月と店舗 */}
           <div className="shrink-0 app-toolbar">
             <div className="app-toolbar-accent" aria-hidden="true" />
             <div className="app-toolbar-pad">
@@ -3433,14 +3464,14 @@ export default function App() {
                 if (!years.includes(ySel)) years.push(ySel);
                 years.sort((a, b) => a - b);
                 return (
-                  <div className="app-ym-nav" role="group" aria-label="??E>
+                  <div className="app-ym-nav" role="group" aria-label="年月">
                     <button
                       type="button"
                       className="app-ym-nav__arrow"
                       disabled={busy || !baseYm}
                       onClick={() => changeMonth(shiftYearMonth(baseYm, -1))}
-                      title="??"
-                      aria-label="??"
+                      title="前月"
+                      aria-label="前月"
                     >
                       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
                         <path d="M14.5 6L9 12l5.5 6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
@@ -3451,30 +3482,30 @@ export default function App() {
                       value={ySel}
                       disabled={busy}
                       onChange={(e) => changeMonth(`${e.target.value}-${pad2(mSel)}`)}
-                      aria-label="?"
+                      aria-label="年"
                     >
                       {years.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
-                    <span className="app-ym-nav__unit">?</span>
+                    <span className="app-ym-nav__unit">年</span>
                     <select
                       className="app-ym-nav__select app-ym-nav__month"
                       value={mSel}
                       disabled={busy}
                       onChange={(e) => changeMonth(`${ySel}-${pad2(Number(e.target.value))}`)}
-                      aria-label="?E
+                      aria-label="月"
                     >
                       {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
-                    <span className="app-ym-nav__unit">?E/span>
+                    <span className="app-ym-nav__unit">月</span>
                     <button
                       type="button"
                       className="app-ym-nav__arrow"
                       disabled={busy || !baseYm}
                       onClick={() => changeMonth(shiftYearMonth(baseYm, 1))}
-                      title="??"
-                      aria-label="??"
+                      title="翌月"
+                      aria-label="翌月"
                     >
                       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
                         <path d="M9.5 6L15 12l-5.5 6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
@@ -3488,7 +3519,7 @@ export default function App() {
                 value={storeId}
                 disabled={busy || !(user?.stores || []).length}
                 onChange={(e) => switchStore(e.target.value, yearMonth)}
-                aria-label="??E"
+                aria-label="店舗"
               >
                 {(user?.stores || []).map((s) => <option key={s.store_id} value={s.store_id}>{s.store_name}</option>)}
               </select>
@@ -3509,15 +3540,15 @@ export default function App() {
                   disabled={busy}
                   onClick={copyByeBye}
                   className="app-kintai-btn"
-                  title="???????E?E??????E????E?E?E
-                  aria-label="???????E"
+                  title="キンタイコピー（押したら自動コピー）"
+                  aria-label="キンタイコピー"
                 >
                   <svg viewBox="0 0 24 24" className="app-kintai-btn__icon" fill="none" aria-hidden="true">
                     <rect x="8" y="4" width="11" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.7" />
                     <path d="M6 8H5a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 5 21h9a1.5 1.5 0 0 0 1.5-1.5V18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
                     <path d="M11 9h5M11 12h5M11 15h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
-                  <span>????</span>
+                  <span>キンタイ</span>
                 </button>
               )}
               {canEdit && (
@@ -3526,48 +3557,48 @@ export default function App() {
                   disabled={busy}
                   onClick={applyWeeklyTemplateToMonth}
                   className="app-kintai-btn"
-                  title="??????????????????E????????????E?????E??E
-                  aria-label="?E??????"
+                  title="週間テンプレートを表示中の月に反映（テンプレ未登録のスタッフは空欄）"
+                  aria-label="テンプレ反映"
                 >
                   <svg viewBox="0 0 24 24" className="app-kintai-btn__icon" fill="none" aria-hidden="true">
                     <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
                     <path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
                     <path d="M9 15.2l2 2 4-4.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  <span>?E??????</span>
+                  <span>テンプレ反映</span>
                 </button>
               )}
               {canEdit && exportPanelOpen && (
-                <div className="app-cal-dock" role="group" aria-label="?????">
+                <div className="app-cal-dock" role="group" aria-label="カレンダー">
                   <button
                     type="button"
                     disabled={busy || !!calendarProgress}
                     onClick={syncCalendar}
                     className="app-cal-dock__btn"
-                    title="????????E??E?E?E??E?E
+                    title="カレンダー登録（自分のみ）"
                   >
-                    ??
+                    登録
                   </button>
                   <button
                     type="button"
                     disabled={busy || !!calendarProgress}
                     onClick={clearCalendar}
                     className="app-cal-dock__btn app-cal-dock__btn--ghost"
-                    title="?????????E???????E??E?E??E?E
+                    title="カレンダークリア（表示中の月・自分のみ）"
                   >
-                    ???
+                    クリア
                   </button>
                 </div>
               )}
               {canEdit && (
-                <div className="app-tool-group" role="toolbar" aria-label="??E>
+                <div className="app-tool-group" role="toolbar" aria-label="編集">
                   <button
                     type="button"
                     className="app-tool-btn"
                     disabled={busy || historyRef.current.past.length === 0}
                     onClick={undoEdit}
-                    title="?E????E(Ctrl+Z)"
-                    aria-label="?E????E
+                    title="元に戻す (Ctrl+Z)"
+                    aria-label="元に戻す"
                   >
                     <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
                       <path d="M9 8H5V4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -3579,8 +3610,8 @@ export default function App() {
                     className="app-tool-btn"
                     disabled={busy || historyRef.current.future.length === 0}
                     onClick={redoEdit}
-                    title="?E????E(Ctrl+Y)"
-                    aria-label="?E????E
+                    title="やり直す (Ctrl+Y)"
+                    aria-label="やり直す"
                   >
                     <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
                       <path d="M15 8h4V4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -3592,8 +3623,8 @@ export default function App() {
                     className="app-tool-btn"
                     disabled={busy}
                     onClick={printShiftSheet}
-                    title="A4????????"
-                    aria-label="??"
+                    title="A4横で掲示用に印刷"
+                    aria-label="印刷"
                   >
                     <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
                       <path d="M7 8V4h10v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -3606,8 +3637,8 @@ export default function App() {
                     className={`app-tool-btn ${exportPanelOpen ? 'app-tool-btn--on' : ''}`}
                     disabled={busy}
                     onClick={() => setExportPanelOpen((v) => !v)}
-                    title={exportPanelOpen ? '???????????E : '???????????'}
-                    aria-label="?????"
+                    title={exportPanelOpen ? 'カレンダー操作を閉じる' : 'カレンダー登録・クリア'}
+                    aria-label="カレンダー"
                     aria-expanded={exportPanelOpen}
                   >
                     <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
@@ -3624,18 +3655,18 @@ export default function App() {
                       : saveState === 'saved' ? 'text-emerald-700 border-emerald-200 bg-emerald-50'
                         : dirtyTotal > 0 ? 'text-amber-700 border-amber-200 bg-amber-50' : 'text-zinc-400'
                 }`}>
-                  {saveState === 'saving' || saveState === 'pending' ? '????'
-                    : saveState === 'error' ? '?????'
-                      : saveState === 'saved' && dirtyTotal === 0 ? '????'
-                        : dirtyTotal > 0 ? `???E${dirtyTotal}` : ''}
+                  {saveState === 'saving' || saveState === 'pending' ? '保存中…'
+                    : saveState === 'error' ? '保存エラー'
+                      : saveState === 'saved' && dirtyTotal === 0 ? '保存済み'
+                        : dirtyTotal > 0 ? `未保存 ${dirtyTotal}` : ''}
                 </span>
               )}
               {calendarProgress ? (
                 <span
                   className="app-save-badge text-[#1565c0] border-[#b8d4ea] bg-[#eef6fc] tabular-nums"
-                  title="???????E???E???E???E???E?E
+                  title="カレンダー処理中（他の操作は可能）"
                 >
-                  ????? {calendarProgress.percent}% {calendarProgress.label || ''}
+                  カレンダー {calendarProgress.percent}% {calendarProgress.label || ''}
                 </span>
               ) : null}
               <div className="relative shrink-0">
@@ -3674,7 +3705,7 @@ export default function App() {
                           </button>
                         );
                       })}
-                      <button type="button" role="menuitem" onClick={logout} className="app-menu-logout">?????E/button>
+                      <button type="button" role="menuitem" onClick={logout} className="app-menu-logout">ログアウト</button>
                     </div>
                   </>
                 )}
@@ -3694,19 +3725,19 @@ export default function App() {
 
           {monthlyRefreshing && employees.length > 0 ? (
             <p className="app-flash-msg shrink-0 px-4 py-1 text-[11px] text-slate-500 bg-slate-50 border-b border-zinc-100">
-              ???E?E??????
+              最新データを同期中…
             </p>
           ) : null}
 
           {monthlyLoading ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-500">
               <div className="h-9 w-9 rounded-full border-[3px] border-slate-200 border-t-[var(--acc-500)] animate-spin" />
-              <p className="font-semibold text-sm">??????????</p>
+              <p className="font-semibold text-sm">月間シフトを準備中…</p>
             </div>
           ) : !daysInMonth || !employees.length ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 px-6 text-center">
-              <p className="font-semibold text-sm text-zinc-500">??E??E???????E??????????</p>
-              <p className="text-xs text-zinc-400">?????? ?????E???E?? ???????????E?????????E/p>
+              <p className="font-semibold text-sm text-zinc-500">この店舗に登録されている従業員がいません</p>
+              <p className="text-xs text-zinc-400">右上メニュー →「スタッフ情報 追加・変更」からスタッフを追加できます</p>
             </div>
           ) : (
             <Fragment>
@@ -3760,7 +3791,7 @@ export default function App() {
                     const nameBg = empIdx % 2 ? 'bg-[#f3f7fb]' : 'bg-white';
                     return (
                     <Fragment key={e.employee_id}>
-                      {/* ????E*/}
+                      {/* 氏名列 */}
                       <tr
                         className={`group ${dragging ? 'opacity-70' : ''}`}
                         data-emp-id={e.employee_id}
@@ -3779,8 +3810,8 @@ export default function App() {
                               className={`sheet-memo-toggle shrink-0 w-8 flex flex-col items-center justify-end gap-0.5 pb-2.5 border-r border-[#1a1a1a]/70 transition-colors disabled:opacity-50 ${
                                 memoOpen ? 'bg-[#eef3f8] text-zinc-800' : 'bg-transparent text-zinc-400 hover:text-zinc-700 hover:bg-[#f7fafc]'
                               }`}
-                              title={memoOpen ? '??????' : '?????E}
-                              aria-label={memoOpen ? '??????' : '?????E}
+                              title={memoOpen ? 'メモを閉じる' : 'メモを開く'}
+                              aria-label={memoOpen ? 'メモを閉じる' : 'メモを開く'}
                               aria-expanded={memoOpen}
                             >
                               <svg
@@ -3801,8 +3832,8 @@ export default function App() {
                                 }}
                                 className={`sheet-emp-grip shrink-0 w-4 flex items-center justify-center text-zinc-300 hover:text-zinc-600 hover:bg-[#f1f5f9] outline-none select-none ${dragging ? 'text-zinc-700 bg-[#e8eef5]' : ''}`}
                                 style={{ height: SHIFT_ROW_H, touchAction: 'none', cursor: 'grab' }}
-                                title="???E????????E
-                                aria-label="????E
+                                title="ドラッグして並べ替え"
+                                aria-label="並べ替え"
                               >
                                 <svg viewBox="0 0 6 16" className="w-[6px] h-4" fill="currentColor" aria-hidden="true">
                                   <circle cx="1.5" cy="3" r="1" />
@@ -3822,12 +3853,12 @@ export default function App() {
                               onPointerDown={(ev) => onEmpNamePointerDown(ev, e.employee_id)}
                               className={`min-w-0 flex-1 px-3 text-left hover:bg-[#f7fafc] disabled:opacity-60 outline-none select-none ${empDragId ? 'cursor-grabbing' : canEdit ? 'cursor-grab' : ''}`}
                               style={{ height: SHIFT_ROW_H, touchAction: empDragId ? 'none' : 'manipulation' }}
-                              title={canEdit ? '???E?????E/ ????????????E : ''}
+                              title={canEdit ? 'クリックで編集 / 長押しして上下に並べ替え' : ''}
                             >
                               <div className="font-bold text-[15px] leading-snug whitespace-nowrap truncate text-zinc-900">{e.name}</div>
                               <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
                                 <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 ${isFullTimeEmp(e) ? 'bg-[#3a4a5a] text-white' : 'bg-[#2f7ec4] text-white'}`} style={{ borderRadius: 2 }}>
-                                  {isFullTimeEmp(e) ? '?' : '?'}
+                                  {isFullTimeEmp(e) ? 'ア' : '日'}
                                 </span>
                                 <span className="text-[12px] font-medium text-zinc-400 truncate">{e.bye_code || ''}</span>
                               </div>
@@ -3837,11 +3868,11 @@ export default function App() {
                                   <div className="mt-1 px-1 py-0.5 text-[11px] leading-tight tabular-nums text-zinc-800 bg-[#fde8d4]">
                                     {isFullTimeEmp(e) ? (
                                       <>
-                                        <div>{sum.shiftDays}? ?E{sum.prescribedDays}?</div>
-                                        <div>{sum.shiftHm} ?E{sum.prescribedHm}</div>
+                                        <div>{sum.shiftDays}日 ⇔ {sum.prescribedDays}日</div>
+                                        <div>{sum.shiftHm} ⇔ {sum.prescribedHm}</div>
                                       </>
                                     ) : (
-                                      <div>{sum.shiftDays}??{sum.shiftHm}</div>
+                                      <div>{sum.shiftDays}日　{sum.shiftHm}</div>
                                     )}
                                   </div>
                                 );
@@ -3937,7 +3968,7 @@ export default function App() {
                                   onKeyDown={(ev) => handleShiftCellKeyDown(ev, e.employee_id, date)}
                                   className="sheet-cell-btn w-full px-1 flex flex-col items-center justify-center leading-none hover:bg-[#f7fafc] disabled:opacity-60 outline-none focus:outline-none focus-visible:outline-none"
                                   style={{ height: SHIFT_ROW_H }}
-                                  title={leaveName ? `${leaveCode} ${leaveName}` : '???E?????E/ ??????E?????E}
+                                  title={leaveName ? `${leaveCode} ${leaveName}` : 'クリックで選択 / ダブルクリックで編集'}
                                 >
                                   <span className={`font-bold leading-tight px-0.5 ${leaveName ? 'text-[13px]' : 'text-base tabular-nums'}`}>{top}</span>
                                   {bottom ? <span className="text-[13px] font-semibold tabular-nums text-zinc-500 mt-0.5">{bottom}</span> : null}
@@ -3947,7 +3978,7 @@ export default function App() {
                           );
                         })}
                       </tr>
-                      {/* MEMO??????????????????E???????E*/}
+                      {/* MEMO行（展開しているスタッフのみ表示） */}
                       {memoOpen && (
                       <tr
                         className={`sheet-memo-row ${dragging ? 'opacity-70' : ''}`}
@@ -3962,9 +3993,9 @@ export default function App() {
                             onPointerDown={(ev) => onEmpNamePointerDown(ev, e.employee_id)}
                             className={`w-full h-full px-3 text-left text-[11px] font-bold tracking-wide text-zinc-500 hover:bg-[#eeeeee] disabled:opacity-60 outline-none select-none ${empDragId ? 'cursor-grabbing' : canEdit ? 'cursor-grab' : ''}`}
                             style={{ height: MEMO_ROW_H, touchAction: empDragId ? 'none' : 'manipulation' }}
-                            title={canEdit ? '????????????E : ''}
+                            title={canEdit ? '長押しして上下に並べ替え' : ''}
                           >
-                            ??
+                            メモ
                           </button>
                         </td>
                         {visibleDays.map((day) => {
@@ -4040,7 +4071,7 @@ export default function App() {
                                   }}
                                   className="sheet-cell-btn w-full px-1 py-0.5 flex items-start justify-start text-left hover:bg-[#f7fafc] disabled:opacity-60 outline-none focus:outline-none"
                                   style={{ height: MEMO_ROW_H }}
-                                  title="???E?????E/ ??????E?????E
+                                  title="クリックで選択 / ダブルクリックで編集"
                                 >
                                   <span className="text-[11px] font-medium text-zinc-800 leading-tight whitespace-pre-wrap break-words line-clamp-4 w-full">
                                     {body}
@@ -4060,7 +4091,7 @@ export default function App() {
             </div>
             <div className="print-board" aria-hidden="true">
               <div className="print-sheet-banner">
-                <p className="print-sheet-banner__title">{formatYmJa(yearMonth)}?{storeName || staffColLabel}</p>
+                <p className="print-sheet-banner__title">{formatYmJa(yearMonth)}　{storeName || staffColLabel}</p>
               </div>
               {printDayBlocks.map((block) => (
                 <div key={block.key} className="print-board__block">
@@ -4114,11 +4145,12 @@ export default function App() {
               <div className="km-dialog" onClick={(ev) => ev.stopPropagation()}>
                 <div className="km-dialog-head flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[12px] font-semibold tracking-wide opacity-90">??????</p>
+                    <p className="text-[12px] font-semibold tracking-wide opacity-90">従業員を変更</p>
                     <p className="text-[20px] font-bold leading-tight mt-0.5">{empEditor.name}</p>
                   </div>
                   <button type="button" onClick={closeEmpEditor} className="h-9 px-3 text-[13px] font-semibold bg-white/15 border border-white/40 text-white">
-                    ???E                  </button>
+                    閉じる
+                  </button>
                 </div>
                 <div className="km-dialog-body space-y-4">
                   <div className="flex flex-wrap gap-2">
@@ -4126,26 +4158,27 @@ export default function App() {
                       type="button"
                       disabled={busy}
                       onClick={() => updateEmployeeProfile(empEditor.employee_id, {
-                        employment_type: '??',
-                        work_hours: carryOverHours(empEditor, '??'),
+                        employment_type: '社員',
+                        work_hours: carryOverHours(empEditor, '社員'),
                       })}
                       className={`sheet-chip h-10 px-4 text-[15px] ${isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
                     >
-                      ??
+                      社員
                     </button>
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => updateEmployeeProfile(empEditor.employee_id, {
-                        employment_type: '?????E,
-                        work_hours: carryOverHours(empEditor, '?????E),
+                        employment_type: 'アルバイト',
+                        work_hours: carryOverHours(empEditor, 'アルバイト'),
                       })}
                       className={`sheet-chip h-10 px-4 text-[15px] ${!isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
                     >
-                      ?????E                    </button>
+                      アルバイト
+                    </button>
                   </div>
                   <div>
-                    <p className="text-[14px] font-bold text-slate-800 mb-2">????E/p>
+                    <p className="text-[14px] font-bold text-slate-800 mb-2">勤務時間</p>
                     <div className="flex flex-wrap gap-1.5">
                       {hourOptionsForEmp(empEditor).map((h) => {
                         const active = Number(spanHoursForEmp(empEditor)) === h;
@@ -4167,7 +4200,8 @@ export default function App() {
                     </div>
                   </div>
                   <p className="text-[13px] text-slate-600 leading-relaxed">
-                    ?????????E????????E??????????E?E??????????????E???????????????????E                  </p>
+                    ここで変えても、入力済みのシフトや週間テンプレートは組み替わりません。これから入力するセルの既定時間として使われます。
+                  </p>
                 </div>
               </div>
             </div>
@@ -4178,16 +4212,17 @@ export default function App() {
               <div className="km-dialog" onClick={(ev) => ev.stopPropagation()}>
                 <div className="km-dialog-head flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[12px] font-semibold tracking-wide opacity-90">??????</p>
+                    <p className="text-[12px] font-semibold tracking-wide opacity-90">シフトを変更</p>
                     <p className="text-[20px] font-bold leading-tight mt-0.5">{editorEmpName}</p>
                     <p className="text-[15px] font-medium mt-0.5 tabular-nums opacity-95">{formatDateJa(shiftEditor.date)}</p>
                   </div>
                   <button type="button" onClick={closeShiftEditor} className="h-9 px-3 text-[13px] font-semibold bg-white/15 border border-white/40 text-white">
-                    ???E                  </button>
+                    閉じる
+                  </button>
                 </div>
                 <div className="km-dialog-body space-y-4">
                   <div>
-                    <p className="text-[16px] font-bold text-slate-800 mb-2">??E/p>
+                    <p className="text-[16px] font-bold text-slate-800 mb-2">区分</p>
                     <div className="flex flex-wrap items-center gap-2">
                       {SHIFT_STATUS_OPTIONS.map((st) => {
                         const autoLc = houteiMaps[shiftEditor.employee_id]?.[shiftEditor.date] || 0;
@@ -4238,9 +4273,10 @@ export default function App() {
                   />
                   {ptoTemplateOpen && (
                     <div className="rounded border border-[#9db4c8] bg-[#f7fafc] p-3 space-y-3">
-                      <p className="text-[14px] font-bold text-slate-800">??????IN?OUT??</p>
+                      <p className="text-[14px] font-bold text-slate-800">有休取得時のIN・OUT時間</p>
                       <p className="text-[12px] text-slate-500 leading-relaxed">
-                        ??E??????????????????????????????????E                      </p>
+                        この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。
+                      </p>
                       <div className="flex flex-wrap items-end gap-3">
                         <label className="flex flex-col gap-1 min-w-[8rem]">
                           <span className="text-[13px] font-bold text-slate-700">IN</span>
@@ -4278,16 +4314,18 @@ export default function App() {
                             savePtoTemplate(shiftEditor.employee_id, ptoTemplateDraft);
                             setPtoTemplateTick((t) => t + 1);
                             setPtoTemplateOpen(false);
-                            notify('??E????IN?OUT???????', 'ok');
+                            notify('この人の有休IN・OUTを保存しました', 'ok');
                           }}
                         >
-                          ??E                        </button>
+                          保存
+                        </button>
                         <button
                           type="button"
                           className="sheet-chip h-11 px-4 sheet-chip-off"
                           onClick={() => setPtoTemplateOpen(false)}
                         >
-                          ???E                        </button>
+                          閉じる
+                        </button>
                       </div>
                     </div>
                   )}
@@ -4295,11 +4333,12 @@ export default function App() {
                     <div className="space-y-3 pt-1 border-t border-[#c5d4e0]">
                       {editorShowsPaidLeaveHours && (
                         <p className="text-[13px] text-slate-600">
-                          {leaveCodeLabel(editorLeaveCode) || '??E}????IN?OUT?????????E                        </p>
+                          {leaveCodeLabel(editorLeaveCode) || '有休'}取得時のIN・OUT時間を設定可能です
+                        </p>
                       )}
                       {(editorShift.status || '') === 'work' && (
                         <div>
-                          <p className="text-[14px] font-bold text-slate-800 mb-2">????E/p>
+                          <p className="text-[14px] font-bold text-slate-800 mb-2">既定時間</p>
                           <div className="flex flex-wrap gap-1.5">
                             {hourOptionsForEmp(editorEmp).map((h) => {
                               const active = Number(spanHoursForEmp(editorEmp)) === h;
@@ -4353,9 +4392,9 @@ export default function App() {
                             disabled={busy}
                             onClick={applyEditorAutoOut}
                             className="sheet-chip h-11 px-3 sheet-chip-off"
-                            title={isFullTimeEmp(editorEmp) ? 'IN??+9??' : `IN??+${spanHoursForEmp(editorEmp)}??`}
+                            title={isFullTimeEmp(editorEmp) ? 'INから+9時間' : `INから+${spanHoursForEmp(editorEmp)}時間`}
                           >
-                            ??OUT
+                            自動OUT
                           </button>
                         )}
                       </div>
@@ -4368,11 +4407,11 @@ export default function App() {
                       disabled={busy || !canEdit}
                       onChange={(ev) => patchMemoLocal(shiftEditor.employee_id, shiftEditor.date, ev.target.value)}
                       rows={MEMO_MAX_LINES}
-                      placeholder={'TF???E5???\n18???EN\n19?ET??'}
+                      placeholder={'TF報告会15時参加\n18時経堂IN\n19時MT外部'}
                       className="w-full min-h-[7rem] border border-[#9db4c8] bg-[#eef3f8] px-3 py-2 text-[15px] leading-relaxed outline-none resize-y"
                       style={{ borderRadius: 2 }}
                     />
-                    <p className="text-[12px] text-slate-500">??5?E� Enter??????MEMO????E?E/p>
+                    <p className="text-[12px] text-slate-500">最大5行 · Enterで改行（表のMEMOと同じ）</p>
                   </div>
                 </div>
               </div>
@@ -4385,25 +4424,25 @@ export default function App() {
                 <div className="km-dialog-head flex items-start justify-between gap-3 sticky top-0 z-10">
                   <div>
                     <p className="text-[13px] font-semibold text-white/85">
-                      {settingsPanel === 'jurisdiction' && (user?.needsJurisdiction ? '????' : SETTINGS_TITLES.jurisdiction.kicker)}
+                      {settingsPanel === 'jurisdiction' && (user?.needsJurisdiction ? '初回登録' : SETTINGS_TITLES.jurisdiction.kicker)}
                       {settingsPanel === 'employees' && SETTINGS_TITLES.employees.kicker}
                       {settingsPanel === 'weekly' && SETTINGS_TITLES.weekly.kicker}
                     </p>
                     <p className="text-[1.15rem] font-extrabold text-white mt-0.5">
-                      {settingsPanel === 'jurisdiction' && (user?.needsJurisdiction ? '?E????E???' : SETTINGS_TITLES.jurisdiction.title)}
+                      {settingsPanel === 'jurisdiction' && (user?.needsJurisdiction ? '担当店舗を選ぶ' : SETTINGS_TITLES.jurisdiction.title)}
                       {settingsPanel === 'employees' && SETTINGS_TITLES.employees.title}
                       {settingsPanel === 'weekly' && SETTINGS_TITLES.weekly.title}
                     </p>
                     <p className="text-[13px] text-white/80 mt-0.5">
                       {settingsPanel === 'jurisdiction' && (user?.needsJurisdiction
-                        ? '????????E???????E??????E????????'
+                        ? 'メール登録は完了済み。次に担当する店舗を選んでください'
                         : SETTINGS_TITLES.jurisdiction.sub)}
-                      {settingsPanel === 'employees' && `${storeName} � ${SETTINGS_TITLES.employees.sub}`}
+                      {settingsPanel === 'employees' && `${storeName} · ${SETTINGS_TITLES.employees.sub}`}
                       {settingsPanel === 'weekly' && SETTINGS_TITLES.weekly.sub}
                     </p>
                   </div>
                   {!user?.needsJurisdiction && (
-                    <button type="button" onClick={closeSettings} className="text-[14px] font-bold text-white/90 px-3 py-1 rounded-lg hover:bg-white/15">???E/button>
+                    <button type="button" onClick={closeSettings} className="text-[14px] font-bold text-white/90 px-3 py-1 rounded-lg hover:bg-white/15">閉じる</button>
                   )}
                 </div>
                 <div className="km-dialog-body space-y-4">
@@ -4412,11 +4451,11 @@ export default function App() {
                     <>
                       <div className="grid sm:grid-cols-2 gap-3">
                         <label className={labelCls}>
-                          <span>???E/span>
-                          <input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="??E??" />
+                          <span>表示名</span>
+                          <input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="日下 竜汰" />
                         </label>
                         <label className={labelCls}>
-                          <span>????<span className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
+                          <span>社員番号<span className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
                           <input
                             className={inputCls}
                             value={byeCode}
@@ -4429,28 +4468,28 @@ export default function App() {
                         </label>
                         {needsAreaFilter && (
                         <label className={labelCls}>
-                          <span>????E??????E?E/span>
+                          <span>エリア（絞り込み）</span>
                           <select className={inputCls} value={selectedArea} onChange={(e) => onAreaChange(e.target.value)}>
-                            <option value="">???</option>
+                            <option value="">すべて</option>
                             {catalogAreas.map((a) => <option key={a} value={a}>{a}</option>)}
                           </select>
                         </label>
                         )}
                         {usesTerritory && (
                         <label className={labelCls}>
-                          <span>?E??????E??????E?E/span>
+                          <span>テリトリー（絞り込み）</span>
                           <select className={inputCls} value={selectedTerritory} onChange={(e) => onTerritoryChange(e.target.value)}>
-                            <option value="">???</option>
+                            <option value="">すべて</option>
                             {territoryOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                           </select>
                         </label>
                         )}
                       </div>
-                      <p className="text-[15px] font-semibold text-slate-700">??E???E?E???E?E?????E/p>
+                      <p className="text-[15px] font-semibold text-slate-700">管轄店舗（タップして選択）</p>
                       {!catalogStores.length ? (
-                        <p className="text-[13px] text-rose-600 font-semibold">??E???????????????E??????E???E?E?E?????E???????????????????E/p>
+                        <p className="text-[13px] text-rose-600 font-semibold">店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。</p>
                       ) : !areaStores.length ? (
-                        <p className="text-[13px] text-slate-500">??????E?????????????????????????E/p>
+                        <p className="text-[13px] text-slate-500">該当する店舗がありません。エリアを「すべて」に戻してください。</p>
                       ) : (
                       <div className="flex flex-wrap gap-2">
                         {areaStores.map((s) => {
@@ -4464,7 +4503,7 @@ export default function App() {
                       </div>
                       )}
                       <button type="button" disabled={busy || !selectedStores.length || !String(byeCode || '').trim()} onClick={saveJurisdiction} className={btnPrimary}>
-                        {user?.needsJurisdiction ? '??????' : '??E}
+                        {user?.needsJurisdiction ? '登録して進む' : '保存'}
                       </button>
                     </>
                   )}
@@ -4475,26 +4514,26 @@ export default function App() {
                         <div className="app-section-card space-y-4">
                           <div className="flex items-center justify-between gap-3">
                             <p className="app-section-title">
-                              {empForm.employee_id ? `${String(empForm.name || '???E??').trim()} ???E : '???E?????'}
+                              {empForm.employee_id ? `${String(empForm.name || 'このスタッフ').trim()} を編集` : 'スタッフを追加'}
                             </p>
-                            <button type="button" onClick={closeEmpForm} className="text-[13px] font-bold text-slate-500 hover:text-slate-800">?E???E/button>
+                            <button type="button" onClick={closeEmpForm} className="text-[13px] font-bold text-slate-500 hover:text-slate-800">新規追加に切替</button>
                           </div>
 
                           <label className={labelCls}>
-                            <span>???E?????E??E???E??E?Espan className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
-                            <input className={inputCls} value={empForm.name} onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })} placeholder="?? ??" autoFocus={!empForm.employee_id} />
+                            <span>氏名（フルネーム）<span className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
+                            <input className={inputCls} value={empForm.name} onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })} placeholder="蜂谷 有加" autoFocus={!empForm.employee_id} />
                           </label>
 
                           <label className={labelCls}>
-                            <span>????<span className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
+                            <span>社員コード<span className="text-rose-600 ml-0.5" aria-hidden="true">*</span></span>
                             <input className={`${inputCls} tabular-nums`} value={empForm.bye_code} onChange={(e) => setEmpForm({ ...empForm, bye_code: e.target.value.replace(/[^0-9]/g, '') })} placeholder="030400" inputMode="numeric" />
-                            <span className="text-[12px] text-slate-400 font-medium">??? 0 ??????????E30400?E?E/span>
+                            <span className="text-[12px] text-slate-400 font-medium">先頭の 0 も入力してください（例：030400）</span>
                           </label>
 
                           <div className={labelCls}>
-                            <span>??E/span>
+                            <span>区分</span>
                             <div className="flex gap-2 pt-1">
-                              {['??', '?????E].map((t) => {
+                              {['社員', 'アルバイト'].map((t) => {
                                 const on = normalizeEmpType(empForm.employment_type) === t;
                                 return (
                                   <button
@@ -4511,7 +4550,7 @@ export default function App() {
                           </div>
 
                           <div className={labelCls}>
-                            <span>1?????????E???E?E/span>
+                            <span>1日の勤務時間（休憩込み）</span>
                             <div className="flex flex-wrap gap-1.5 pt-1">
                               {hourOptionsForEmp(empForm).map((h) => (
                                 <button key={h} type="button" onClick={() => setEmpForm({ ...empForm, work_hours: h })} className={`h-11 min-w-[3.25rem] px-2 rounded-xl border text-[15px] font-bold ${Number(spanHoursForEmp(empForm)) === h ? 'bg-[var(--acc-500)] text-white border-[var(--acc-500)]' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'}`}>{h}h</button>
@@ -4526,9 +4565,9 @@ export default function App() {
                               onClick={saveEmployee}
                               className={btnPrimary}
                             >
-                              {empForm.employee_id ? '?????E : '??E???E?????'}
+                              {empForm.employee_id ? '変更を保存' : 'スタッフを追加'}
                             </button>
-                            <button type="button" onClick={closeEmpForm} className={btnSecondary}>?????</button>
+                            <button type="button" onClick={closeEmpForm} className={btnSecondary}>キャンセル</button>
                           </div>
 
                           {empForm.employee_id && canEdit && (
@@ -4539,22 +4578,22 @@ export default function App() {
                                 onClick={requestUnregisterEmployee}
                                 className="text-[13px] font-bold text-rose-600 hover:text-rose-700 underline decoration-rose-200"
                               >
-                                ??E???E??????????
+                                登録を解除する
                               </button>
-                              <p className={panelSubCls + ' mt-1'}>??????E?????E?????E???????????E/p>
+                              <p className={panelSubCls + ' mt-1'}>退職・異動などで使います。解除するとマスタから削除されます。</p>
                             </div>
                           )}
                         </div>
                       ) : (
                         <>
                           <div className="flex items-center justify-between gap-3">
-                            <p className="app-section-title">?????E?? {employees.length}?E/p>
+                            <p className="app-section-title">登録済みスタッフ {employees.length}名</p>
                             {canEdit && (
-                              <button type="button" onClick={openEmpFormForNew} className={btnPrimary}>?E?E???E?????</button>
+                              <button type="button" onClick={openEmpFormForNew} className={btnPrimary}>新しいスタッフを追加</button>
                             )}
                           </div>
                           {!employees.length ? (
-                            <p className={panelSubCls}>???E???????E???E?????????????????E/p>
+                            <p className={panelSubCls}>まだスタッフがいません。「新しいスタッフを追加」から登録してください。</p>
                           ) : (
                             <ul className="divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden bg-white">
                               {employees.map((e) => (
@@ -4569,19 +4608,19 @@ export default function App() {
                                       <span className="block font-bold text-[15px] text-slate-900 truncate">{e.name}</span>
                                       <span className="flex items-center gap-1.5 mt-0.5">
                                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isFullTimeEmp(e) ? 'bg-[#3a4a5a] text-white' : 'bg-[#2f7ec4] text-white'}`}>
-                                          {isFullTimeEmp(e) ? '??' : '?????E}
+                                          {isFullTimeEmp(e) ? '社員' : 'アルバイト'}
                                         </span>
-                                        <span className="text-[12px] font-medium text-slate-400 tabular-nums">{e.bye_code || '?E}</span>
+                                        <span className="text-[12px] font-medium text-slate-400 tabular-nums">{e.bye_code || '—'}</span>
                                         <span className="text-[12px] font-medium text-slate-400">{spanHoursForEmp(e)}h</span>
                                       </span>
                                     </span>
-                                    {canEdit && <span className="shrink-0 text-[13px] font-bold text-[var(--acc-500)]">??E?</span>}
+                                    {canEdit && <span className="shrink-0 text-[13px] font-bold text-[var(--acc-500)]">編集</span>}
                                   </button>
                                 </li>
                               ))}
                             </ul>
                           )}
-                          <p className={panelSubCls}>??????????????????E??????????????E/p>
+                          <p className={panelSubCls}>名前をタップすると編集できます。ここで追加したスタッフが一覧に並びます。</p>
                         </>
                       )}
                     </>
@@ -4590,7 +4629,7 @@ export default function App() {
                   {settingsPanel === 'weekly' && (
                     <>
                       {!employees.length ? (
-                        <p className={panelSubCls}>??????????????</p>
+                        <p className={panelSubCls}>先に従業員を登録してください</p>
                       ) : (
                         <>
                           <div className="flex flex-wrap gap-2">
@@ -4602,19 +4641,19 @@ export default function App() {
                             <>
                               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 space-y-2">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-[13px] font-bold text-slate-500">?????E/span>
+                                  <span className="text-[13px] font-bold text-slate-500">基本の勤務</span>
                                   <select disabled={!canEdit} className={weeklySelCls} value={weeklyBulkStart} onChange={(e) => setWeeklyBulkStart(snapToStep(e.target.value, TIME_STEP_MIN))}>
                                     {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                   </select>
-                                  <span className="text-slate-400 font-bold">?E/span>
+                                  <span className="text-slate-400 font-bold">〜</span>
                                   <span className="text-[15px] font-bold tabular-nums text-slate-800">{addHoursToHm(weeklyBulkStart, weeklySpan)}</span>
-                                  <select disabled={!canEdit} className={weeklySelCls} value={String(weeklySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="?????E???E???E?E>
-                                    {WEEKLY_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}??</option>)}
+                                  <select disabled={!canEdit} className={weeklySelCls} value={String(weeklySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="拘束時間（休憩込み）">
+                                    {WEEKLY_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}時間</option>)}
                                   </select>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
-                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('weekday')} className={weeklyBulkBtnCls}>????E?</button>
-                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('all-off')} className={weeklyBulkBtnCls}>???????E/button>
+                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('weekday')} className={weeklyBulkBtnCls}>平日を出勤</button>
+                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('all-off')} className={weeklyBulkBtnCls}>全部休みに戻す</button>
                                 </div>
                               </div>
                               <div>
@@ -4631,15 +4670,15 @@ export default function App() {
                                     <div key={wd} className="grid grid-cols-[1.75rem_4.75rem_1fr] items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
                                       <div className={`text-[16px] font-black ${weekdayTextClass(wd)}`}>{label}</div>
                                       <div className="flex gap-1">
-                                        <button type="button" disabled={!canEdit} title="??" onClick={() => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(cell.start_time || weeklyBulkStart, daySpan))} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isWork ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-400 border-slate-200'}`}>?</button>
-                                        <button type="button" disabled={!canEdit} title="??" onClick={() => setWeeklyLeave(weeklyEmpId, wd, leaveVal)} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isOff ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-400 border-slate-200'}`}>?E/button>
+                                        <button type="button" disabled={!canEdit} title="出勤" onClick={() => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(cell.start_time || weeklyBulkStart, daySpan))} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isWork ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-400 border-slate-200'}`}>出</button>
+                                        <button type="button" disabled={!canEdit} title="休み" onClick={() => setWeeklyLeave(weeklyEmpId, wd, leaveVal)} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isOff ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-400 border-slate-200'}`}>休</button>
                                       </div>
                                       {isWork ? (
                                         <div className="flex items-center gap-1.5">
                                           <select disabled={!canEdit} className={weeklySelCls} value={dayStart} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(e.target.value, daySpan))}>
                                             {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                           </select>
-                                          <span className="text-slate-400 font-bold">?E/span>
+                                          <span className="text-slate-400 font-bold">〜</span>
                                           <select disabled={!canEdit} className={weeklySelCls} value={dayEnd} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, { status: 'work', start_time: dayStart, end_time: snapToStep(e.target.value, TIME_STEP_MIN), leave_code: '' })}>
                                             {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                           </select>
@@ -4647,7 +4686,7 @@ export default function App() {
                                         </div>
                                       ) : (
                                         <select disabled={!canEdit || !isOff} className={`${weeklySelCls} w-full max-w-[13rem] font-semibold`} value={leaveVal} onChange={(e) => setWeeklyLeave(weeklyEmpId, wd, e.target.value)}>
-                                          <option value="">??E/option>
+                                          <option value="">公休</option>
                                           {(leaveCodeGroups.used || []).map((c) => <option key={`u-${c.code}`} value={c.code}>{c.code} {c.name}</option>)}
                                           {(leaveCodeGroups.unused || []).map((c) => <option key={`n-${c.code}`} value={c.code}>{c.code} {c.name}</option>)}
                                         </select>
@@ -4661,17 +4700,17 @@ export default function App() {
                           <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                             <p className={panelSubCls}>
                               {weeklyStatus === 'saving'
-                                ? '????'
+                                ? '保存中…'
                                 : weeklyStatus === 'saved'
-                                  ? '?????????E????????OK?E?E
+                                  ? '自動保存しました（そのまま閉じてOK）'
                                   : weeklyStatus === 'dirty'
-                                    ? '????E????????'
-                                    : '??E??????E??????????????E}
+                                    ? '未保存の変更があります…'
+                                    : '「出」「休」で切替。変更は自動保存されます'}
                             </p>
                             <div className="flex flex-wrap gap-2">
-                              <button type="button" onClick={() => setSettingsPanel(null)} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700">???E/button>
-                              <button type="button" disabled={!canEdit || busy} onClick={() => saveWeeklyAndApply('all')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700 disabled:opacity-40">?????</button>
-                              <button type="button" disabled={!canEdit || busy || !weeklyEmpId} onClick={() => saveWeeklyAndApply('employee')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">??E???E?????</button>
+                              <button type="button" onClick={() => setSettingsPanel(null)} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700">閉じる</button>
+                              <button type="button" disabled={!canEdit || busy} onClick={() => saveWeeklyAndApply('all')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700 disabled:opacity-40">全員を反映</button>
+                              <button type="button" disabled={!canEdit || busy || !weeklyEmpId} onClick={() => saveWeeklyAndApply('employee')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">このスタッフを反映</button>
                             </div>
                           </div>
                         </>
