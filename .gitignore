@@ -1,5 +1,6 @@
 node_modules
 dist
+dist-staff
 .DS_Store
 *.local
 .env
@@ -8,3 +9,8 @@ docs/gas/*.zip
 *.zip
 .vercel
 .env*
+
+# 復元作業用の一時スクリプト・ログ
+.restore/
+migrate-out.txt
+docs/tmp_hibari_crops/
