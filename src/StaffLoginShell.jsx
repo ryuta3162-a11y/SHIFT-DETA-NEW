@@ -1,0 +1,46 @@
+import { BrandTitle } from './BrandTitle.jsx';
+import { APP_TAGLINE } from './appBrand.js';
+import { LoginBgDecor } from './LoginHero.jsx';
+import { StaffLoginPanel } from './StaffLoginPanel.jsx';
+
+/** PWA ログイン（アルバイト専用・シンプル） */
+export function StaffLoginShell({
+  busy,
+  busyText,
+  error,
+  onVerify,
+  onSetPassword,
+  onLogin,
+}) {
+  return (
+    <div className="staff-login-shell">
+      <div className="staff-login-shell__bg" aria-hidden="true">
+        <LoginBgDecor />
+      </div>
+
+      {busy && (
+        <div className="staff-login-shell__overlay">
+          <div className="staff-login-shell__spinner" />
+          <p>{busyText || '処理中…'}</p>
+        </div>
+      )}
+
+      <div className="staff-login-shell__inner">
+        <header className="staff-login-shell__hero">
+          <BrandTitle />
+          <p className="staff-login-shell__tagline">{APP_TAGLINE}</p>
+        </header>
+
+        <div className="staff-login-shell__card">
+          <StaffLoginPanel
+            busy={busy}
+            error={error}
+            onVerify={onVerify}
+            onSetPassword={onSetPassword}
+            onLogin={onLogin}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -22,6 +22,7 @@ function onOpen() {
     .createMenu('シフト基盤')
     .addItem('シート構成を初期セットアップ', 'menuSetupSheets')
     .addItem('レイアウトだけ再適用（データは残す）', 'menuRestyleOnly')
+    .addItem('ヘッダを日本語に変換', 'menuMigrateHeadersJa')
     .addToUi();
 }
 
@@ -30,7 +31,7 @@ function menuSetupSheets() {
   const res = ui.alert(
     'シート構成の初期セットアップ',
     '次のシートを作成／再作成します。\n\n' +
-      '・使い方（規則）\n・店舗マスタ\n・従業員マスタ\n・シフト\n・シフトメモ\n・週間固定\n・権限\n・設定\n・同期ログ\n\n' +
+      '・マスターデータ\n・シフト\n・シフトメモ\n・週間固定\n・権限\n・設定\n・同期ログ\n\n' +
       '同名シートがある場合は中身を消して作り直します。よろしいですか？',
     ui.ButtonSet.YES_NO
   );
@@ -51,72 +52,54 @@ function menuRestyleOnly() {
  * ============================================================ */
 const SHEET_DEFS = [
   {
-    name: '使い方',
-    tabColor: '#666666',
-    kind: 'guide'
-  },
-  {
-    name: '店舗マスタ',
+    name: 'マスターデータ',
     tabColor: '#4a86e8',
-    headers: ['store_id', 'store_name', 'area', 'is_active', 'sort_order', 'note'],
-    widths: [100, 140, 120, 90, 100, 220],
-    boolCols: [4], // 1-based
-    numberCols: [5],
-    samples: [
-      ['S001', '経堂', '第7エリア', true, 10, '試験店舗'],
-      ['S002', 'ひばりが丘', '第7エリア', true, 20, '試験店舗']
-    ],
-    rules: [
-      'store_id は一度決めたら変更しない（Web・シフトが参照する）',
-      'is_active=FALSE の店舗は Web の候補から外す',
-      'sort_order は小さい順に表示'
-    ]
-  },
-  {
-    name: '従業員マスタ',
-    tabColor: '#6aa84f',
     headers: [
-      'employee_id', 'name', 'name_key', 'email', 'bye_code',
-      'primary_store_id', 'employment_type', 'is_active', 'calendar_sync', 'memo_offset', 'note'
+      '店舗ID', '店舗名', 'エリア', '店舗有効', '表示順',
+      '従業員ID', '氏名', '氏名キー', 'メール', '社員コード',
+      '雇用区分', '有効', 'カレンダー同期', '勤務時間', '備考'
     ],
-    widths: [110, 120, 110, 220, 100, 120, 120, 90, 110, 100, 180],
-    boolCols: [8, 9],
-    numberCols: [10],
+    widths: [90, 120, 110, 80, 70, 110, 120, 110, 220, 100, 90, 70, 110, 80, 200],
+    boolCols: [4, 12, 13],
+    numberCols: [5, 14],
     listValidations: {
-      7: ['社員', 'パート', 'その他'] // employment_type
+      11: ['社員', 'パート', 'その他']
     },
     samples: [
-      [
-        'E001', '日下 竜汰', '日下竜汰', 'r-kusaka@okamoto-group.co.jp', '303879',
-        'S001', '社員', true, true, 1, 'サンプル行（必要なら削除）'
-      ]
+      ['S001', '経堂', '第7エリア', true, 10, 'EK003', '日下 竜汰', '日下竜汰', 'r-kusaka@okamoto-group.co.jp', '303879', '社員', true, true, '', ''],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '030396', '津田 加奈', '津田加奈', '', '030396', '社員', true, false, '', 'ひばり／旧SHOPS'],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '030400', '吉田 薫理', '吉田薫理', '', '030400', '社員', true, false, '', 'ひばり／旧SHOPS'],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '30204', '黒川 沙由美', '黒川沙由美', '', '30204', 'パート', true, false, 4, 'ひばり／パート・時間は日ごと'],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '30331', '徳重 翠', '徳重翠', '', '30331', '社員', true, false, '', 'ひばり／旧SHOPS'],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '303523', '大野 雅代', '大野雅代', '', '303523', '社員', true, false, '', 'ひばり／旧SHOPS'],
+      ['S002', 'ひばりが丘', '第7エリア', true, 20, '30469', '手塚 柚衣', '手塚柚衣', '', '30469', '社員', true, false, '', 'ひばり／旧SHOPS']
     ],
     rules: [
-      'employee_id は一意。変更しない',
-      'email は Google カレンダー同期先',
-      'bye_code はバイバイ（勤怠）社員コード',
-      '主所属は primary_store_id。ヘルプ勤務はシフト行の store_id で表現'
+      '1行＝1人。左が店舗、右が従業員',
+      '店舗ID は一度決めたら変更しない',
+      '店舗だけの行は従業員IDを空にする',
+      '店舗有効＝オフの店は Web の候補から外す'
     ]
   },
   {
     name: 'シフト',
     tabColor: '#e69138',
     headers: [
-      'shift_id', 'date', 'employee_id', 'store_id', 'status',
-      'start_time', 'end_time', 'break_minutes', 'source', 'updated_at', 'updated_by'
+      'シフトID', '日付', '従業員ID', '店舗ID', '区分', '休日休暇コード',
+      '開始', '終了', '休憩分', '入力元', '更新日時', '更新者'
     ],
-    widths: [150, 110, 110, 100, 90, 90, 90, 110, 90, 150, 200],
-    numberCols: [8],
+    widths: [150, 110, 110, 100, 90, 110, 90, 90, 90, 110, 150, 200],
+    numberCols: [6, 9],
     dateCols: [2],
     listValidations: {
       5: ['work', 'off', 'pto', 'absent', 'undef'],
-      9: ['web', 'import', 'system']
+      10: ['web', 'import', 'system']
     },
     samples: [],
     rules: [
       '1行 = ある人の、ある日の、ある店舗の予定',
-      'status: work=勤務 / off=公休など / pto=有休 / absent=欠勤 / undef=未定',
-      'work のとき start_time・end_time 必須（HH:mm）',
+      '区分: work=勤務 / off=公休など / pto=有休 / absent=欠勤 / undef=未定（値の日本語化は次工程）',
+      '勤務のとき開始・終了必須（HH:mm）',
       '現場は Web のみ編集。このシートを一般に共有しない'
     ]
   },
@@ -124,8 +107,8 @@ const SHEET_DEFS = [
     name: 'シフトメモ',
     tabColor: '#f6b26b',
     headers: [
-      'memo_id', 'date', 'employee_id', 'store_id', 'kind',
-      'title', 'start_time', 'end_time', 'body', 'updated_at', 'updated_by'
+      'メモID', '日付', '従業員ID', '店舗ID', '種類',
+      '件名', '開始', '終了', '内容', '更新日時', '更新者'
     ],
     widths: [100, 110, 110, 100, 90, 140, 90, 90, 260, 150, 200],
     dateCols: [2],
@@ -142,8 +125,8 @@ const SHEET_DEFS = [
     name: '週間固定',
     tabColor: '#3d85c6',
     headers: [
-      'weekly_id', 'employee_id', 'store_id', 'weekday', 'status',
-      'start_time', 'end_time', 'break_minutes', 'is_active', 'updated_at', 'updated_by'
+      '週間ID', '従業員ID', '店舗ID', '曜日', '区分',
+      '開始', '終了', '休憩分', '有効', '更新日時', '更新者'
     ],
     widths: [140, 110, 100, 90, 90, 90, 90, 110, 90, 150, 200],
     boolCols: [9],
@@ -161,7 +144,7 @@ const SHEET_DEFS = [
   {
     name: '権限',
     tabColor: '#8e7cc3',
-    headers: ['email', 'store_id', 'role', 'is_active'],
+    headers: ['メール', '店舗ID', '役割', '有効'],
     widths: [240, 100, 90, 90],
     boolCols: [4],
     listValidations: {
@@ -171,16 +154,16 @@ const SHEET_DEFS = [
       ['r-kusaka@okamoto-group.co.jp', '*', 'admin', true]
     ],
     rules: [
-      'Web ログインメール × store_id で見える店舗を決める',
-      'admin は store_id=* で全店',
-      'editor=編集 / viewer=閲覧のみ',
+      'Web ログインメール × 店舗ID で見える店舗を決める',
+      '管理（admin）は 店舗ID=* で全店',
+      '編集（editor）／閲覧（viewer）',
       '店舗名の手入力だけに頼らない（他店閲覧リスク防止）'
     ]
   },
   {
     name: '設定',
     tabColor: '#76a5af',
-    headers: ['key', 'value', 'note'],
+    headers: ['キー', '値', '備考'],
     widths: [200, 280, 320],
     samples: [
       ['app_title', 'シフト・キンタイ・カレンダー', 'Web 上のタイトル'],
@@ -190,13 +173,13 @@ const SHEET_DEFS = [
       ['attendance_dest_sheet', 'バイバイ貼り付け', '勤怠出力先シート名（将来）']
     ],
     rules: [
-      'アプリ／GAS が読む定数。key は重複させない'
+      'アプリ／GAS が読む定数。キーは重複させない'
     ]
   },
   {
     name: '同期ログ',
     tabColor: '#999999',
-    headers: ['logged_at', 'type', 'target', 'range', 'result', 'message'],
+    headers: ['記録日時', '種類', '対象', '範囲', '結果', 'メッセージ'],
     widths: [150, 100, 120, 100, 80, 360],
     listValidations: {
       2: ['calendar', 'bye_bye', 'labor'],
@@ -420,12 +403,13 @@ function buildGuideSheet_(sh) {
     ['・同期ログ … カレンダー／勤怠出力の履歴（システム追記）'],
     [''],
     ['■ データの規則'],
-    ['1. ID列（store_id / employee_id / shift_id など）は一度決めたら変えない'],
+    ['1. ID列（店舗ID／従業員ID／シフトID など）は一度決めたら変えない'],
     ['2. シフトは行列レイアウトではなく、正規化表（縦持ち）を正とする'],
-    ['3. status は work / off / pto / absent / undef のみ'],
-    ['4. work のとき start_time・end_time は HH:mm'],
-    ['5. 権限の admin は store_id=* で全店'],
+    ['3. 区分は work / off / pto / absent / undef（値の日本語化は別途）'],
+    ['4. 勤務のとき開始・終了は HH:mm'],
+    ['5. 権限の管理は 店舗ID=* で全店'],
     ['6. ヘッダ行（1行目）は消さない・列順を勝手に入れ替えない'],
+    ['7. ヘッダは日本語。メニュー「ヘッダを日本語に変換」で既存英語ヘッダを置換できる'],
     [''],
     ['■ 運用の流れ（予定）'],
     ['従業員 → Web（ログイン）→ 権限で店舗だけ表示 → シフト／メモを編集'],

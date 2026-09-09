@@ -5,6 +5,19 @@
  */
 export const ACCENT_THEMES = [
   {
+    id: 'kintai',
+    label: 'キンタイミライ',
+    50: '#f4f8fc',
+    100: '#e8f1fa',
+    200: '#d5e6f5',
+    300: '#9ec5e8',
+    400: '#3d8ecb',
+    500: '#2f7ec4',
+    600: '#005bb5',
+    700: '#004a94',
+    900: '#003366',
+  },
+  {
     id: 'black',
     label: 'ブラック',
     50: 'oklch(98.2% 0 0)',
@@ -169,18 +182,17 @@ export function applyAccentTheme(themeId) {
 export function readStoredAccentId() {
   try {
     const v = localStorage.getItem(ACCENT_STORAGE_KEY);
-    // 旧既定のインディゴはブラックへ寄せる（手動でインディゴを選び直すことは可能）
-    if (v === 'indigo') {
+    if (v === 'indigo' || v === 'black') {
       try {
-        localStorage.setItem(ACCENT_STORAGE_KEY, 'black');
+        localStorage.setItem(ACCENT_STORAGE_KEY, 'kintai');
       } catch {
         /* ignore */
       }
-      return 'black';
+      return 'kintai';
     }
     if (v && ACCENT_THEMES.some((t) => t.id === v)) return v;
   } catch {
     /* ignore */
   }
-  return 'black';
+  return 'kintai';
 }

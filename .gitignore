@@ -6,3 +6,5 @@ dist
 .env.*
 docs/gas/*.zip
 *.zip
+.vercel
+.env*

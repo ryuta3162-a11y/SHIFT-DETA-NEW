@@ -22,6 +22,7 @@ function onOpen() {
     .createMenu('シフト基盤')
     .addItem('不足シートを追加（データ保持）', 'menuEnsureMissingSheets')
     .addItem('レイアウト再適用（データ保持）', 'menuRestyleKeepData')
+    .addItem('ヘッダを日本語に変換', 'menuMigrateHeadersJa')
     .addItem('従業員マスタに店舗フィルタを付ける', 'menuEmployeeStoreFilter')
     .addSeparator()
     .addItem('（危険）初期セットアップは SetupSheets.gs を使う', 'menuWarnSetup')
@@ -60,47 +61,39 @@ function menuEmployeeStoreFilter() {
  * ============================================================ */
 var LAYOUT_SHEET_DEFS = [
   {
-    name: '店舗マスタ',
+    name: 'マスターデータ',
     tabColor: '#4a86e8',
-    headers: ['store_id', 'store_name', 'area', 'is_active', 'sort_order', 'note'],
-    widths: [100, 140, 120, 90, 100, 220],
-    boolCols: [4],
-    numberCols: [5]
-  },
-  {
-    name: '従業員マスタ',
-    tabColor: '#6aa84f',
     headers: [
-      'employee_id', 'name', 'name_key', 'email', 'bye_code',
-      'primary_store_id', 'employment_type', 'is_active', 'calendar_sync', 'memo_offset', 'note'
+      '店舗ID', '店舗名', 'エリア', '店舗有効', '表示順',
+      '従業員ID', '氏名', '氏名キー', 'メール', '社員コード',
+      '雇用区分', '有効', 'カレンダー同期', '勤務時間', '備考'
     ],
-    widths: [110, 120, 110, 220, 100, 120, 120, 90, 110, 100, 180],
-    boolCols: [8, 9],
-    numberCols: [10],
-    listValidations: { 7: ['社員', 'パート', 'その他'] },
-    note: '店舗で絞るときは primary_store_id 列でフィルタ（経堂=S001 など）'
+    widths: [90, 120, 110, 80, 70, 110, 120, 110, 220, 100, 90, 70, 110, 80, 200],
+    boolCols: [4, 12, 13],
+    numberCols: [5, 14],
+    listValidations: { 11: ['社員', 'パート', 'その他'] }
   },
   {
     name: 'シフト',
     tabColor: '#e69138',
     headers: [
-      'shift_id', 'date', 'employee_id', 'store_id', 'status',
-      'start_time', 'end_time', 'break_minutes', 'source', 'updated_at', 'updated_by'
+      'シフトID', '日付', '従業員ID', '店舗ID', '区分', '休日休暇コード',
+      '開始', '終了', '休憩分', '入力元', '更新日時', '更新者'
     ],
-    widths: [150, 110, 110, 100, 90, 90, 90, 110, 90, 150, 200],
-    numberCols: [8],
+    widths: [150, 110, 110, 100, 90, 110, 90, 90, 90, 110, 150, 200],
+    numberCols: [6, 9],
     dateCols: [2],
     listValidations: {
       5: ['work', 'off', 'pto', 'absent', 'undef'],
-      9: ['web', 'import', 'system']
+      10: ['web', 'import', 'system']
     }
   },
   {
     name: 'シフトメモ',
     tabColor: '#f6b26b',
     headers: [
-      'memo_id', 'date', 'employee_id', 'store_id', 'kind',
-      'title', 'start_time', 'end_time', 'body', 'updated_at', 'updated_by'
+      'メモID', '日付', '従業員ID', '店舗ID', '種類',
+      '件名', '開始', '終了', '内容', '更新日時', '更新者'
     ],
     widths: [100, 110, 110, 100, 90, 140, 90, 90, 260, 150, 200],
     dateCols: [2],
@@ -110,8 +103,8 @@ var LAYOUT_SHEET_DEFS = [
     name: '週間固定',
     tabColor: '#3d85c6',
     headers: [
-      'weekly_id', 'employee_id', 'store_id', 'weekday', 'status',
-      'start_time', 'end_time', 'break_minutes', 'is_active', 'updated_at', 'updated_by'
+      '週間ID', '従業員ID', '店舗ID', '曜日', '区分',
+      '開始', '終了', '休憩分', '有効', '更新日時', '更新者'
     ],
     widths: [140, 110, 100, 90, 90, 90, 90, 110, 90, 150, 200],
     boolCols: [9],
@@ -121,7 +114,7 @@ var LAYOUT_SHEET_DEFS = [
   {
     name: '権限',
     tabColor: '#8e7cc3',
-    headers: ['email', 'store_id', 'role', 'is_active'],
+    headers: ['メール', '店舗ID', '役割', '有効'],
     widths: [240, 100, 90, 90],
     boolCols: [4],
     listValidations: { 3: ['viewer', 'editor', 'admin'] }
@@ -129,13 +122,13 @@ var LAYOUT_SHEET_DEFS = [
   {
     name: '設定',
     tabColor: '#76a5af',
-    headers: ['key', 'value', 'note'],
+    headers: ['キー', '値', '備考'],
     widths: [200, 280, 320]
   },
   {
     name: '同期ログ',
     tabColor: '#999999',
-    headers: ['logged_at', 'type', 'target', 'range', 'result', 'message'],
+    headers: ['記録日時', '種類', '対象', '範囲', '結果', 'メッセージ'],
     widths: [150, 100, 120, 100, 80, 360],
     listValidations: {
       2: ['calendar', 'bye_bye', 'labor'],
@@ -172,7 +165,7 @@ function ensureMissingSheets_() {
   if (emp) {
     emp.getRange(1, 1).setNote(
       '【相互編集】Webアプリとこのシートは同じデータを見ます。\n' +
-        '店舗で絞る: データ → フィルタ → primary_store_id（例: S001=経堂）\n' +
+        '店舗で絞る: データ → フィルタ → 主所属店舗（例: S001=経堂）\n' +
         'またはメニュー「従業員マスタに店舗フィルタを付ける」'
     );
   }
@@ -255,7 +248,7 @@ function setupEmployeeStoreFilter_() {
     .build();
   view.getRange('B1').setDataValidation(rule);
 
-  view.getRange(3, 1, 1, 5).setValues([['employee_id', 'name', 'bye_code', 'email', 'primary_store_id']]);
+  view.getRange(3, 1, 1, 5).setValues([['従業員ID', '氏名', '社員コード', 'メール', '主所属店舗']]);
   view.getRange(3, 1, 1, 5)
     .setBackground(HEADER_BG)
     .setFontColor(HEADER_FG)
@@ -277,7 +270,7 @@ function setupEmployeeStoreFilter_() {
 
   return (
     '完了しました。\n\n' +
-      '1) 「従業員マスタ」本体にフィルタを付けました（primary_store_id で絞れます）\n' +
+      '1) 「従業員マスタ」本体にフィルタを付けました（主所属店舗で絞れます）\n' +
       '2) 「' + viewName + '」シートを作りました。B1 で店舗名を選ぶとその店の人だけ出ます\n\n' +
       '編集の正本は「従業員マスタ」です。ビューは見やすくするための画面です。'
   );
@@ -295,11 +288,11 @@ function ensureStoreLookupSheet_(ss, lines) {
   }
   sh.clear();
   sh.setTabColor('#cfe2f3');
-  sh.getRange(1, 1, 1, 3).setValues([['store_id', 'store_name', 'area']]);
+  sh.getRange(1, 1, 1, 3).setValues([['店舗ID', '店舗名', 'エリア']]);
   sh.getRange(1, 1, 1, 3).setBackground(HEADER_BG).setFontColor(HEADER_FG).setFontWeight('bold');
   sh.getRange('A2').setFormula("=IFERROR(FILTER({'店舗マスタ'!A:A,'店舗マスタ'!B:B,'店舗マスタ'!C:C},'店舗マスタ'!D:D=TRUE),\"\")");
   sh.setFrozenRows(1);
-  sh.getRange('A1').setNote('従業員マスタの primary_store_id にはここの store_id を入れます（例: 経堂=S001）');
+  sh.getRange('A1').setNote('従業員マスタの「主所属店舗」にはここの店舗IDを入れます（例: 経堂=S001）');
 }
 
 /* ============================================================

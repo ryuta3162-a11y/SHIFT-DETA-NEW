@@ -8,7 +8,11 @@
     "build": "vite build",
     "build:gas": "vite build && powershell -NoProfile -Command \"Copy-Item -Force dist/index.html docs/gas/deployed/index.html\"",
     "push:gas": "npm run build:gas && powershell -NoProfile -Command \"Set-Location docs/gas/deployed; clasp push --force\"",
+    "build:staff": "npm run icons:pwa && vite build --config vite.staff.config.js && node -e \"require('fs').copyFileSync('dist-staff/index.staff.html','dist-staff/index.html')\"",
+    "icons:pwa": "node scripts/generate-pwa-icons.mjs",
+    "deploy:staff-pwa": "npm run build:staff && npx vercel deploy --prod --yes --project shift-one-staff",
     "deploy:gas": "npm run push:gas && powershell -NoProfile -Command \"Set-Location docs/gas/deployed; clasp deploy -i AKfycbxp0HBE4-akd-bbMFzvkaAbFiBkxlK-m8W7HugP9nkYx0LEs8kwu1sjdo54AABZuijv -d auto\"",
+    "deploy:all": "npm run deploy:gas && npx vercel deploy --prod --yes --project shift-one-staff",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,6 +24,7 @@
     "@vitejs/plugin-react": "^6.0.0",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.0",
     "vite-plugin-singlefile": "^2.3.0"
