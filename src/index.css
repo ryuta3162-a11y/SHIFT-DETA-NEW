@@ -142,6 +142,23 @@
   .sheet-chip-ghost {
     @apply bg-transparent text-zinc-600 border-transparent hover:bg-[#eef3f8];
   }
+  /* スタッフ情報ダイアログの導線ボタン */
+  .emp-menu-item {
+    @apply w-full flex flex-col items-start gap-0.5 px-4 py-3 text-left border bg-white transition
+      disabled:opacity-40;
+    border-color: #cfdce8;
+    border-radius: 2px;
+  }
+  .emp-menu-item:hover:not(:disabled) {
+    background: #f4f8fc;
+    border-color: #2f7ec4;
+  }
+  .emp-menu-main {
+    @apply text-[15px] font-bold text-slate-800;
+  }
+  .emp-menu-sub {
+    @apply text-[12px] font-medium text-slate-500;
+  }
   /* 氏名列の区分バッジ（社＝社員／ア＝アルバイト） */
   .sheet-emp-tag {
     @apply shrink-0 inline-flex items-center justify-center text-white;

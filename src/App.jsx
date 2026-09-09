@@ -988,6 +988,7 @@ export default function App() {
   // weekly
   const [weekly, setWeekly] = useState([]); // map-like array
   const [weeklyEmpId, setWeeklyEmpId] = useState('');
+  const weeklyEmpIdRef = useRef('');
   const [weeklySpanH, setWeeklySpanH] = useState(null); // 拘束時間の上書き（null=従業員設定のまま）
   const [weeklyStatus, setWeeklyStatus] = useState('idle'); // idle | saving | saved
   const [weeklyBulkStart, setWeeklyBulkStart] = useState('10:00');
@@ -1660,6 +1661,13 @@ export default function App() {
     });
   }
 
+  /** 週間テンプレートで編集するスタッフを選ぶ */
+  function selectWeeklyEmp(employeeId) {
+    const id = employeeId || '';
+    weeklyEmpIdRef.current = id;
+    setWeeklyEmpId(id);
+  }
+
   async function loadWeekly(sid = storeId, opts = {}) {
     if (!user?.email || !sid) return;
     // 予約済みの自動保存があれば取り消す
@@ -1681,7 +1689,7 @@ export default function App() {
         setWeekly(res.weekly || []);
       }
       weeklyLoadedRef.current = true;
-      if (!weeklyEmpId && res.employees?.[0]) setWeeklyEmpId(res.employees[0].employee_id);
+      if (!weeklyEmpIdRef.current && res.employees?.[0]) selectWeeklyEmp(res.employees[0].employee_id);
     };
     try {
       if (opts.quiet) await run();
@@ -2787,6 +2795,21 @@ export default function App() {
 
   function closeEmpEditor() {
     setEmpEditorId(null);
+  }
+
+  /** このスタッフの週間テンプレートを開く */
+  function openWeeklyForEmp(employeeId) {
+    selectWeeklyEmp(employeeId);
+    setWeeklySpanH(null);
+    closeEmpEditor();
+    openSettings('weekly');
+  }
+
+  /** このスタッフの詳細（氏名・社員番号など）を開く */
+  async function openEmpDetailFor(emp) {
+    closeEmpEditor();
+    await openSettings('employees');
+    openEmpFormForEdit(emp);
   }
 
   function endEmpDrag_(persist) {
@@ -4166,55 +4189,53 @@ export default function App() {
                   </button>
                 </div>
                 <div className="km-dialog-body space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => updateEmployeeProfile(empEditor.employee_id, {
-                        employment_type: '社員',
-                        work_hours: carryOverHours(empEditor, '社員'),
-                      })}
-                      className={`sheet-chip h-10 px-4 text-[15px] ${isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
-                    >
-                      社員
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => updateEmployeeProfile(empEditor.employee_id, {
-                        employment_type: 'アルバイト',
-                        work_hours: carryOverHours(empEditor, 'アルバイト'),
-                      })}
-                      className={`sheet-chip h-10 px-4 text-[15px] ${!isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
-                    >
-                      アルバイト
-                    </button>
-                  </div>
                   <div>
-                    <p className="text-[14px] font-bold text-slate-800 mb-2">勤務時間</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {hourOptionsForEmp(empEditor).map((h) => {
-                        const active = Number(spanHoursForEmp(empEditor)) === h;
-                        return (
-                          <button
-                            key={h}
-                            type="button"
-                            disabled={busy}
-                            onClick={() => updateEmployeeProfile(empEditor.employee_id, {
-                              employment_type: normalizeEmpType(empEditor.employment_type),
-                              work_hours: h,
-                            })}
-                            className={`sheet-chip min-w-[3.25rem] h-10 text-[15px] ${active ? 'sheet-chip-on' : 'sheet-chip-off'}`}
-                          >
-                            {h}h
-                          </button>
-                        );
-                      })}
+                    <p className="text-[13px] font-bold text-slate-700 mb-2">区分</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => updateEmployeeProfile(empEditor.employee_id, {
+                          employment_type: '社員',
+                          work_hours: carryOverHours(empEditor, '社員'),
+                        })}
+                        className={`sheet-chip h-10 px-4 text-[15px] ${isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
+                      >
+                        社員
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => updateEmployeeProfile(empEditor.employee_id, {
+                          employment_type: 'アルバイト',
+                          work_hours: carryOverHours(empEditor, 'アルバイト'),
+                        })}
+                        className={`sheet-chip h-10 px-4 text-[15px] ${!isFullTimeEmp(empEditor) ? 'sheet-chip-on' : 'sheet-chip-off'}`}
+                      >
+                        アルバイト
+                      </button>
                     </div>
                   </div>
-                  <p className="text-[13px] text-slate-600 leading-relaxed">
-                    ここで変えても、入力済みのシフトや週間テンプレートは組み替わりません。これから入力するセルの既定時間として使われます。
-                  </p>
+                  <div className="grid gap-2">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => openWeeklyForEmp(empEditor.employee_id)}
+                      className="emp-menu-item"
+                    >
+                      <span className="emp-menu-main">週間テンプレートを開く</span>
+                      <span className="emp-menu-sub">曜日ごとの固定シフトを設定する</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => openEmpDetailFor(empEditor)}
+                      className="emp-menu-item"
+                    >
+                      <span className="emp-menu-main">スタッフ情報を編集</span>
+                      <span className="emp-menu-sub">氏名・社員番号・既定の勤務時間</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -4647,7 +4668,7 @@ export default function App() {
                         <>
                           <div className="flex flex-wrap gap-2">
                             {employees.map((e) => (
-                              <button key={e.employee_id} type="button" onClick={() => { setWeeklyEmpId(e.employee_id); setWeeklySpanH(null); }} className={`px-4 py-2.5 rounded-xl text-[15px] font-bold border ${weeklyEmpId === e.employee_id ? 'bg-[var(--acc-500)] text-white border-[var(--acc-500)]' : 'bg-white border-slate-200 text-slate-800'}`}>{e.name}</button>
+                              <button key={e.employee_id} type="button" onClick={() => { selectWeeklyEmp(e.employee_id); setWeeklySpanH(null); }} className={`px-4 py-2.5 rounded-xl text-[15px] font-bold border ${weeklyEmpId === e.employee_id ? 'bg-[var(--acc-500)] text-white border-[var(--acc-500)]' : 'bg-white border-slate-200 text-slate-800'}`}>{e.name}</button>
                             ))}
                           </div>
                           {weeklyEmpId && (
