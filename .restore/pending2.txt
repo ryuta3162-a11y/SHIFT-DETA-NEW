@@ -1,0 +1,1299 @@
+pos=918 len=2
+  cands: 休職,(1.0) | 休出,(1.0) | 振休(1.0) | 振休'(1.0) | 振休"(1.0) | 振休,(1.0) | 振休<(1.0) | 振休>(1.0)
+  ctx: es.js';\n\nconst EMAIL_KEY = 'shiftapp_user_email';\nconst STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E
+pos=929 len=2
+  cands: 休職,(1.0) | 休出,(1.0) | 振休(1.0) | 振休'(1.0) | 振休"(1.0) | 振休,(1.0) | 振休<(1.0) | 振休>(1.0)
+  ctx: nst EMAIL_KEY = 'shiftapp_user_email';\nconst STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E };\nconst W
+pos=940 len=2
+  cands: 休職,(1.0) | 休出,(1.0) | 振休(1.0) | 振休'(1.0) | 振休"(1.0) | 振休,(1.0) | 振休<(1.0) | 振休>(1.0)
+  ctx: EY = 'shiftapp_user_email';\nconst STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E };\nconst WEEKDAY_LABE
+pos=954 len=2
+  cands: 振出'(1.0) | 欠勤'(1.0) | 無効'(1.0) | 半欠'(1.0) | 看護'(1.0) | 母性'(1.0) | 時間'(0.7) | 出勤'(0.7)
+  ctx: _user_email';\nconst STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E };\nconst WEEKDAY_LABELS = ['?', '?E
+pos=967 len=2
+  cands: 休職 (1.0) | 休出 (1.0) | 振休(1.0) | 振休'(1.0) | 振休"(1.0) | 振休,(1.0) | 振休<(1.0) | 振休>(1.0)
+  ctx: \nconst STATUS_LABEL = { work: '??E, off: '??E, pto: '??E, absent: '??', undef: '??E };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '
+pos=1884 len=4
+  cands: 　スタッフ`(2.2) | 　スタッフ(2.2) | 従業員?(2.2) | 自動展開(1.0) | シフト?(1.0) | 非表示?(0.9) | 小野寺?(0.8) | エリア?(0.7)
+  ctx:  if (areaNum) code = areaNum;\n  const label = code && name\n    ? `${code}${name}????E??`\n    : name\n      ? `${name}????E??`\n      : '
+pos=1889 len=2
+  cands: 社員`(1.3) | 登録`(1.3) | 自動`(1.0) | 戻す`(0.9) | 勤務`(0.8) | 代休`(0.8) | 欠勤`(0.8) | 生理`(0.8)
+  ctx: areaNum) code = areaNum;\n  const label = code && name\n    ? `${code}${name}????E??`\n    : name\n      ? `${name}????E??`\n      : '???
+pos=1920 len=4
+  cands: 　スタッフ`(2.5) | 　スタッフ(2.5) | 従業員?(2.5) | 小野寺?(1.1) | 諏訪部?(1.0) | 自動展開(1.0) | シフト?(1.0) | 仲村渠?(1.0)
+  ctx: t label = code && name\n    ? `${code}${name}????E??`\n    : name\n      ? `${name}????E??`\n      : '???';\n  return { code, name, suffix:
+pos=1925 len=2
+  cands: 社員`(1.6) | 登録`(1.6) | 空欄`(1.1) | 自動`(1.0) | 戻す`(0.9) | 勤務`(0.8) | 代休`(0.8) | 欠勤`(0.8)
+  ctx: el = code && name\n    ? `${code}${name}????E??`\n    : name\n      ? `${name}????E??`\n      : '???';\n  return { code, name, suffix: na
+pos=1991 len=3
+  cands: スタッフ'(2.3) | スタッフ(2.3) | 従業員(2.3) | コード(1.8) | コード'(1.8) | コード"(1.8) | コード,(1.8) | コード<(1.8)
+  ctx:  `${name}????E??`\n      : '???';\n  return { code, name, suffix: name || code ? '???E??' : '', label };\n}\n\nfunction formatDateJa(ymd) 
+pos=1995 len=2
+  cands: 社員'(1.8) | 登録'(1.8) | 欠勤'(1.0) | 生理'(1.0) | 介護'(1.0) | 看護'(1.0) | 母性'(1.0) | 出勤'(1.0)
+  ctx: name}????E??`\n      : '???';\n  return { code, name, suffix: name || code ? '???E??' : '', label };\n}\n\nfunction formatDateJa(ymd) {\n 
+pos=3929 len=2
+  cands: 管轄店舗変更'(2.7) | 管轄店舗変更(2.7) | 管轄店舗?(2.7) | 管轄店舗(2.7) | 店舗?(2.7) | 設定(2.7) | 設定'(2.7) | 設定"(2.7)
+  ctx: d" />\n    </svg>\n  );\n}\n\nconst ACCOUNT_MENU = [\n  { id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?
+pos=3932 len=3
+  cands: スタッフ'(2.7) | スタッフ(2.7) | 表示名(2.7) | 表示名'(2.7) | 表示名"(2.7) | 表示名,(2.7) | 表示名<(2.7) | 表示名>(2.7)
+  ctx: />\n    </svg>\n  );\n}\n\nconst ACCOUNT_MENU = [\n  { id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ??
+pos=3936 len=2
+  cands: 社員'(2.7) | 時間'(2.7) | 登録'(1.7) | 前月'(1.7) | 翌月'(1.7) | 印刷'(1.7) | メモ'(0.7) | から'(0.6)
+  ctx:    </svg>\n  );\n}\n\nconst ACCOUNT_MENU = [\n  { id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ?????
+pos=3972 len=3
+  cands: スタッフ情報 追加・変更'(2.7) | スタッフ情報 追加・変更(2.7) | スタッフ情報 (2.7) | スタッフ情報(2.7) | スタッフ?(2.7) | スタッフ(2.7) | 表示名(2.7) | 表示名'(2.7)
+  ctx:  = [\n  { id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ?????' },\n  { id: 'weekly', label: '??????
+pos=3976 len=3
+  cands: スタッフ (2.7) | スタッフ(2.7) | 表示名(2.7) | 表示名'(2.7) | 表示名"(2.7) | 表示名,(2.7) | 表示名<(2.7) | 表示名>(2.7)
+  ctx: \n  { id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ?????' },\n  { id: 'weekly', label: '??????????
+pos=3980 len=2
+  cands: 社員 (2.7) | 時間 (2.7) | 登録 (1.7) | 前月 (1.7) | 翌月 (1.7) | 印刷 (1.7) | メモ (0.7) | から (0.6)
+  ctx:  id: 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ?????' },\n  { id: 'weekly', label: '??????????E' 
+pos=3983 len=5
+  cands: 追加・変更'(2.7) | 追加・変更(2.7) | 社員番号?(2.7) | カレンダー'(1.7) | カレンダー(1.7) | 保存エラー'(1.4) | 保存エラー(1.4) | 保存中…?(1.4)
+  ctx: : 'jurisdiction', label: '??E???E??' },\n  { id: 'employees', label: '???E???E?? ?????' },\n  { id: 'weekly', label: '??????????E' },\n];\n
+pos=4092 len=2
+  cands: 店舗,(1.6) | 設定(1.6) | 設定'(1.6) | 設定"(1.6) | 設定,(1.6) | 設定<(1.6) | 設定>(1.6) | 設定 (1.6)
+  ctx: abel: '??????????E' },\n];\n\nconst SETTINGS_TITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???'
+pos=4105 len=2
+  cands: 管轄店舗変更'(1.6) | 管轄店舗変更(1.6) | 管轄店舗?(1.6) | 管轄店舗(1.6) | 店舗?(1.6) | 設定(1.6) | 設定'(1.6) | 設定"(1.6)
+  ctx: ????E' },\n];\n\nconst SETTINGS_TITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employe
+pos=4108 len=3
+  cands: スタッフ'(1.5) | スタッフ(1.5) | 表示名(1.5) | 表示名'(1.5) | 表示名"(1.5) | 表示名,(1.5) | 表示名<(1.5) | 表示名>(1.5)
+  ctx: ?E' },\n];\n\nconst SETTINGS_TITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: 
+pos=4112 len=2
+  cands: 社員'(1.5) | 時間'(1.5) | 登録'(1.3) | から'(0.6) | 竜汰'(0.5) | 」を'(0.5) | 名称'(0.5) | メモ'(0.5)
+  ctx: },\n];\n\nconst SETTINGS_TITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: { k
+pos=4123 len=4
+  cands: 表示名・社員番号・担当店舗を選ぶ'(1.5) | 表示名・社員番号・担当店舗を選ぶ(1.5) | 勤務時間(1.5) | 勤務時間'(1.5) | 勤務時間"(1.5) | 勤務時間,(1.5) | 勤務時間<(1.5) | 勤務時間>(1.5)
+  ctx: t SETTINGS_TITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, 
+pos=4135 len=4
+  cands: 勤務時間(1.5) | 勤務時間'(1.5) | 勤務時間"(1.5) | 勤務時間,(1.5) | 勤務時間<(1.5) | 勤務時間>(1.5) | 勤務時間 (1.5) | 勤務時間$(1.5)
+  ctx: ITLES = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E
+pos=4140 len=3
+  cands: 社員?(1.5) | 時間?(1.5) | 登録?(1.3) | から?(0.6) | 竜汰?(0.5) | 」を?(0.5) | 未使用'(0.5) | 非表示'(0.5)
+  ctx:  = {\n  jurisdiction: { kicker: '??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E
+pos=4172 len=2
+  cands: 店舗,(2.7) | 設定(2.7) | 設定'(2.7) | 設定"(2.7) | 設定,(2.7) | 設定<(2.7) | 設定>(2.7) | 設定 (2.7)
+  ctx: ??E, title: '??E???E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E 
+pos=4185 len=3
+  cands: スタッフ情報 追加・変更'(2.4) | スタッフ情報 追加・変更(2.4) | スタッフ情報 (2.4) | スタッフ情報(2.4) | スタッフ?(2.4) | スタッフ(2.4) | 表示名(2.4) | 表示名'(2.4)
+  ctx: ??E???E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E },\n  weekly: {
+pos=4189 len=3
+  cands: スタッフ (2.4) | スタッフ(2.4) | 表示名(2.4) | 表示名'(2.4) | 表示名"(2.4) | 表示名,(2.4) | 表示名<(2.4) | 表示名>(2.4)
+  ctx: ??E??', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E },\n  weekly: { kic
+pos=4193 len=2
+  cands: 社員 (2.4) | 時間 (2.4) | メモ (1.4) | 登録 (1.4) | 前月 (1.4) | 翌月 (1.4) | 印刷 (1.4) | 名称 (1.0)
+  ctx: ?', sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E },\n  weekly: { kicker
+pos=4196 len=5
+  cands: 追加・変更'(2.4) | 追加・変更(2.4) | 社員番号?(2.4) | カレンダー'(1.4) | カレンダー(1.4) | キンタイ?(1.4) | 初回登録?(1.3) | ログイン?(0.7)
+  ctx:  sub: '????E??????E????E???' },\n  employees: { kicker: '??E, title: '???E???E?? ?????', sub: '????????????E },\n  weekly: { kicker: '??E
+pos=4248 len=2
+  cands: 店舗,(3.2) | 設定(3.2) | 設定'(3.2) | 設定"(3.2) | 設定,(3.2) | 設定<(3.2) | 設定>(3.2) | 設定 (3.2)
+  ctx: r: '??E, title: '???E???E?? ?????', sub: '????????????E },\n  weekly: { kicker: '??E, title: '??????????E', sub: '1???E??????' },\n};\n
+pos=4282 len=3
+  cands: 週間の固定パターン'(3.2) | 週間の固定パターン(3.2) | スタッフ?(3.2) | スタッフ(3.2) | 表示名(3.2) | 表示名'(3.2) | 表示名"(3.2) | 表示名,(3.2)
+  ctx: , sub: '????????????E },\n  weekly: { kicker: '??E, title: '??????????E', sub: '1???E??????' },\n};\n\nfunction IconMenuStore({ className
+pos=8087 len=3
+  cands: 上へ（よく使う）(2.8) | 上へ（よく使う）'(2.8) | 上へ（よく使う）"(2.8) | 上へ（よく使う）,(2.8) | 上へ（よく使う）<(2.8) | 上へ（よく使う）>(2.8) | 上へ（よく使う） (2.8) | 上へ（よく使う）$(2.8)
+  ctx:            type="button"\n              disabled={disabled}\n              title="???E?????E??E\n              aria-label="???E?????E??E
+pos=8127 len=3
+  cands: 上へ（よく使う）(2.4) | 上へ（よく使う）'(2.4) | 上へ（よく使う）"(2.4) | 上へ（よく使う）,(2.4) | 上へ（よく使う）<(2.4) | 上へ（よく使う）>(2.4) | 上へ（よく使う） (2.4) | 上へ（よく使う）$(2.4)
+  ctx: isabled={disabled}\n              title="???E?????E??E\n              aria-label="???E?????E??E\n              onClick={() => onMoveToUs
+pos=8415 len=3
+  cands: 下へ（未使用）(1.6) | 下へ（未使用）'(1.6) | 下へ（未使用）"(1.6) | 下へ（未使用）,(1.6) | 下へ（未使用）<(1.6) | 下へ（未使用）>(1.6) | 下へ（未使用） (1.6) | 下へ（未使用）$(1.6)
+  ctx:            type="button"\n              disabled={disabled}\n              title="???E?????E?E\n              aria-label="???E?????E?E\n 
+pos=8454 len=3
+  cands: 下へ（未使用）(1.6) | 下へ（未使用）'(1.6) | 下へ（未使用）"(1.6) | 下へ（未使用）,(1.6) | 下へ（未使用）<(1.6) | 下へ（未使用）>(1.6) | 下へ（未使用） (1.6) | 下へ（未使用）$(1.6)
+  ctx: disabled={disabled}\n              title="???E?????E?E\n              aria-label="???E?????E?E\n              onClick={() => onMoveToUnu
+pos=8734 len=4
+  cands: 非表示へ"(2.1) | 非表示へ(2.1) | 未使用?(2.1) | 非表示?(2.1) | 取得時の"(1.4) | 取得時の(1.4) | キンタイ"(1.1) | キンタイ(1.1)
+  ctx: on\n            type="button"\n            disabled={disabled}\n            title="????"\n            aria-label="????"\n            onClic
+pos=8764 len=4
+  cands: 非表示へ"(2.2) | 非表示へ(2.2) | 未使用?(2.2) | 非表示?(2.2) | 取得時の"(1.4) | 取得時の(1.4) | シフト?(1.2) | キンタイ"(1.1)
+  ctx:            disabled={disabled}\n            title="????"\n            aria-label="????"\n            onClick={() => onHide(c.code)}\n     
+pos=9575 len=3
+  cands: コード(6.9) | コード'(6.9) | コード"(6.9) | コード,(6.9) | コード<(6.9) | コード>(6.9) | コード (6.9) | コード$(6.9)
+  ctx: auto">\n        <div className="km-code-head sticky top-0 z-10">\n          <span>???E/span>\n          <span>??</span>\n          <span 
+pos=9777 len=4
+  cands: よく使う(4.0) | よく使う'(4.0) | よく使う"(4.0) | よく使う`(4.0) | よく使う,(4.0) | よく使う<(4.0) | よく使う>(4.0) | よく使う (4.0)
+  ctx:         <>\n            <div className="km-code-sep bg-[#e8f1fa] text-[#2f7ec4]">????E/div>\n            {used.map((c) => row(c, 'used')
+pos=9965 len=3
+  cands: 未使用<(2.9) | 未使用(2.9) | 名称?(2.9) | 時間?(2.6) | 非表示<(0.9) | 諏訪部<(0.9) | 小野寺<(0.9) | 仲村渠<(0.9)
+  ctx:  && (\n          <>\n            {used.length > 0 && <div className="km-code-sep">???</div>}\n            {unused.map((c) => row(c, 'unu
+pos=10438 len=6
+  cands: 有休取得時のIN・OUT時間"(2.7) | 有休取得時のIN・OUT時間(2.7) | 有休取得時のIN・(2.7) | 有休取得時の(2.7) | メモを閉じる(1.8) | 登録を解除?(1.5) | カレンダー?(1.4) | 従業員を変更(1.2)
+  ctx: ck={onOpenPtoHours}\n          className="km-code-trash-toggle"\n          title="??????IN?OUT??"\n          aria-label="??????IN?OUT??"\n  
+pos=10476 len=6
+  cands: 有休取得時のIN・OUT時間"(2.8) | 有休取得時のIN・OUT時間(2.8) | 有休取得時のIN・(2.8) | 有休取得時の(2.8) | メモを閉じる(1.8) | 登録を解除?(1.6) | カレンダー?(1.5) | 従業員を変更(1.2)
+  ctx: e="km-code-trash-toggle"\n          title="??????IN?OUT??"\n          aria-label="??????IN?OUT??"\n        >\n          <IconClock className
+pos=10969 len=3
+  cands: 非表示(2.7) | 時間?(2.7) | 未使用(1.4) | クリア(1.1) | 名称?(1.1) | 翌月?(1.1) | 登録?(0.9) | 前月?(0.9)
+  ctx: ????E\n        >\n          <IconTrash className="w-3.5 h-3.5" />\n          <span>???{hidden.length ? ` (${hidden.length})` : ''}</span
+pos=15056 len=5
+  cands: 休日・休暇'(1.8) | 休日・休暇(1.8) | 自動展開?(1.8) | 登録中…?(1.4) | カレンダー'(1.3) | カレンダー(1.3) | 準備中…?(1.3) | 保存中…?(1.2)
+  ctx: th}`, ' '].concat(dateHeaders);\n  const rowTypes = [\n    { code: 215001, name: '?????' },\n    { code: 215201, name: '???' },\n    { code
+pos=15093 len=3
+  cands: 従業員'(1.5) | シフト'(1.5) | 従業員(1.5) | シフト(1.5) | 社員?(1.5) | 登録?(1.5) | 全員?(1.0) | 」を?(1.0)
+  ctx: st rowTypes = [\n    { code: 215001, name: '?????' },\n    { code: 215201, name: '???' },\n    { code: 215013, name: '?????(????)' },\n  
+pos=15128 len=5
+  cands: 休日・休暇(自動展開)(1.5) | 休日・休暇(自動展開(1.5) | 休日・休暇((1.5) | 休日・休暇(1.5) | 自動展開?(1.5) | 登録中…?(1.4) | カレンダー((1.3) | カレンダー(1.3)
+  ctx:  name: '?????' },\n    { code: 215201, name: '???' },\n    { code: 215013, name: '?????(????)' },\n    { code: 215231, name: '???(????)' }
+pos=15134 len=4
+  cands: 自動展開)(1.5) | 自動展開(1.5) | 従業員?(1.5) | シフト?(1.5) | 登録中…)(1.4) | 登録中…(1.4) | 準備中…)(1.3) | 準備中…(1.3)
+  ctx:  '?????' },\n    { code: 215201, name: '???' },\n    { code: 215013, name: '?????(????)' },\n    { code: 215231, name: '???(????)' },\n  ]
+pos=15171 len=3
+  cands: シフト(自動展開)(1.5) | シフト(自動展開(1.5) | 従業員((1.5) | シフト((1.5) | 従業員(1.5) | シフト(1.5) | 社員?(1.5) | 登録?(1.5)
+  ctx:  '???' },\n    { code: 215013, name: '?????(????)' },\n    { code: 215231, name: '???(????)' },\n  ];\n  const outputData = [];\n\n  withCo
+pos=15175 len=4
+  cands: 自動展開)(1.5) | 自動展開(1.5) | 従業員?(1.5) | シフト?(1.5) | 登録中…)(1.4) | 登録中…(1.4) | 準備中…)(1.3) | 準備中…(1.3)
+  ctx: ?' },\n    { code: 215013, name: '?????(????)' },\n    { code: 215231, name: '???(????)' },\n  ];\n  const outputData = [];\n\n  withCode.fo
+pos=18697 len=6
+  cands: 休日・休暇?(0.8) | カレンダー?(0.7) | 保存しました (0.5) | 保存しました(0.5) | 読み込み中… (0.3) | 登録して進む (0.3) | 読み込み中…(0.3) | 登録して進む(0.3)
+  ctx: y || !m) return '';\n  return `${y}?${Number(m)}?E;\n}\n\n/** ???????E ??E?????E "8"?????? "8:30" */\nfunction formatPrintTimePart(hm) {\n  co
+pos=19177 len=1
+  cands: （読取不可?(0.2) | （読取不可(0.2) | テンプレ反映(0.0) | テリトリー?(0.0) | テリトリー(0.0) | ティール?(0.0) | ティール(0.0) | 行 ·?(0.0)
+  ctx: if (a && b) return `${a}-${b}`;\n  return a || b || '';\n}\n\n/** 0:00?E4:00 ?Estep ?E??????E */\nfunction buildTimeOptions(stepMin = 30
+pos=19179 len=6
+  cands: 保存しました(0.4) | カレンダー?(0.2) | 健康維持代休(0.0) | 健康維持代休'(0.0) | 健康維持代休"(0.0) | 健康維持代休,(0.0) | 健康維持代休<(0.0) | 健康維持代休>(0.0)
+  ctx:  (a && b) return `${a}-${b}`;\n  return a || b || '';\n}\n\n/** 0:00?E4:00 ?Estep ?E??????E */\nfunction buildTimeOptions(stepMin = 30) {\n  c
+pos=20218 len=5
+  cands: カレンダー(0.5) | メモを開く(0.4) | メモを開く'(0.4) | メモを開く"(0.4) | メモを開く,(0.4) | メモを開く<(0.4) | メモを開く>(0.4) | メモを開く (0.4)
+  ctx: onst MEMO_MAX_LINES = 5;\nconst CELL_FOCUS_RING = 'inset 0 0 0 2px #18181b';\n/** ?????E?Eeparate + 1px?E?????E? sheet-name-cell ???E*/\nc
+pos=20239 len=1
+  cands: －—–〜～(0.7) | －—–〜～'(0.7) | －—–〜～"(0.7) | －—–〜～,(0.7) | －—–〜～<(0.7) | －—–〜～>(0.7) | －—–〜～ (0.7) | －—–〜～$(0.7)
+  ctx:  5;\nconst CELL_FOCUS_RING = 'inset 0 0 0 2px #18181b';\n/** ?????E?Eeparate + 1px?E?????E? sheet-name-cell ???E*/\nconst SHEET_DAY = 
+pos=20241 len=5
+  cands: アルバイト(0.5) | アルバイト'(0.5) | アルバイト"(0.5) | アルバイト`(0.5) | アルバイト,(0.5) | アルバイト<(0.5) | アルバイト>(0.5) | アルバイト (0.5)
+  ctx: ;\nconst CELL_FOCUS_RING = 'inset 0 0 0 2px #18181b';\n/** ?????E?Eeparate + 1px?E?????E? sheet-name-cell ???E*/\nconst SHEET_DAY = 'sheet
+pos=20265 len=3
+  cands: 出勤?(2.1) | 休み?(2.1) | 長谷川(0.9) | 長谷川'(0.9) | 長谷川"(0.9) | 長谷川,(0.9) | 長谷川<(0.9) | 長谷川>(0.9)
+  ctx: = 'inset 0 0 0 2px #18181b';\n/** ?????E?Eeparate + 1px?E?????E? sheet-name-cell ???E*/\nconst SHEET_DAY = 'sheet-day-cell';\nconst SHEE
+pos=20406 len=2
+  cands: 出勤 (2.3) | 休み (2.3) | 登録 (1.0) | 欠勤 (0.9) | 」を (0.9) | メモ (0.8) | 半欠 (0.7) | 生理 (0.7)
+  ctx:  'sheet-name-cell';\n\nfunction clampMemoBody(text) {\n  const lines = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').s
+pos=20788 len=2
+  cands: 空欄にする'(2.6) | 空欄にする(2.6) | 空欄(2.6) | 空欄'(2.6) | 空欄"(2.6) | 空欄,(2.6) | 空欄<(2.6) | 空欄>(2.6)
+  ctx: i + 1);\n}\n\nconst SHIFT_STATUS_OPTIONS = [\n  { id: 'blank', label: '??E, title: '??E????' },\n  { id: 'work', label: '?E, title: '??' 
+pos=20836 len=2
+  cands: 社員'(2.1) | 出勤'(2.1) | 休み'(2.1) | 振出'(1.1) | 半欠'(1.1) | 時間'(1.1) | から'(1.1) | 登録'(1.1)
+  ctx: : 'blank', label: '??E, title: '??E????' },\n  { id: 'work', label: '?E, title: '??' },\n  { id: 'off', label: 'ÁE, title: '??' },\n];\n
+pos=20878 len=2
+  cands: 社員'(2.4) | 出勤'(2.4) | 休み'(2.4) | 欠勤'(1.4) | 印刷'(1.3) | 時間'(1.3) | から'(1.3) | 日　'(1.3)
+  ctx: ,\n  { id: 'work', label: '?E, title: '??' },\n  { id: 'off', label: 'ÁE, title: '??' },\n];\n\nfunction shiftCategoryId(shift, autoLeave
+pos=21330 len=10
+  cands: を保存してください。(0.2) | を保存してください。'(0.2) | を保存してください。"(0.2) | を保存してください。,(0.2) | を保存してください。<(0.2) | を保存してください。>(0.2) | を保存してください。 (0.2) | を保存してください。$(0.2)
+  ctx:  (status === 'off' || lc === 10 || lc === 20) return 'off';\n  return '';\n}\n\n/** ??????????E????E????E*/\nconst PART_HOUR_OPTIONS = [3, 3.5, 4
+pos=21341 len=4
+  cands: 保存中…(0.9) | 平日を出勤?(0.9) | 平日を出勤(0.9) | シフト?(0.7) | 既定時間(0.5) | 既定時間'(0.5) | 既定時間"(0.5) | 既定時間,(0.5)
+  ctx: = 'off' || lc === 10 || lc === 20) return 'off';\n  return '';\n}\n\n/** ??????????E????E????E*/\nconst PART_HOUR_OPTIONS = [3, 3.5, 4, 4.5
+pos=21346 len=4
+  cands: 保存中…(0.9) | シフト?(0.7) | 既定時間(0.5) | 既定時間'(0.5) | 既定時間"(0.5) | 既定時間,(0.5) | 既定時間<(0.5) | 既定時間>(0.5)
+  ctx: f' || lc === 10 || lc === 20) return 'off';\n  return '';\n}\n\n/** ??????????E????E????E*/\nconst PART_HOUR_OPTIONS = [3, 3.5, 4, 4.5, 5, 
+pos=21429 len=7
+  cands: 全部休みに戻す(0.6) | 全部休みに戻す'(0.6) | 全部休みに戻す"(0.6) | 全部休みに戻す,(0.6) | 全部休みに戻す<(0.6) | 全部休みに戻す>(0.6) | 全部休みに戻す (0.6) | 全部休みに戻す$(0.6)
+  ctx: ?E*/\nconst PART_HOUR_OPTIONS = [3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];\n/** ???????E????E?????????E????????E*/\nconst FULL_HOUR_OPTION
+pos=21437 len=4
+  cands: 保存中…(0.6) | 従業員?(0.6) | 平日を出勤?(0.6) | 平日を出勤(0.6) | 自動展開(0.5) | シフト?(0.5) | 既定時間(0.5) | 既定時間'(0.5)
+  ctx: st PART_HOUR_OPTIONS = [3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];\n/** ???????E????E?????????E????????E*/\nconst FULL_HOUR_OPTIONS = [
+pos=21442 len=9
+  cands: 登録を解除しました(0.6) | 従業員を保存中…?(0.6) | 変更はありません?(0.6) | 時間を設定可能です(0.5) | 時間を設定可能です'(0.5) | 時間を設定可能です"(0.5) | 時間を設定可能です,(0.5) | 時間を設定可能です<(0.5)
+  ctx: RT_HOUR_OPTIONS = [3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];\n/** ???????E????E?????????E????????E*/\nconst FULL_HOUR_OPTIONS = [6, 6.5, 7,
+pos=21452 len=8
+  cands: なのに時刻不正?(0.6) | 従業員を保存中…(0.6) | 登録を解除中…?(0.6) | 変更はありません(0.6) | を保存しました?(0.5) | をクリアしました(0.3) | メールアドレス?(0.3) | 現場のすべてを、(0.3)
+  ctx: TIONS = [3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];\n/** ???????E????E?????????E????????E*/\nconst FULL_HOUR_OPTIONS = [6, 6.5, 7, 7.5, 8, 
+pos=21558 len=5
+  cands: アルバイト(0.4) | アルバイト'(0.4) | アルバイト"(0.4) | アルバイト`(0.4) | アルバイト,(0.4) | アルバイト<(0.4) | アルバイト>(0.4) | アルバイト (0.4)
+  ctx: R_OPTIONS = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];\nconst TIME_STEP_MIN = 30;\n/** ?????E ??8h + ??E1h = ??9h */\nconst FULLTIME_SPAN_HOURS
+pos=21565 len=2
+  cands: 社員8(0.4) | 出勤8(0.4) | 休み8(0.4) | 」を8(0.4) | 登録8(0.4) | から8(0.4) | 欠勤8(0.3) | 半欠8(0.3)
+  ctx: NS = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];\nconst TIME_STEP_MIN = 30;\n/** ?????E ??8h + ??E1h = ??9h */\nconst FULLTIME_SPAN_HOURS = 9
+pos=21572 len=2
+  cands: 店舗1(0.4) | 設定(0.4) | 設定'(0.4) | 設定"(0.4) | 設定,(0.4) | 設定<(0.4) | 設定>(0.4) | 設定 (0.4)
+  ctx: , 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];\nconst TIME_STEP_MIN = 30;\n/** ?????E ??8h + ??E1h = ??9h */\nconst FULLTIME_SPAN_HOURS = 9;\n\nfunc
+pos=21580 len=2
+  cands: 社員9(0.4) | 出勤9(0.4) | 休み9(0.4) | 」を9(0.4) | 登録9(0.4) | から9(0.4) | 欠勤9(0.3) | 半欠9(0.3)
+  ctx: , 7.5, 8, 8.5, 9, 9.5, 10];\nconst TIME_STEP_MIN = 30;\n/** ?????E ??8h + ??E1h = ??9h */\nconst FULLTIME_SPAN_HOURS = 9;\n\nfunction nor
+pos=21682 len=2
+  cands: 社員'(0.7) | 出勤'(0.7) | 休み'(0.7) | 登録'(0.7) | から'(0.7) | 」を'(0.4) | 時間'(0.4) | 欠勤'(0.3)
+  ctx: _SPAN_HOURS = 9;\n\nfunction normalizeEmpType(type) {\n  const t = String(type || '??').trim();\n  if (t === '??E?E || t === '?????E) re
+pos=21708 len=2
+  cands: パート(0.8) | パート'(0.8) | パート"(0.8) | パート`(0.8) | パート,(0.8) | パート<(0.8) | パート>(0.8) | パート (0.8)
+  ctx:  normalizeEmpType(type) {\n  const t = String(type || '??').trim();\n  if (t === '??E?E || t === '?????E) return '?????E;\n  return '??
+pos=21758 len=2
+  cands: 社員'(1.1) | 休み'(1.1) | 登録'(0.9) | から'(0.9) | 出勤'(0.8) | 時間'(0.7) | 欠勤'(0.5) | 半欠'(0.5)
+  ctx: || '??').trim();\n  if (t === '??E?E || t === '?????E) return '?????E;\n  return '??';\n}\n\nfunction isFullTimeEmp(emp) {\n  return norma
+pos=21849 len=2
+  cands: 社員'(1.1) | 休み'(1.1) | 登録'(0.9) | から'(0.9) | 出勤'(0.8) | 時間'(0.7) | 欠勤'(0.5) | 半欠'(0.5)
+  ctx: ction isFullTimeEmp(emp) {\n  return normalizeEmpType(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E?
+pos=21861 len=2
+  cands: はい、解除する(0.9) | はい(0.9) | はい'(0.9) | はい"(0.9) | はい,(0.9) | はい<(0.9) | はい>(0.9) | はい (0.9)
+  ctx: TimeEmp(emp) {\n  return normalizeEmpType(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*
+pos=21864 len=6
+  cands: 登録を解除?(0.9) | ログイン中…(0.7) | 読み込み中…(0.7) | 従業員を変更(0.6) | カレンダー?(0.5) | 登録して進む(0.4) | 休日・休暇?(0.3) | 保存しました(0.3)
+  ctx: eEmp(emp) {\n  return normalizeEmpType(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*/\nfunct
+pos=21882 len=4
+  cands: 保存中…(0.9) | 従業員?(0.9) | 勤務時間(0.7) | 勤務時間'(0.7) | 勤務時間"(0.7) | 勤務時間,(0.7) | 勤務時間<(0.7) | 勤務時間>(0.7)
+  ctx: rn normalizeEmpType(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*/\nfunction spanHoursFor
+pos=21893 len=6
+  cands: 登録を解除?(0.9) | ログイン中…(0.7) | 読み込み中…(0.7) | 従業員を変更(0.6) | カレンダー?(0.5) | 登録して進む(0.4) | 社員番号を入力してください。(0.3) | 社員番号を入力してください。'(0.3)
+  ctx: eEmpType(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*/\nfunction spanHoursForEmp(emp) {\n  
+pos=21900 len=8
+  cands: 従業員を保存中…(0.9) | 登録を解除中…?(0.9) | 変更はありません(0.7) | をクリアしました(0.5) | なのに時刻不正?(0.3) | メールアドレス?(0.3) | を保存しました?(0.3) | 月間を準備中…?(0.3)
+  ctx: e(emp?.employment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*/\nfunction spanHoursForEmp(emp) {\n  const wh 
+pos=21909 len=2
+  cands: はい(0.9) | はい'(0.9) | はい"(0.9) | はい,(0.9) | はい<(0.9) | はい>(0.9) | はい (0.9) | はい$(0.9)
+  ctx: ployment_type) === '??';\n}\n\n/** ??E??????Ework_hours ????E?????E??????E????????E??E*/\nfunction spanHoursForEmp(emp) {\n  const wh = N
+pos=22178 len=2
+  cands: 勤務(0.4) | 勤務'(0.4) | 勤務"(0.4) | 勤務,(0.4) | 勤務<(0.4) | 勤務>(0.4) | 勤務 (0.4) | 勤務$(0.4)
+  ctx: ) {\n  return isFullTimeEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunct
+pos=22181 len=3
+  cands: 社員?(0.6) | スタッフを追加?(0.4) | スタッフを追加(0.4) | スタッフ?(0.4) | スタッフ(0.4) | シフト(0.4) | 時間?(0.4) | 休み?(0.4)
+  ctx: \n  return isFullTimeEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction 
+pos=22185 len=9
+  cands: 登録を解除しました(0.2) | 従業員を保存中…?(0.2) | 変更はありません?(0.2) | 時間を設定可能です(0.2) | 時間を設定可能です'(0.2) | 時間を設定可能です"(0.2) | 時間を設定可能です,(0.2) | 時間を設定可能です<(0.2)
+  ctx: eturn isFullTimeEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction carryOverH
+pos=22195 len=3
+  cands: 社員?(0.6) | スタッフを追加?(0.4) | スタッフを追加(0.4) | スタッフ?(0.4) | スタッフ(0.4) | シフト(0.4) | 時間?(0.4) | 休み?(0.4)
+  ctx: llTimeEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction carryOverHours
+pos=22199 len=6
+  cands: 法定休日出勤(0.4) | 法定外休日?(0.4) | ログイン中…(0.2) | 従業員を変更(0.2) | 登録を解除?(0.2) | →半日有休・半日欠勤(0.2) | 健康維持代休(0.2) | 健康維持代休'(0.2)
+  ctx: meEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction carryOverHours(emp, n
+pos=22206 len=4
+  cands: 勤務時間(0.4) | 勤務時間'(0.4) | 勤務時間"(0.4) | 勤務時間,(0.4) | 勤務時間<(0.4) | 勤務時間>(0.4) | 勤務時間 (0.4) | 勤務時間$(0.4)
+  ctx: mp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction carryOverHours(emp, nextTy
+pos=22211 len=10
+  cands: 従業員を更新しました(0.2) | 登録を解除しました?(0.2) | つ以上選んでください(0.2) | 週間テンプレート作成*(0.0) | 週間テンプレート作成(0.0) | を保存してください。(0.0) | を保存してください。'(0.0) | を保存してください。"(0.0)
+  ctx:  FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** ??E???E?????????E???E??????E????E??????????E*/\nfunction carryOverHours(emp, nextType) {\n  con
+pos=22336 len=2
+  cands: 社員'(0.8) | 有給'(0.4) | 欠勤'(0.4) | 休み'(0.4) | 不在'(0.4) | 時間'(0.4) | から'(0.4) | 出勤'(0.4)
+  ctx: xtType) {\n  const wh = Number(emp?.work_hours);\n  const allowed = nextType === '??' ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n  retur
+pos=23492 len=4
+  cands: 取得時の(0.5) | 諏訪部?(0.5) | 小野寺?(0.5) | 仲村渠?(0.5) | 登録中…(0.3) | 準備中…(0.3) | 平日を出勤?(0.3) | 平日を出勤(0.3)
+  ctx: (diff <= 0) diff += 24 * 60;\n  return Math.round((diff / 60) * 10) / 10;\n}\n\n/** ????E?????E??????E???????????E???? */\nconst WEEKLY_SPA
+pos=23497 len=5
+  cands: アルバイト(0.7) | アルバイト'(0.7) | アルバイト"(0.7) | アルバイト`(0.7) | アルバイト,(0.7) | アルバイト<(0.7) | アルバイト>(0.7) | アルバイト (0.7)
+  ctx:  <= 0) diff += 24 * 60;\n  return Math.round((diff / 60) * 10) / 10;\n}\n\n/** ????E?????E??????E???????????E???? */\nconst WEEKLY_SPAN_OPTI
+pos=23503 len=6
+  cands: 有休取得時の(0.6) | 読み込み中…(0.5) | 休日・休暇?(0.5) | カレンダー?(0.3) | 法定休日出勤(0.3) | 従業員を変更(0.3) | シフトを変更(0.3) | で改行（表の(0.3)
+  ctx:  diff += 24 * 60;\n  return Math.round((diff / 60) * 10) / 10;\n}\n\n/** ????E?????E??????E???????????E???? */\nconst WEEKLY_SPAN_OPTIONS = [
+pos=23510 len=11
+  cands: 日の登録に失敗しました(0.3) | カレンダー操作を閉じる(0.2) | カレンダー操作を閉じる'(0.2) | カレンダー操作を閉じる"(0.2) | カレンダー操作を閉じる,(0.2) | カレンダー操作を閉じる<(0.2) | カレンダー操作を閉じる>(0.2) | カレンダー操作を閉じる (0.2)
+  ctx: = 24 * 60;\n  return Math.round((diff / 60) * 10) / 10;\n}\n\n/** ????E?????E??????E???????????E???? */\nconst WEEKLY_SPAN_OPTIONS = [4, 4.5, 5, 5
+pos=23522 len=4
+  cands: 取得時の (0.8) | 取得時の(0.8) | 自動展開 (0.6) | 保存中… (0.6) | 自動展開(0.6) | 保存中…(0.6) | シフト?(0.6) | 諏訪部?(0.5)
+  ctx:  return Math.round((diff / 60) * 10) / 10;\n}\n\n/** ????E?????E??????E???????????E???? */\nconst WEEKLY_SPAN_OPTIONS = [4, 4.5, 5, 5.5, 6
+pos=25589 len=4
+  cands: 登録中…(0.8) | ログイン(0.8) | 社員番号(0.8) | シフト?(0.7) | すべて?(0.7) | 保存中…(0.7) | 月シフト(0.4) | クリア?(0.4)
+  ctx: PTO_TEMPLATE_KEY, JSON.stringify(all));\n  } catch {\n    /* ignore */\n  }\n}\n\n/** ????E???????????????E???E?E0-16 / 12:30-21:30 ???E?E*/
+pos=25594 len=15
+  cands: 週間テンプレートを保存しました(0.4) | カレンダー準備に失敗しました?(0.3) | 反映する日がありませんでした?(0.3) | 先に従業員を登録してください?(0.0)
+  ctx: EMPLATE_KEY, JSON.stringify(all));\n  } catch {\n    /* ignore */\n  }\n}\n\n/** ????E???????????????E???E?E0-16 / 12:30-21:30 ???E?E*/\nconst SHIFT_TIM
+pos=25701 len=2
+  cands: 〜ー－—/／](3.0) | 〜ー－—(3.0) | 〜ー－—'(3.0) | 〜ー－—"(3.0) | 〜ー－—,(3.0) | 〜ー－—<(3.0) | 〜ー－—>(3.0) | 〜ー－— (3.0)
+  ctx: / 12:30-21:30 ???E?E*/\nconst SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~??E?E??E?E?]\s*(\d{1,2})(?::(\d{2}))?/;\nconst SHIFT_
+pos=25704 len=1
+  cands: 行 ·?(0.1) | 行 ·(0.1)
+  ctx: 2:30-21:30 ???E?E*/\nconst SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~??E?E??E?E?]\s*(\d{1,2})(?::(\d{2}))?/;\nconst SHIFT_TI
+pos=25851 len=2
+  cands: 出勤 (0.8) | 休み (0.8) | 有給 (0.7) | 欠勤 (0.7) | 不在 (0.7) | 社員 (0.6) | 時間 (0.6) | から (0.5)
+  ctx: \d{1,2})(?::(\d{2}))?$/;\n\nfunction normalizeShiftRaw(raw) {\n  return String(raw ?? '')\n    .replace(/[?E?E?E?]/g, (ch) => String.fro
+pos=25873 len=1
+  cands: ０-９](1.8) | ～(1.8) | ～'(1.8) | ～"(1.8) | ～,(1.8) | ～<(1.8) | ～>(1.8) | ～ (1.8)
+  ctx: /;\n\nfunction normalizeShiftRaw(raw) {\n  return String(raw ?? '')\n    .replace(/[?E?E?E?]/g, (ch) => String.fromCharCode(ch.charCode
+pos=25875 len=1
+  cands: ～(1.8) | ～'(1.8) | ～"(1.8) | ～,(1.8) | ～<(1.8) | ～>(1.8) | ～ (1.8) | ～$(1.8)
+  ctx: \n\nfunction normalizeShiftRaw(raw) {\n  return String(raw ?? '')\n    .replace(/[?E?E?E?]/g, (ch) => String.fromCharCode(ch.charCodeAt
+pos=25877 len=1
+  cands: ～](1.8) | ：](1.8) | ／](1.8) | ０](1.8) | ９](1.8) | ）](0.6) | 行 ·](0.5) | 行 ·(0.5)
+  ctx: function normalizeShiftRaw(raw) {\n  return String(raw ?? '')\n    .replace(/[?E?E?E?]/g, (ch) => String.fromCharCode(ch.charCodeAt(0
+pos=25956 len=1
+  cands: ～](1.8) | ：](1.8) | ／](1.8) | ０](1.8) | ９](1.8) | ）](0.6) | 行 ·](0.5) | 行 ·(0.5)
+  ctx: E?E?]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))\n    .replace(/[?E?]/g, ':')\n    .replace(/[?E?????]/g, '-');\n}\n\nfu
+pos=26324 len=2
+  cands: 有休(2.5) | 有休'(2.5) | 有休"(2.5) | 有休,(2.5) | 有休<(2.5) | 有休>(2.5) | 有休 (2.5) | 有休$(2.5)
+  ctx: work', start_time: start, end_time: end, leave_code: '' };\n}\n\n/** ?E3:00\\n22:00??E???????? IN/OUT ????? */\nfunction parseStackedTim
+pos=26343 len=5
+  cands: 休日・休暇 (1.4) | 休日・休暇(1.4) | 自動展開?(1.4) | 保存中…?(1.4) | カレンダー (1.0) | カレンダー(1.0) | 社員番号?(0.8) | 取得時の?(0.8)
+  ctx: start, end_time: end, leave_code: '' };\n}\n\n/** ?E3:00\\n22:00??E???????? IN/OUT ????? */\nfunction parseStackedTimes(original) {\n  const
+pos=26444 len=1
+  cands: ○\n(2.8) | ×\n(2.8) | ◯\n(2.8) | 〇\n(2.8) | ✕\n(2.8) | ✖\n(2.8) | 〜\n(2.8) | —\n(2.8)
+  ctx: seStackedTimes(original) {\n  const lines = String(original || '')\n    .split(/\r?\n/)\n    .map((s) => s.trim().replace(/\s+/g, ''))
+pos=26912 len=6
+  cands: 読み込み中…(1.0) | 休日・休暇?(1.0) | 保存しました(0.8) | 有休取得時の(0.7) | 登録して進む(0.6) | 社員番号を入力してください:(0.5) | 社員番号を入力してください(0.5) | 新規追加に切替?(0.4)
+  ctx: ')) return false;\n  return !!parseStackedTimes(normalizeShiftRaw(text));\n}\n\n/** ??????E???????: ?E0-16??E2:00-21:00???E???????? */\nfunct
+pos=27164 len=1
+  cands: ～(1.6) | ～'(1.6) | ～"(1.6) | ～,(1.6) | ～<(1.6) | ～>(1.6) | ～ (1.6) | ～$(1.6)
+  ctx: 'undef', start_time: '', end_time: '', leave_code: '' };\n\n  // ????E??? IN / OUT?E?E3:00\\n22:00?E?E  const stacked = parseStackedT
+pos=27180 len=1
+  cands: ～(1.6) | ～'(1.6) | ～"(1.6) | ～,(1.6) | ～<(1.6) | ～>(1.6) | ～ (1.6) | ～$(1.6)
+  ctx: ime: '', end_time: '', leave_code: '' };\n\n  // ????E??? IN / OUT?E?E3:00\\n22:00?E?E  const stacked = parseStackedTimes(original);\n
+pos=27281 len=14
+  cands: 印刷するシフトがありません。(0.8) | 印刷するシフトがありません。'(0.8) | 印刷するシフトがありません。"(0.8) | 印刷するシフトがありません。,(0.8) | 印刷するシフトがありません。<(0.8) | 印刷するシフトがありません。>(0.8) | 印刷するシフトがありません。 (0.8) | 印刷するシフトがありません。$(0.8)
+  ctx:  parseStackedTimes(original);\n  if (stacked) return stacked;\n\n  // ?E?????????????????????????E  const firstLine = original.split(/\r?\n/).map((
+pos=27334 len=1
+  cands: ○\n(2.2) | ×\n(2.2) | ◯\n(2.2) | 〇\n(2.2) | ✕\n(2.2) | ✖\n(2.2) | 〜\n(1.6) | —\n(1.6)
+  ctx: tacked;\n\n  // ?E?????????????????????????E  const firstLine = original.split(/\r?\n/).map((s) => s.trim()).find(Boolean) || '';\n  c
+pos=28109 len=2
+  cands: 有休(1.8) | 有休'(1.8) | 有休"(1.8) | 有休,(1.8) | 有休<(1.8) | 有休>(1.8) | 有休 (1.8) | 有休$(1.8)
+  ctx: e.code, start_time: '', end_time: '' };\n  }\n\n  const leaveMap = [\n    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },\n    {
+pos=28115 len=2
+  cands: 有給'(1.8) | 欠勤'(1.8) | 休み'(1.8) | 不在'(1.8) | 出勤'(1.2) | 日　'(1.2) | 社員'(1.0) | 印刷'(1.0)
+  ctx: , start_time: '', end_time: '' };\n  }\n\n  const leaveMap = [\n    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },\n    { keys:
+pos=28126 len=2
+  cands: 有給'(2.0) | 欠勤'(2.0) | 休み'(2.0) | 不在'(2.0) | 出勤'(1.2) | 日　'(1.2) | 社員'(1.0) | 印刷'(1.0)
+  ctx: e: '', end_time: '' };\n  }\n\n  const leaveMap = [\n    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },\n    { keys: ['??E, '??
+pos=28170 len=2
+  cands: 有休(2.0) | 有休'(2.0) | 有休"(2.0) | 有休,(2.0) | 有休<(2.0) | 有休>(2.0) | 有休 (2.0) | 有休$(2.0)
+  ctx:  = [\n    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },\n    { keys: ['??E, '??', 'pto'], status: 'pto', leave_code: 61 },\n
+pos=28176 len=2
+  cands: 有給'(2.0) | 欠勤'(2.0) | 休み'(2.0) | 不在'(2.0) | 出勤'(1.2) | 日　'(1.2) | 社員'(1.0) | 印刷'(1.0)
+  ctx:    { keys: ['??E, '??', '?E, '??', 'off'], status: 'off' },\n    { keys: ['??E, '??', 'pto'], status: 'pto', leave_code: 61 },\n    { 
+pos=28236 len=2
+  cands: 有給'(1.9) | 欠勤'(1.9) | 休み'(1.9) | 不在'(1.9) | 出勤'(1.1) | 日　'(1.1) | 時間'(0.9) | 社員'(0.8)
+  ctx:     { keys: ['??E, '??', 'pto'], status: 'pto', leave_code: 61 },\n    { keys: ['??', 'absent'], status: 'absent', leave_code: 80 },\n
+pos=28524 len=2
+  cands: 有休(1.8) | 有休'(1.8) | 有休"(1.8) | 有休,(1.8) | 有休<(1.8) | 有休>(1.8) | 有休 (1.8) | 有休$(1.8)
+  ctx: row.leave_code || '', start_time: '', end_time: '' };\n    }\n  }\n  if (text === '??E || text.toLowerCase() === 'work') {\n    return w
+pos=28665 len=2
+  cands: 〜ー－—/／](1.4) | 〜ー－—(1.4) | 〜ー－—'(1.4) | 〜ー－—"(1.4) | 〜ー－—,(1.4) | 〜ー－—<(1.4) | 〜ー－—>(1.4) | 〜ー－— (1.4)
+  ctx: romIn(emp, '12:00');\n  }\n\n  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~??E?E??E?E?](\d{1,2})(?::(\d{2}))?$/);\n  if (range) 
+pos=28668 len=1
+  cands: 行 ·?(0.3) | 行 ·(0.3)
+  ctx: In(emp, '12:00');\n  }\n\n  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~??E?E??E?E?](\d{1,2})(?::(\d{2}))?$/);\n  if (range) re
+pos=28670 len=2
+  cands: 有休(1.4) | 有休'(1.4) | 有休"(1.4) | 有休,(1.4) | 有休<(1.4) | 有休>(1.4) | 有休 (1.4) | 有休$(1.4)
+  ctx: (emp, '12:00');\n  }\n\n  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~??E?E??E?E?](\d{1,2})(?::(\d{2}))?$/);\n  if (range) retur
+pos=28918 len=6
+  cands: カレンダー?(0.4) | →半日有休・半日欠勤?(0.3) | →半日有休・半日欠勤(0.3) | 法定休日出勤(0.3) | 保存しました(0.3) | 法定外休日?(0.3) | 新規追加に切替?(0.3) | 新規追加に切替(0.3)
+  ctx: romIn(emp, `${pad2(Number(single[1]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  c
+pos=28925 len=6
+  cands: カレンダー?(0.4) | →半日有休・半日欠勤?(0.3) | →半日有休・半日欠勤(0.3) | 法定休日出勤(0.3) | 保存しました(0.3) | 法定外休日?(0.3) | 新規追加に切替?(0.3) | 新規追加に切替(0.3)
+  ctx: mp, `${pad2(Number(single[1]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  const em
+pos=28932 len=12
+  cands: 長押しして上下に並べ替え(0.3) | 長押しして上下に並べ替え'(0.3) | 長押しして上下に並べ替え"(0.3) | 長押しして上下に並べ替え`(0.3) | 長押しして上下に並べ替え,(0.3) | 長押しして上下に並べ替え<(0.3) | 長押しして上下に並べ替え>(0.3) | 長押しして上下に並べ替え (0.3)
+  ctx: pad2(Number(single[1]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  const embedded = orig
+pos=28952 len=12
+  cands: 長押しして上下に並べ替え(0.3) | 長押しして上下に並べ替え'(0.3) | 長押しして上下に並べ替え"(0.3) | 長押しして上下に並べ替え`(0.3) | 長押しして上下に並べ替え,(0.3) | 長押しして上下に並べ替え<(0.3) | 長押しして上下に並べ替え>(0.3) | 長押しして上下に並べ替え (0.3)
+  ctx: ]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  const embedded = original.match(SHIFT_TIM
+pos=28965 len=5
+  cands: 非表示へ?(0.6) | オレンジ?(0.6) | アルバイト(0.4) | アルバイト'(0.4) | アルバイト"(0.4) | アルバイト`(0.4) | アルバイト,(0.4) | アルバイト<(0.4)
+  ctx: [2] || '00'}`);\n  }\n\n  // ?E0-16 ??????E??????E????????????E9-15??E????????????E?????E  const embedded = original.match(SHIFT_TIME_RANG
+pos=29281 len=4
+  cands: 諏訪部?(1.1) | 小野寺?(1.1) | 仲村渠?(1.1) | 並べ替え(0.8) | 並べ替え'(0.8) | 並べ替え"(0.8) | 並べ替え`(0.8) | 並べ替え,(0.8)
+  ctx: tch(embedded);\n    return null;\n  }\n\n  return null;\n}\n\n/**\n * Sheets/Excel ? TSV????E????E "..." ?????????? split('\\n') ????????E */\n
+pos=29286 len=4
+  cands: 諏訪部?(1.1) | 小野寺?(1.1) | 仲村渠?(1.1) | 並べ替え(0.8) | 並べ替え'(0.8) | 並べ替え"(0.8) | 並べ替え`(0.8) | 並べ替え,(0.8)
+  ctx: mbedded);\n    return null;\n  }\n\n  return null;\n}\n\n/**\n * Sheets/Excel ? TSV????E????E "..." ?????????? split('\\n') ????????E */\nfunct
+pos=29298 len=10
+  cands: つ以上選んでください (0.5) | つ以上選んでください(0.5) | 月間シフトを準備中… (0.4) | 月間シフトを準備中…(0.4) | 従業員を更新しました (0.1) | 従業員を更新しました(0.1) | 登録を解除しました?(0.1)
+  ctx:   return null;\n  }\n\n  return null;\n}\n\n/**\n * Sheets/Excel ? TSV????E????E "..." ?????????? split('\\n') ????????E */\nfunction parseTsvGrid(t
+pos=29322 len=8
+  cands: なのに時刻不正?(0.9) | をクリアしました(0.7) | を貼り付けました(0.5) | 変更はありません(0.5) | メールアドレス?(0.5) | を保存しました?(0.4) | 登録を解除する?(0.4) | 法定外休日出勤?(0.3)
+  ctx: turn null;\n}\n\n/**\n * Sheets/Excel ? TSV????E????E "..." ?????????? split('\\n') ????????E */\nfunction parseTsvGrid(text) {\n  const src = S
+pos=29391 len=2
+  cands: 時間 (1.0) | から (1.0) | メモ (0.8) | 外部 (0.8) | 最大 (0.8) | 欠勤 (0.7) | 出勤 (0.7) | 休み (0.7)
+  ctx: lit('\\n') ????????E */\nfunction parseTsvGrid(text) {\n  const src = String(text ?? '');\n  const rows = [];\n  let row = [];\n  let cel
+pos=30274 len=3
+  cands: 時間?(1.0) | から?(1.0) | コード(0.9) | コード'(0.9) | コード"(0.9) | コード,(0.9) | コード<(0.9) | コード>(0.9)
+  ctx: > String(c).length) || rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction pars
+pos=30278 len=1
+  cands: 行 ·?(0.8) | 行 ·(0.8)
+  ctx: ring(c).length) || rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseC
+pos=30280 len=2
+  cands: 勤務(1.0) | 勤務'(1.0) | 勤務"(1.0) | 勤務,(1.0) | 勤務<(1.0) | 勤務>(1.0) | 勤務 (1.0) | 勤務$(1.0)
+  ctx: ng(c).length) || rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClip
+pos=30283 len=2
+  cands: 勤務(1.0) | 勤務'(1.0) | 勤務"(1.0) | 勤務,(1.0) | 勤務<(1.0) | 勤務>(1.0) | 勤務 (1.0) | 勤務$(1.0)
+  ctx: c).length) || rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClipboa
+pos=30297 len=1
+  cands: 行 ·?(0.8) | 行 ·(0.8)
+  ctx: rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClipboardGrid(text) 
+pos=30299 len=3
+  cands: 時間?(1.0) | から?(1.0) | 非表示(0.9) | 諏訪部(0.9) | 小野寺(0.9) | 仲村渠(0.9) | 欠勤?(0.9) | すべて(0.9)
+  ctx: ws.length === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClipboardGrid(text) {\n  
+pos=30303 len=1
+  cands: 行 ·?(0.8) | 行 ·(0.8) | いいえ(0.6) | いいえ'(0.6) | いいえ"(0.6) | いいえ`(0.6) | いいえ,(0.6) | いいえ<(0.6)
+  ctx: ength === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClipboardGrid(text) {\n  co
+pos=30305 len=3
+  cands: 時間?(1.0) | から?(1.0) | コード(0.9) | コード'(0.9) | コード"(0.9) | コード,(0.9) | コード<(0.9) | コード>(0.9)
+  ctx: gth === 0) rows.push(row);\n  return rows;\n}\n\n/** ???E?E??E??Eheets/Excel?E???×?E???E? */\nfunction parseClipboardGrid(text) {\n  const 
+pos=30383 len=2
+  cands: 時間 (1.0) | から (1.0) | 欠勤 (0.9) | メモ (0.8) | 外部 (0.8) | 最大 (0.8) | 」を (0.7) | 登録 (0.7)
+  ctx: ?E???E? */\nfunction parseClipboardGrid(text) {\n  const normalized = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');\n
+pos=30477 len=3
+  cands: スタッフを追加?(1.0) | スタッフを追加(1.0) | スタッフ?(1.0) | スタッフ(1.0) | 登録?(1.0) | 時間?(1.0) | から?(1.0) | コード(0.9)
+  ctx: (/\r\n/g, '\n').replace(/\r/g, '\n');\n  if (!normalized.trim()) return [];\n  // ???E??????E IN/OUT ? 1 ???????E  if (looksLikeStacked
+pos=30481 len=6
+  cands: 登録して進む(1.0) | で改行（表の(0.8) | 休日・休暇?(0.6) | 読み込み中…(0.5) | カレンダー?(0.5) | 有休取得時の(0.4) | 保存しました(0.4) | 右上メニュー(0.4)
+  ctx: \n/g, '\n').replace(/\r/g, '\n');\n  if (!normalized.trim()) return [];\n  // ???E??????E IN/OUT ? 1 ???????E  if (looksLikeStackedTimesCe
+pos=30500 len=7
+  cands: 登録して進む?(1.0) | なのに時刻不正(0.9) | で改行（表の?(0.8) | 全部休みに戻す(0.7) | 全部休みに戻す'(0.7) | 全部休みに戻す"(0.7) | 全部休みに戻す,(0.7) | 全部休みに戻す<(0.7)
+  ctx: (/\r/g, '\n');\n  if (!normalized.trim()) return [];\n  // ???E??????E IN/OUT ? 1 ???????E  if (looksLikeStackedTimesCell(normalized)) {\n  
+pos=30598 len=6
+  cands: 登録して進む(1.0) | 新規追加に切替?(0.9) | 新規追加に切替(0.9) | 読み込み中…(0.5) | 休日・休暇?(0.5) | カレンダー?(0.5) | メモを閉じる(0.4) | で改行（表の(0.4)
+  ctx: sLikeStackedTimesCell(normalized)) {\n    return [[normalized.trim()]];\n  }\n  // ??????E????Eheets ??????E?E  return parseTsvGrid(normali
+pos=30605 len=4
+  cands: 非表示?(0.9) | 諏訪部?(0.9) | 小野寺?(0.9) | 仲村渠?(0.9) | 従業員?(0.8) | エリア?(0.7) | すべて?(0.7) | 勤務時間(0.7)
+  ctx: ackedTimesCell(normalized)) {\n    return [[normalized.trim()]];\n  }\n  // ??????E????Eheets ??????E?E  return parseTsvGrid(normalized.r
+pos=30616 len=6
+  cands: 登録して進む(1.0) | 読み込み中…(0.5) | 休日・休暇?(0.5) | カレンダー?(0.5) | メモを閉じる(0.4) | で改行（表の(0.4) | 有休取得時の(0.4) | 保存しました(0.4)
+  ctx: ell(normalized)) {\n    return [[normalized.trim()]];\n  }\n  // ??????E????Eheets ??????E?E  return parseTsvGrid(normalized.replace(/\n+$/
+pos=30835 len=17
+  cands: 該当する非表示コードがありません?(0.7) | 社員コード付きの従業員がいません?(0.5) | 月に週間テンプレートを反映します。(0.1) | 月に週間テンプレートを反映します。'(0.1) | 月に週間テンプレートを反映します。"(0.1) | 月に週間テンプレートを反映します。,(0.1) | 月に週間テンプレートを反映します。<(0.1) | 月に週間テンプレートを反映します。>(0.1)
+  ctx:   if (grid.length > 1) return true;\n  return (grid[0]?.length || 0) > 1;\n}\n\n/** ?????????????????E?E */\nfunction detectPasteLabelColumn(grid, emp) 
+pos=30985 len=2
+  cands: 欠勤 (1.0) | 半欠 (1.0) | 生理 (1.0) | 介護 (1.0) | 看護 (1.0) | 母性 (1.0) | 社員 (1.0) | 出勤 (1.0)
+  ctx:  if (!grid[0] || grid[0].length < 2) return 0;\n  const head = String(grid[0][0] ?? '').trim();\n  if (!head) return 0;\n  if (parseShi
+pos=33898 len=2
+  cands: 店舗?(0.4) | 店舗(0.4) | 自動(0.4) | 自動'(0.4) | 自動"(0.4) | 自動,(0.4) | 自動<(0.4) | 自動>(0.4)
+  ctx:  [busy, setBusy] = useState(false);\n  const [busyText, setBusyText] = useState('??E???');\n  const [msg, setMsg] = useState('');\n  co
+pos=33901 len=3
+  cands: 社員?(0.4) | ブルー'(0.0) | スカイ'(0.0) | シアン'(0.0) | ローズ'(0.0) | 従業員'(0.0) | 未使用'(0.0) | 非表示'(0.0)
+  ctx: usy, setBusy] = useState(false);\n  const [busyText, setBusyText] = useState('??E???');\n  const [msg, setMsg] = useState('');\n  const 
+pos=34742 len=2
+  cands: 登録'(1.4) | から'(1.4) | 社員'(1.2) | 時間'(0.7) | 休み'(0.6) | 蜂谷'(0.5) | 有加'(0.5) | 全員'(0.5)
+  ctx: mpForm] = useState({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });\n  const [empFormOpen, setEmpF
+pos=35010 len=3
+  cands: スタッフ?(1.5) | スタッフ(1.5) | 登録?(1.5) | 欠勤?(1.1) | 未保存(1.0) | 未保存'(1.0) | 未保存"(1.0) | 未保存,(1.0)
+  ctx: pId] = useState('');\n  const [weeklySpanH, setWeeklySpanH] = useState(null); // ???E?????E?Eull=?????????E?E  const [weeklyStatus, se
+pos=35026 len=9
+  cands: 月に反映しました（(0.4) | 月に反映しました（'(0.4) | 月に反映しました（"(0.4) | 月に反映しました（`(0.4) | 月に反映しました（,(0.4) | 月に反映しました（<(0.4) | 月に反映しました（>(0.4) | 月に反映しました（ (0.4)
+  ctx: '');\n  const [weeklySpanH, setWeeklySpanH] = useState(null); // ???E?????E?Eull=?????????E?E  const [weeklyStatus, setWeeklyStatus] = useSt
+pos=35758 len=4
+  cands: 並べ替え(0.9) | 並べ替え'(0.9) | 並べ替え"(0.9) | 並べ替え`(0.9) | 並べ替え,(0.9) | 並べ替え<(0.9) | 並べ替え>(0.9) | 並べ替え (0.9)
+  ctx: \n  const [empEditorId, setEmpEditorId] = useState(null); // employee_id ?E?????E????E  const [memoOpenIds, setMemoOpenIds] = useState(
+pos=38101 len=2
+  cands: 有休s(1.6) | 公休s(1.6) | 勤務s(1.1) | メモs(1.1) | 日　s(0.9) | 経堂s(0.9) | 社員s(0.7) | 欠勤s(0.7)
+  ctx:    applyAccentTheme(readStoredAccentId());\n  }, []);\n\n  // ????????????????????E??scrollIntoView ????????E  useEffect(() => {\n    if
+pos=38935 len=7
+  cands: 月間を準備中…(0.9) | 月に反映しています…?(0.8) | 月に反映しています…(0.8) | 選択中のスタッフ?(0.8) | 選択中のスタッフ(0.8) | を保存しました(0.8) | 読み込み中…?(0.8) | 保存しました?(0.8)
+  ctx: g');\n    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);\n    // ???????E??????E???????E???????E    const delay = total > 
+pos=38943 len=6
+  cands: 読み込み中…(0.8) | 保存しました(0.8) | ログイン中…(0.7) | 登録を解除?(0.6) | 社員番号を入力してください(0.6) | カレンダー?(0.6) | クリア中…?(0.3) | メモを閉じる(0.3)
+  ctx:  if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);\n    // ???????E??????E???????E???????E    const delay = total > 40 ? 18
+pos=38950 len=7
+  cands: 月間を準備中…(0.9) | 月に反映しています…?(0.8) | 月に反映しています…(0.8) | 選択中のスタッフ?(0.8) | 選択中のスタッフ(0.8) | を保存しました(0.8) | 読み込み中…?(0.8) | 保存しました?(0.8)
+  ctx: toSaveTimer.current) clearTimeout(autoSaveTimer.current);\n    // ???????E??????E???????E???????E    const delay = total > 40 ? 1800 : 600
+pos=38958 len=7
+  cands: 月間を準備中…(0.9) | を保存しました(0.8) | 読み込み中…?(0.8) | 保存しました?(0.8) | ログイン中…?(0.7) | メールアドレス(0.6) | キンタイコピー (0.3) | キンタイコピー(0.3)
+  ctx: mer.current) clearTimeout(autoSaveTimer.current);\n    // ???????E??????E???????E???????E    const delay = total > 40 ? 1800 : 600;\n    au
+pos=39384 len=12
+  cands: 月間シフトを読み込み中…(0.9) | 日の登録に失敗しました?(0.5) | 氏名・社員番号・勤務時間(0.1) | 氏名・社員番号・勤務時間'(0.1) | 氏名・社員番号・勤務時間"(0.1) | 氏名・社員番号・勤務時間,(0.1) | 氏名・社員番号・勤務時間<(0.1) | 氏名・社員番号・勤務時間>(0.1)
+  ctx: etLeavePrefs(readLeavePrefs(user.email));\n  }, [user?.email]);\n\n  /** ??E???E??E????????????E???E????????????E??E*/\n  useEffect(() => {\n    if
+pos=39401 len=12
+  cands: 月間シフトを読み込み中…(0.9) | 日の登録に失敗しました?(0.5) | 氏名・社員番号・勤務時間(0.1) | 氏名・社員番号・勤務時間'(0.1) | 氏名・社員番号・勤務時間"(0.1) | 氏名・社員番号・勤務時間,(0.1) | 氏名・社員番号・勤務時間<(0.1) | 氏名・社員番号・勤務時間>(0.1)
+  ctx: LeavePrefs(user.email));\n  }, [user?.email]);\n\n  /** ??E???E??E????????????E???E????????????E??E*/\n  useEffect(() => {\n    if (authStep !== 'r
+pos=40092 len=12
+  cands: 月間シフトを読み込み中…(0.6) | 氏名・社員番号・勤務時間(0.6) | 氏名・社員番号・勤務時間'(0.6) | 氏名・社員番号・勤務時間"(0.6) | 氏名・社員番号・勤務時間,(0.6) | 氏名・社員番号・勤務時間<(0.6) | 氏名・社員番号・勤務時間>(0.6) | 氏名・社員番号・勤務時間 (0.6)
+  ctx: eTimer.current = setTimeout(() => saveWeekly({ quiet: true }), 400);\n  }\n\n  /** ????????????E???????? */\n  useEffect(() => {\n    if (settingsP
+pos=40105 len=8
+  cands: 月間を準備中…?(0.8) | を保存しました?(0.8) | 従業員を保存中… (0.4) | 従業員を保存中…(0.4) | をご利用ください (0.4) | をご利用ください(0.4) | を貼り付けました (0.4) | を貼り付けました(0.4)
+  ctx: t = setTimeout(() => saveWeekly({ quiet: true }), 400);\n  }\n\n  /** ????????????E???????? */\n  useEffect(() => {\n    if (settingsPanel === 
+pos=41805 len=9
+  cands: 月に反映しました（(0.7) | 月に反映しました（'(0.7) | 月に反映しました（"(0.7) | 月に反映しました（`(0.7) | 月に反映しました（,(0.7) | 月に反映しました（<(0.7) | 月に反映しました（>(0.7) | 月に反映しました（ (0.7)
+  ctx:  [authStep, busy, historyTick, shifts, memos, dirtyKeys, dirtyMemoKeys]);\n\n  // ?????????E?E?????????????E??????????E?E  useEffect(() => {\n
+pos=41815 len=1
+  cands: テンプレート未登録のため?(0.7) | テンプレート未登録のため(0.7) | （読取不可?(0.3) | （読取不可(0.3) | テンプレ反映?(0.2) | テンプレ反映(0.2) | ：勤務なのに時刻不正?(0.1) | ：勤務なのに時刻不正(0.1)
+  ctx: , busy, historyTick, shifts, memos, dirtyKeys, dirtyMemoKeys]);\n\n  // ?????????E?E?????????????E??????????E?E  useEffect(() => {\n  
+pos=41817 len=13
+  cands: 該当するコードがありません(0.2) | 月間シフトを読み込み中…?(0.1)
+  ctx: busy, historyTick, shifts, memos, dirtyKeys, dirtyMemoKeys]);\n\n  // ?????????E?E?????????????E??????????E?E  useEffect(() => {\n    if (authStep
+pos=41831 len=10
+  cands: つ以上選んでください(0.7) | を保存してください。(0.5) | を保存してください。'(0.5) | を保存してください。"(0.5) | を保存してください。,(0.5) | を保存してください。<(0.5) | を保存してください。>(0.5) | を保存してください。 (0.5)
+  ctx: ick, shifts, memos, dirtyKeys, dirtyMemoKeys]);\n\n  // ?????????E?E?????????????E??????????E?E  useEffect(() => {\n    if (authStep !== 'app' 
+pos=42167 len=4
+  cands: 月シフト`(1.4) | 月シフト(1.4) | シフト?(1.4) | クリア?(1.1) | 社員番号`(0.9) | 社員番号(0.9) | すべて?(0.9) | 初回登録`(0.8)
+  ctx: trim();\n    if (!y || !m) return;\n    document.title = `${storeLabel}${y}?E?E{m}????`;\n  }, [authStep, yearMonth, storeName]);\n\n  // C
+pos=42229 len=16
+  cands: 社員コード付きの従業員がいません(0.8) | 該当する非表示コードがありません(0.6) | の週間テンプレートが未登録です。(0.5) | の週間テンプレートが未登録です。'(0.5) | の週間テンプレートが未登録です。"(0.5) | の週間テンプレートが未登録です。,(0.5) | の週間テンプレートが未登録です。<(0.5) | の週間テンプレートが未登録です。>(0.5)
+  ctx: eLabel}${y}?E?E{m}????`;\n  }, [authStep, yearMonth, storeName]);\n\n  // Ctrl+P / ????????????????E????????E?E  useEffect(() => {\n    if (authStep !
+pos=42246 len=8
+  cands: をクリアしました(0.9) | を貼り付けました(0.6) | 横で掲示用に印刷(0.6) | 現場のすべてを、(0.6) | 現場のすべてを、'(0.6) | 現場のすべてを、"(0.6) | 現場のすべてを、,(0.6) | 現場のすべてを、<(0.6)
+  ctx: }????`;\n  }, [authStep, yearMonth, storeName]);\n\n  // Ctrl+P / ????????????????E????????E?E  useEffect(() => {\n    if (authStep !== 'app')
+pos=43225 len=4
+  cands: 月シフト`(3.9) | 月シフト(3.9) | シフト?(3.9) | 登録中…`(1.0) | 社員番号`(1.0) | 登録中…(1.0) | 社員番号(1.0) | クリア?(1.0)
+  ctx: e || '???').trim();\n      if (y && m) document.title = `${storeLabel}${y}?E?E{m}????`;\n    };\n    const onAfterPrint = () => {\n      d
+pos=44196 len=4
+  cands: 登録中…(1.4) | ログイン(1.4) | 社員番号(1.4) | シフト?(1.0) | エリア?(0.8) | すべて?(0.7) | 保存中…(0.5) | 初回登録(0.5)
+  ctx:  (boot.sessionEmail) setLoginEmail(boot.sessionEmail);\n        // GAS ?????????E????E???????E???????E        localStorage.removeItem(S
+pos=44201 len=7
+  cands: メールアドレス(1.5) | ログイン中…?(1.5) | カレンダー連携(1.2) | 初回登録が完了しました?(0.7) | 初回登録が完了しました(0.7) | 読み込み中…?(0.7) | 保存しました?(0.6) | 月間を準備中…(0.4)
+  ctx: t.sessionEmail) setLoginEmail(boot.sessionEmail);\n        // GAS ?????????E????E???????E???????E        localStorage.removeItem(STAFF_TOK
+pos=44209 len=7
+  cands: メールアドレス(1.5) | ログイン中…?(1.5) | カレンダー連携(1.2) | 読み込み中…?(0.7) | 保存しました?(0.6) | 月間を準備中…(0.4) | 法定外休日出勤(0.3) | 法定休日出勤?(0.3)
+  ctx: nEmail) setLoginEmail(boot.sessionEmail);\n        // GAS ?????????E????E???????E???????E        localStorage.removeItem(STAFF_TOKEN_KEY);
+pos=44647 len=4
+  cands: ログイン(0.9) | 登録中…(0.8) | 社員番号(0.8) | 準備中…(0.7) | シフト?(0.7) | 　スタッフ?(0.7) | 　スタッフ(0.7) | 従業員?(0.7)
+  ctx: n');\n      }\n    })();\n    return () => { cancelled = true; };\n  }, []);\n\n  /** ????E?????????E???????????E??????????????E*/\n  functio
+pos=44652 len=9
+  cands: を貼り付けました?(0.8) | メールアドレスを入力してください?(0.8) | メールアドレスを入力してください(0.8) | 登録を解除しました(0.7) | 上で開くか、スタッフ用アプリ?(0.6) | 上で開くか、スタッフ用アプリ(0.6) | をご利用ください?(0.6) | をクリアしました?(0.6)
+  ctx:       }\n    })();\n    return () => { cancelled = true; };\n  }, []);\n\n  /** ????E?????????E???????????E??????????????E*/\n  function notify(t
+pos=44662 len=11
+  cands: つ以上選んでください?(0.8) | 日の登録に失敗しました(0.6) | カレンダー登録・クリア(0.6) | つ以上選んでください。(0.5) | つ以上選んでください。'(0.5) | つ以上選んでください。"(0.5) | つ以上選んでください。,(0.5) | つ以上選んでください。<(0.5)
+  ctx:   })();\n    return () => { cancelled = true; };\n  }, []);\n\n  /** ????E?????????E???????????E??????????????E*/\n  function notify(text, kind = 
+pos=44674 len=14
+  cands: カレンダー権限が未許可です。(0.6) | カレンダー権限が未許可です。'(0.6) | カレンダー権限が未許可です。"(0.6) | カレンダー権限が未許可です。,(0.6) | カレンダー権限が未許可です。<(0.6) | カレンダー権限が未許可です。>(0.6) | カレンダー権限が未許可です。 (0.6) | カレンダー権限が未許可です。$(0.6)
+  ctx: return () => { cancelled = true; };\n  }, []);\n\n  /** ????E?????????E???????????E??????????????E*/\n  function notify(text, kind = '') {\n    if (k
+pos=45715 len=2
+  cands: 店舗?(0.6) | 年月(0.6) | 年月'(0.6) | 年月"(0.6) | 年月`(0.6) | 年月,(0.6) | 年月<(0.6) | 年月>(0.6)
+  ctx: rogressHideTimer.current = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetW
+pos=45718 len=1
+  cands: （読取不可(0.1) | －—–〜～(0.0) | －—–〜～'(0.0) | －—–〜～"(0.0) | －—–〜～,(0.0) | －—–〜～<(0.0) | －—–〜～>(0.0) | －—–〜～ (0.0)
+  ctx: ressHideTimer.current = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWor
+pos=45720 len=5
+  cands: カレンダー(0.6) | 登録が完了しました?(0.4) | 登録が完了しました(0.4) | ひばりが丘(0.4) | ひばりが丘'(0.4) | ひばりが丘"(0.4) | ひばりが丘,(0.4) | ひばりが丘<(0.4)
+  ctx: ssHideTimer.current = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWorkspace
+pos=45726 len=8
+  cands: をご利用ください(0.4) | を貼り付けました(0.4) | を保存しました?(0.4) | をクリアしました(0.3) | 横で掲示用に印刷(0.1) | キンタイミライ?(0.1) | 月間を準備中…?(0.1) | 現場のすべてを、(0.0)
+  ctx: Timer.current = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWorkspaceState() {
+pos=45735 len=2
+  cands: 店舗?(0.6) | 年月(0.6) | 年月'(0.6) | 年月"(0.6) | 年月`(0.6) | 年月,(0.6) | 年月<(0.6) | 年月>(0.6)
+  ctx: rent = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWorkspaceState() {\n  
+pos=45738 len=1
+  cands: テンプレ反映(0.1) | （読取不可?(0.1) | （読取不可(0.1) | テリトリー?(0.0) | テリトリー(0.0) | ティール?(0.0) | ティール(0.0) | 行 ·?(0.0)
+  ctx: t = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWorkspaceState() {\n    
+pos=45740 len=6
+  cands: カレンダー?(0.6) | 読み込み中…(0.4) | 保存しました(0.4) | 登録を解除?(0.4) | クリア中…?(0.3) | ログイン中…(0.1) | メモを閉じる(0.1) | 追加・変更?(0.1)
+  ctx: = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** ??E?E?????E????????E??E?E??????E*/\n  function resetWorkspaceState() {\n    setShif
+pos=46469 len=2
+  cands: 社員'(2.3) | 登録'(2.3) | から'(2.0) | 全員'(1.1) | 」を'(1.1) | 時間'(0.7) | 休み'(0.6) | 翌月'(0.5)
+  ctx: ');\n    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });\n    setEmpFormOpen(false);\n  
+pos=46916 len=2
+  cands: 処理中…'(1.4) | 処理中…(1.4) | 店舗?(1.4) | 完了(1.4) | 完了'(1.4) | 完了"(1.4) | 完了`(1.4) | 完了,(1.4)
+  ctx:  true });\n  }\n\n  async function withBusy(label, fn) {\n    setBusyText(label || '??E???');\n    setBusy(true);\n    startProgress();\n  
+pos=46919 len=3
+  cands: 社員?(1.4) | 登録?(1.4) | から?(1.4) | クリア'(1.1) | クリア(1.1) | 」を?(1.1) | 従業員'(0.9) | シフト'(0.9)
+  ctx: ue });\n  }\n\n  async function withBusy(label, fn) {\n    setBusyText(label || '??E???');\n    setBusy(true);\n    startProgress();\n    tr
+pos=47382 len=7
+  cands: まだ登録が完了していません。「登録」タブから入力してください。(2.9) | まだ登録が完了していません。「登録」タブから入力してください。'(2.9) | まだ登録が完了していません。「登録」タブから入力してください。"(2.9) | まだ登録が完了していません。「登録」タブから入力してください。,(2.9) | まだ登録が完了していません。「登録」タブから入力してください。<(2.9) | まだ登録が完了していません。「登録」タブから入力してください。>(2.9) | まだ登録が完了していません。「登録」タブから入力してください。 (2.9) | まだ登録が完了していません。「登録」タブから入力してください。$(2.9)
+  ctx: inWithEmail(email);\n      if (res.needsJurisdiction) {\n        throw new Error('???????E????E??????????????E????????E);\n      }\n      loc
+pos=47395 len=14
+  cands: カレンダー権限が未許可です。(0.8) | カレンダー権限が未許可です。'(0.8) | カレンダー権限が未許可です。"(0.8) | カレンダー権限が未許可です。,(0.8) | カレンダー権限が未許可です。<(0.8) | カレンダー権限が未許可です。>(0.8) | カレンダー権限が未許可です。 (0.8) | カレンダー権限が未許可です。$(0.8)
+  ctx: mail);\n      if (res.needsJurisdiction) {\n        throw new Error('???????E????E??????????????E????????E);\n      }\n      localStorage.setItem(EM
+pos=48607 len=2
+  cands: 管轄店舗を1つ以上選んでください'(2.5) | 管轄店舗を1つ以上選んでください(2.5) | 管轄店舗を(2.5) | 管轄店舗を'(2.5) | 管轄店舗を"(2.5) | 管轄店舗を,(2.5) | 管轄店舗を<(2.5) | 管轄店舗を>(2.5)
+  ctx: ??????');\n      return;\n    }\n    if (!regStores.length) {\n      setLoginError('??E???E?E??????????');\n      return;\n    }\n    setBu
+pos=48610 len=3
+  cands: 社員?(2.5) | 登録?(2.5) | から?(1.7) | シフト(1.6) | 従業員(1.1) | コード(1.1) | コード'(1.1) | コード"(1.1)
+  ctx: ???');\n      return;\n    }\n    if (!regStores.length) {\n      setLoginError('??E???E?E??????????');\n      return;\n    }\n    setBusyTe
+pos=48614 len=1
+  cands: ：勤務なのに時刻不正'(0.6) | ：勤務なのに時刻不正(0.6) | テリトリー?(0.5) | テリトリー(0.5) | （読取不可?(0.3) | （読取不可(0.3) | テンプレ反映?(0.2) | テンプレ反映(0.2)
+  ctx: );\n      return;\n    }\n    if (!regStores.length) {\n      setLoginError('??E???E?E??????????');\n      return;\n    }\n    setBusyText
+pos=48667 len=4
+  cands: 登録中…'(3.0) | 社員番号'(3.0) | 登録中…(3.0) | 社員番号(3.0) | 保存中…'(2.1) | 初回登録'(2.1) | 保存中…(2.1) | 初回登録(2.1)
+  ctx:      setLoginError('??E???E?E??????????');\n      return;\n    }\n    setBusyText('????');\n    setBusy(true);\n    try {\n      localStorag
+pos=49512 len=5
+  cands: 登録が完了しました'(3.0) | 登録が完了しました(3.0) | ログイン?(3.0) | 登録中…?(2.8) | 社員番号?(2.8) | 準備中…?(1.5) | 保存中…?(1.4) | 登録を解除(1.2)
+  ctx: y(firstStore, ym, { quiet: true, userEmail: res.email });\n      }\n      notify('?????E?????', 'ok');\n    } catch (e) {\n      setLoginEr
+pos=50629 len=1
+  cands: ）(0.7) | ）'(0.7) | ）"(0.7) | ）,(0.7) | ）<(0.7) | ）>(0.7) | ） (0.7) | ）$(0.7)
+  ctx: ',\n        territory: s.territory || '',\n      }));\n    }\n    // ??????????E???E?E?E??????????????????E?E    return [\n      { store
+pos=50639 len=12
+  cands: 月間シフトを読み込み中…(0.5) | 長押しして上下に並べ替え(0.2) | 長押しして上下に並べ替え'(0.2) | 長押しして上下に並べ替え"(0.2) | 長押しして上下に並べ替え`(0.2) | 長押しして上下に並べ替え,(0.2) | 長押しして上下に並べ替え<(0.2) | 長押しして上下に並べ替え>(0.2)
+  ctx:  territory: s.territory || '',\n      }));\n    }\n    // ??????????E???E?E?E??????????????????E?E    return [\n      { store_id: 'S001', store_na
+pos=53148 len=3
+  cands: すべて'(1.0) | すべて(1.0) | 社員?(1.0) | 従業員'(0.7) | 従業員(0.7) | エリア'(0.5) | エリア(0.5) | 最大?(0.5)
+  ctx: > {\n    if (settingsPanel !== 'jurisdiction') return;\n    if (selectedArea === '???') setSelectedArea('');\n  }, [settingsPanel, selec
+pos=53275 len=3
+  cands: すべて'(1.1) | すべて(1.1) | 社員?(1.1) | エリア'(0.7) | エリア(0.7) | 従業員'(0.5) | 従業員(0.5) | 最大?(0.5)
+  ctx:  selectedArea]);\n\n  function onAreaChange(area) {\n    setSelectedArea(area === '???' ? '' : area);\n    setSelectedTerritory('');\n  }\n
+pos=54101 len=6
+  cands: 社員番号を入力してください。(2.1) | 社員番号を入力してください。'(2.1) | 社員番号を入力してください。"(2.1) | 社員番号を入力してください。,(2.1) | 社員番号を入力してください。<(2.1) | 社員番号を入力してください。>(2.1) | 社員番号を入力してください。 (2.1) | 社員番号を入力してください。$(2.1)
+  ctx: ;\n    const code = String(byeCode || '').trim();\n    if (!code) {\n      notify('??????E????????E, 'err');\n      return;\n    }\n    if (!s
+pos=54195 len=2
+  cands: 管轄店舗を1つ以上選んでください。(1.7) | 管轄店舗を1つ以上選んでください。'(1.7) | 管轄店舗を1つ以上選んでください。"(1.7) | 管轄店舗を1つ以上選んでください。,(1.7) | 管轄店舗を1つ以上選んでください。<(1.7) | 管轄店舗を1つ以上選んでください。>(1.7) | 管轄店舗を1つ以上選んでください。 (1.7) | 管轄店舗を1つ以上選んでください。$(1.7)
+  ctx: ?E, 'err');\n      return;\n    }\n    if (!selectedStores.length) {\n      notify('??E???E?E???????????E, 'err');\n      return;\n    }\n 
+pos=54198 len=3
+  cands: 社員?(2.1) | 登録?(2.1) | シフト(1.9) | すべて(1.6) | から?(1.4) | 欠勤?(1.3) | コード(1.2) | コード'(1.2)
+  ctx:  'err');\n      return;\n    }\n    if (!selectedStores.length) {\n      notify('??E???E?E???????????E, 'err');\n      return;\n    }\n    t
+pos=54278 len=4
+  cands: 保存中…'(2.8) | 社員番号'(2.8) | 初回登録'(2.8) | 保存中…(2.8) | 社員番号(2.8) | 初回登録(2.8) | シフト?(2.8) | 登録中…'(2.6)
+  ctx: ???E?E???????????E, 'err');\n      return;\n    }\n    try {\n      await withBusy('????', async () => {\n        if (dirtyKeys.size || dir
+pos=55052 len=7
+  cands: 初回登録が完了しました'(1.6) | 初回登録が完了しました(1.6) | 読み込み中…?(1.6) | ログイン中…?(1.6) | メールアドレス(1.3) | 登録を解除中…(0.7) | を保存しました(0.7) | 保存しました?(0.7)
+  ctx: ed[0] || '';\n        setStoreId(sid);\n        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');\n        if (sid
+pos=55060 len=5
+  cands: 保存中…?(1.4) | ログイン?(1.4) | 初回登録?(1.4) | 社員番号?(1.2) | 登録中…?(1.1) | 登録を解除'(0.7) | 登録を解除(0.7) | 準備中…?(0.5)
+  ctx:  '';\n        setStoreId(sid);\n        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');\n        if (sid && ym
+pos=55070 len=2
+  cands: 管轄店舗を更新しました'(1.4) | 管轄店舗を更新しました(1.4) | 管轄店舗?(1.4) | 管轄店舗(1.4) | 処理中…(1.4) | 店舗?(1.4) | 完了(1.4) | 完了'(1.4)
+  ctx:    setStoreId(sid);\n        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');\n        if (sid && ym) {\n   
+pos=55073 len=3
+  cands: シフト(1.4) | 登録?(1.4) | から?(1.4) | 社員?(1.2) | コード(1.0) | コード'(1.0) | コード"(1.0) | コード,(1.0)
+  ctx: setStoreId(sid);\n        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');\n        if (sid && ym) {\n       
+pos=55077 len=7
+  cands: 読み込み中…?(1.6) | ログイン中…?(1.6) | メールアドレス'(1.2) | メールアドレス(1.2) | 登録を解除中…'(0.9) | を保存しました'(0.9) | 登録を解除中…(0.9) | を保存しました(0.9)
+  ctx: toreId(sid);\n        notify(user?.needsJurisdiction ? '???????E?????' : '??E???E???????', 'ok');\n        if (sid && ym) {\n          setBu
+pos=55987 len=9
+  cands: 氏名と社員コードは必須です(2.5) | 氏名と社員コードは必須です'(2.5) | 氏名と社員コードは必須です"(2.5) | 氏名と社員コードは必須です,(2.5) | 氏名と社員コードは必須です<(2.5) | 氏名と社員コードは必須です>(2.5) | 氏名と社員コードは必須です (2.5) | 氏名と社員コードは必須です$(2.5)
+  ctx: ring(empForm.bye_code || '').trim();\n    if (!name || !byeCode) {\n      notify('?????????E?E????E, 'err');\n      return;\n    }\n    const is
+pos=55997 len=1
+  cands: 元に戻す(0.5) | 元に戻す'(0.5) | 元に戻す"(0.5) | 元に戻す,(0.5) | 元に戻す<(0.5) | 元に戻す>(0.5) | 元に戻す (0.5) | 元に戻す$(0.5)
+  ctx: rm.bye_code || '').trim();\n    if (!name || !byeCode) {\n      notify('?????????E?E????E, 'err');\n      return;\n    }\n    const isUp
+pos=55999 len=4
+  cands: 保存中…(2.4) | 従業員?(2.4) | シフト?(2.0) | 登録中…(1.8) | 社員番号(1.8) | 初回登録(1.8) | ログイン(1.5) | クリア?(1.5)
+  ctx: .bye_code || '').trim();\n    if (!name || !byeCode) {\n      notify('?????????E?E????E, 'err');\n      return;\n    }\n    const isUpdate 
+pos=56110 len=8
+  cands: 従業員を保存中…'(2.2) | 従業員を保存中…(2.2) | 登録を解除中…?(2.2) | メールアドレス?(1.6) | を保存しました?(1.4) | をクリアしました'(1.3) | をクリアしました(1.3) | なのに時刻不正?(0.8)
+  ctx:   }\n    const isUpdate = !!empForm.employee_id;\n    try {\n      await withBusy('????????', async () => {\n        await api.upsertEmployee(
+pos=56418 len=10
+  cands: 従業員を更新しました'(2.4) | 従業員を更新しました(2.4) | 登録を解除しました?(2.4) | つ以上選んでください'(1.8) | つ以上選んでください(1.8) | 月間シフトを準備中…'(0.0) | 月間シフトを準備中…(0.0)
+  ctx:       await loadEmployees(storeId, { quiet: true });\n        notify(isUpdate ? '??????????' : '???E?????????', 'ok');\n      });\n    } catch 
+pos=56433 len=3
+  cands: スタッフを追加しました'(2.4) | スタッフを追加しました(2.4) | スタッフを追加?(2.4) | スタッフを追加(2.4) | スタッフ?(2.4) | スタッフ(2.4) | コード(2.4) | コード'(2.4)
+  ctx: dEmployees(storeId, { quiet: true });\n        notify(isUpdate ? '??????????' : '???E?????????', 'ok');\n      });\n    } catch (e) {\n  
+pos=56437 len=9
+  cands: 登録を解除しました'(2.4) | 登録を解除しました(2.4) | 従業員を保存中…?(2.4) | をクリアしました?(1.3) | 変更はありません?(1.1) | をご利用ください?(0.3) | を貼り付けました?(0.3) | 横で掲示用に印刷?(0.2)
+  ctx: loyees(storeId, { quiet: true });\n        notify(isUpdate ? '??????????' : '???E?????????', 'ok');\n      });\n    } catch (e) {\n      notify
+pos=56644 len=2
+  cands: 社員'(1.6) | 登録'(1.6) | から'(1.6) | 全員'(1.0) | 」を'(1.0) | 時間'(0.9) | 欠勤'(0.8) | 休み'(0.7)
+  ctx: ) {\n    setEmpForm({ employee_id: '', name: '', bye_code: '', employment_type: '??', work_hours: 4 });\n    setEmpFormOpen(false);\n  
+pos=57564 len=9
+  cands: 登録を解除しました'(2.1) | 登録を解除しました(2.1) | 従業員を保存中…?(2.1) | をクリアしました?(1.2) | をご利用ください?(0.8) | 変更はありません?(0.7) | 横で掲示用に印刷?(0.4) | を貼り付けました?(0.3)
+  ctx: rMonth) await loadMonthly(storeId, yearMonth, { quiet: true });\n        notify('?????????', 'ok');\n      });\n    } catch (e) {\n      notify
+pos=57880 len=7
+  cands: さんを、今後の登録から外しても大丈夫ですか？`(3.0) | 登録を解除中…(3.0) | 読み込み中…?(2.0) | 初回登録が完了しました?(0.9) | 初回登録が完了しました(0.9) | メールアドレス(0.9) | ログイン中…?(0.8) | 年月が不正です(0.8)
+  ctx: ode).trim();\n    setConfirmBox({\n      title: '?????',\n      message: `${label} ???????E???????????????E?`,\n      detail: '?????????????E
+pos=57888 len=15
+  cands: 週間テンプレートを保存しました(0.6) | 反映する日がありませんでした?(0.5) | カレンダー準備に失敗しました?(0.4) | 先に従業員を登録してください?(0.0)
+  ctx: m();\n    setConfirmBox({\n      title: '?????',\n      message: `${label} ???????E???????????????E?`,\n      detail: '?????????????E?????E??????????
+pos=57996 len=2
+  cands: はい、解除する'(3.2) | はい、解除する(3.2) | はい(3.2) | はい'(3.2) | はい"(3.2) | はい,(3.2) | はい<(3.2) | はい>(3.2)
+  ctx: tail: '?????????????E?????E????????????E????????????????E,\n      confirmLabel: '??E??????',\n      cancelLabel: '?E???E,\n      onConf
+pos=58243 len=4
+  cands: 保存中…(1.0) | ログイン(1.0) | 準備中…(1.0) | シフト?(1.0) | 登録中…(0.9) | 社員番号(0.9) | 初回登録(0.9) | 従業員?(0.9)
+  ctx: Weekly(sid = storeId, opts = {}) {\n    if (!user?.email || !sid) return;\n    // ????E??E????????????????E?????????E?E    if (weeklySav
+pos=58248 len=2
+  cands: はい、解除する?(2.4) | はい、解除する(2.4) | はい(2.4) | はい'(2.4) | はい"(2.4) | はい,(2.4) | はい<(2.4) | はい>(2.4)
+  ctx: y(sid = storeId, opts = {}) {\n    if (!user?.email || !sid) return;\n    // ????E??E????????????????E?????????E?E    if (weeklySaveTi
+pos=58251 len=16
+  cands: の週間テンプレートが未登録です。(1.2) | の週間テンプレートが未登録です。'(1.2) | の週間テンプレートが未登録です。"(1.2) | の週間テンプレートが未登録です。,(1.2) | の週間テンプレートが未登録です。<(1.2) | の週間テンプレートが未登録です。>(1.2) | の週間テンプレートが未登録です。 (1.2) | の週間テンプレートが未登録です。$(1.2)
+  ctx: id = storeId, opts = {}) {\n    if (!user?.email || !sid) return;\n    // ????E??E????????????????E?????????E?E    if (weeklySaveTimer.current) {\n  
+pos=58829 len=1
+  cands: 元に戻す(0.3) | 元に戻す'(0.3) | 元に戻す"(0.3) | 元に戻す,(0.3) | 元に戻す<(0.3) | 元に戻す>(0.3) | 元に戻す (0.3) | 元に戻す$(0.3)
+  ctx: (res.employees || []);\n      setCanEdit(!!res.canEdit);\n      // ????????E?????E?E????E      if (weeklyEditSeq.current === seqBefor
+pos=58831 len=4
+  cands: 準備中…(1.1) | シフト?(1.1) | 保存中…(0.9) | 初回登録(0.9) | 従業員?(0.9) | 勤務時間(0.8) | 勤務時間'(0.8) | 勤務時間"(0.8)
+  ctx: es.employees || []);\n      setCanEdit(!!res.canEdit);\n      // ????????E?????E?E????E      if (weeklyEditSeq.current === seqBefore) {\n
+pos=59715 len=13
+  cands: 月間シフトを読み込み中…?(0.3) | 該当するコードがありません(0.2)
+  ctx: ySpanH != null ? Number(weeklySpanH) : spanHoursForEmp(weeklyEmp);\n\n  /** ?????E?????????????E????E?E?E*/\n  function weeklyWorkPatch(startHm, s
+pos=59734 len=1
+  cands: ～(1.3) | ～'(1.3) | ～"(1.3) | ～,(1.3) | ～<(1.3) | ～>(1.3) | ～ (1.3) | ～$(1.3)
+  ctx: mber(weeklySpanH) : spanHoursForEmp(weeklyEmp);\n\n  /** ?????E?????????????E????E?E?E*/\n  function weeklyWorkPatch(startHm, spanH) {
+pos=60038 len=12
+  cands: 月間シフトを読み込み中…/(0.2) | 月間シフトを読み込み中…(0.2) | カレンダー登録・クリア?(0.2) | 日の登録に失敗しました?(0.2)
+  ctx: _time: start, end_time: addHoursToHm(start, span), leave_code: '' };\n  }\n\n  /** ????????????/???/????/???E*/\n  function applyWeeklyBulk(kind) 
+pos=62039 len=7
+  cands: 月間を準備中…(0.8) | を保存しました(0.8) | 読み込み中…?(0.8) | ログイン中…?(0.8) | 保存しました?(0.8) | なのに時刻不正(0.6) | 登録を解除中…(0.6) | メールアドレス(0.6)
+  ctx: \n    scheduleWeeklySave();\n  }\n\n  async function saveWeekly(opts = {}) {\n    // ???????E?E????????????E???E??????\n    const pending = wee
+pos=62047 len=1
+  cands: テンプレート未登録のため(0.8) | ：勤務なのに時刻不正?(0.6) | ：勤務なのに時刻不正(0.6) | （読取不可?(0.3) | （読取不可(0.3) | テリトリー?(0.1) | テリトリー(0.1) | 行 ·?(0.1)
+  ctx: eduleWeeklySave();\n  }\n\n  async function saveWeekly(opts = {}) {\n    // ???????E?E????????????E???E??????\n    const pending = weekl
+pos=62049 len=12
+  cands: 日の登録に失敗しました?(0.8) | 月間シフトを読み込み中…(0.6) | カレンダー登録・クリア?(0.3) | 長押しして上下に並べ替え(0.1) | 長押しして上下に並べ替え'(0.1) | 長押しして上下に並べ替え"(0.1) | 長押しして上下に並べ替え`(0.1) | 長押しして上下に並べ替え,(0.1)
+  ctx: uleWeeklySave();\n  }\n\n  async function saveWeekly(opts = {}) {\n    // ???????E?E????????????E???E??????\n    const pending = weeklySavePromise.
+pos=62062 len=3
+  cands: スタッフ?(1.2) | スタッフ(1.2) | 登録?(1.2) | ○／×(0.8) | ○／×'(0.8) | ○／×"(0.8) | ○／×,(0.8) | ○／×<(0.8)
+  ctx: ();\n  }\n\n  async function saveWeekly(opts = {}) {\n    // ???????E?E????????????E???E??????\n    const pending = weeklySavePromise.curr
+pos=62066 len=6
+  cands: 読み込み中…(0.8) | ログイン中…(0.8) | 保存しました(0.8) | 登録を解除?(0.8) | クリア中…?(0.8) | カレンダー?(0.8) | 全員を反映?(0.4) | 保存エラー?(0.3)
+  ctx:   }\n\n  async function saveWeekly(opts = {}) {\n    // ???????E?E????????????E???E??????\n    const pending = weeklySavePromise.current;\n  
+pos=62204 len=14
+  cands: カレンダー権限が未許可です。(0.9) | カレンダー権限が未許可です。'(0.9) | カレンダー権限が未許可です。"(0.9) | カレンダー権限が未許可です。,(0.9) | カレンダー権限が未許可です。<(0.9) | カレンダー権限が未許可です。>(0.9) | カレンダー権限が未許可です。 (0.9) | カレンダー権限が未許可です。$(0.9)
+  ctx: if (pending) {\n      try { await pending; } catch { /* ignore */ }\n    }\n    // ??????????????E?????????????????????????????E    if (!weeklyLoad
+pos=62453 len=2
+  cands: 空欄(0.6) | 空欄'(0.6) | 空欄"(0.6) | 空欄,(0.6) | 空欄<(0.6) | 空欄>(0.6) | 空欄 (0.6) | 空欄$(0.6)
+  ctx:  || [];\n    const touched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    /
+pos=62456 len=2
+  cands: パート(0.6) | パート'(0.6) | パート"(0.6) | パート`(0.6) | パート,(0.6) | パート<(0.6) | パート>(0.6) | パート (0.6)
+  ctx:  [];\n    const touched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ?
+pos=62459 len=1
+  cands: テンプレ反映?(0.3) | テンプレ反映(0.3) | （読取不可?(0.3) | （読取不可(0.3) | テリトリー?(0.1) | テリトリー(0.1) | 行 ·?(0.1) | 行 ·(0.1)
+  ctx: ;\n    const touched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ???
+pos=62461 len=7
+  cands: を保存しました(0.5) | 保存しました?(0.5) | 月間を準備中…(0.5) | 読み込み中…?(0.3) | キンタイコピー?(0.3) | キンタイコピー(0.3) | メモを閉じる?(0.3) | 選択中のスタッフ?(0.3)
+  ctx:     const touched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??
+pos=62469 len=3
+  cands: 翌月?(0.8) | エリア(0.6) | 社員?(0.6) | 時間?(0.6) | 出勤?(0.6) | 休み?(0.6) | から?(0.6) | スタッフ?(0.6)
+  ctx: t touched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????
+pos=62473 len=4
+  cands: エリア?(0.6) | 　スタッフ?(0.6) | 　スタッフ(0.6) | 登録中…(0.6) | 準備中…(0.5) | 従業員?(0.5) | 保存中…(0.4) | 並べ替え(0.3)
+  ctx: uched = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E
+pos=62478 len=6
+  cands: カレンダー?(0.6) | 保存しました(0.5) | 読み込み中…(0.3) | メモを閉じる(0.3) | 追加・変更?(0.3) | 休日・休暇?(0.3) | 健康維持代休(0.3) | 健康維持代休'(0.3)
+  ctx:  = Array.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????
+pos=62485 len=3
+  cands: 翌月?(0.8) | エリア(0.6) | 社員?(0.6) | 時間?(0.6) | 出勤?(0.6) | 休み?(0.6) | から?(0.6) | スタッフ?(0.6)
+  ctx: y.from(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?
+pos=62489 len=10
+  cands: 週間テンプレート作成 (0.3) | 週間テンプレート作成(0.3) | を保存してください。(0.3) | を保存してください。'(0.3) | を保存してください。"(0.3) | を保存してください。,(0.3) | を保存してください。<(0.3) | を保存してください。>(0.3)
+  ctx: om(weeklyTouchedEmps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    co
+pos=62507 len=4
+  cands: エリア?(0.8) | 準備中…(0.7) | 　スタッフ?(0.6) | 　スタッフ(0.6) | 保存中…(0.6) | 登録中…(0.6) | 自動展開(0.5) | 従業員?(0.5)
+  ctx: ps.current || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds =
+pos=62512 len=3
+  cands: エリア(0.8) | 翌月?(0.8) | 社員?(0.6) | 時間?(0.6) | 出勤?(0.6) | 休み?(0.6) | から?(0.6) | スタッフ?(0.6)
+  ctx: rrent || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];
+pos=62516 len=10
+  cands: 週間テンプレート作成?(0.3) | 週間テンプレート作成(0.3) | を保存してください。(0.3) | を保存してください。'(0.3) | を保存してください。"(0.3) | を保存してください。,(0.3) | を保存してください。<(0.3) | を保存してください。>(0.3)
+  ctx: t || []);\n    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];\n    const 
+pos=62527 len=7
+  cands: 月間を準備中…(0.7) | を保存しました(0.5) | 保存しました?(0.5) | 年月が不正です(0.5) | 年月が不正です'(0.5) | 年月が不正です"(0.5) | 年月が不正です,(0.5) | 年月が不正です<(0.5)
+  ctx:    // ??E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];\n    const seen = {
+pos=62535 len=1
+  cands: （読取不可(0.6) | －—–〜～(0.4) | －—–〜～'(0.4) | －—–〜～"(0.4) | －—–〜～,(0.4) | －—–〜～<(0.4) | －—–〜～>(0.4) | －—–〜～ (0.4)
+  ctx: E??E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];\n    const seen = {};
+pos=62537 len=5
+  cands: ひばりが丘(0.7) | ひばりが丘'(0.7) | ひばりが丘"(0.7) | ひばりが丘,(0.7) | ひばりが丘<(0.7) | ひばりが丘>(0.7) | ひばりが丘 (0.7) | ひばりが丘$(0.7)
+  ctx: ?E?E???????E???E????E??????E???E??????????E    // ????E???E??????????E???????E?E?????E    const empIds = [];\n    const seen = {};\n    c
+pos=63693 len=2
+  cands: 空欄(3.8) | 空欄'(3.8) | 空欄"(3.8) | 空欄,(3.8) | 空欄<(3.8) | 空欄>(3.8) | 空欄 (3.8) | 空欄$(3.8)
+  ctx: re_id: storeId,\n        items,\n        employee_ids: empIds,\n      });\n      // ??E????????????????E?????E???????E???????????E      
+pos=63696 len=16
+  cands: の週間テンプレートが未登録です。(1.3) | の週間テンプレートが未登録です。'(1.3) | の週間テンプレートが未登録です。"(1.3) | の週間テンプレートが未登録です。,(1.3) | の週間テンプレートが未登録です。<(1.3) | の週間テンプレートが未登録です。>(1.3) | の週間テンプレートが未登録です。 (1.3) | の週間テンプレートが未登録です。$(1.3)
+  ctx: id: storeId,\n        items,\n        employee_ids: empIds,\n      });\n      // ??E????????????????E?????E???????E???????????E      if (weeklyEditSeq
+pos=63727 len=11
+  cands: つ以上選んでください。(1.2) | つ以上選んでください。'(1.2) | つ以上選んでください。"(1.2) | つ以上選んでください。,(1.2) | つ以上選んでください。<(1.2) | つ以上選んでください。>(1.2) | つ以上選んでください。 (1.2) | つ以上選んでください。$(1.2)
+  ctx:      employee_ids: empIds,\n      });\n      // ??E????????????????E?????E???????E???????????E      if (weeklyEditSeq.current === seqAtStart) s
+pos=64651 len=3
+  cands: 月にテンプレートを反映しています…`(3.5) | 月にテンプレートを反映しています…(3.5) | スタッフ?(3.5) | スタッフ(3.5) | 登録?(3.5) | 全員?(3.3) | 」を?(3.3) | 社員?(2.0)
+  ctx: size) await flushDirtyShifts({ quiet: true });\n      await withBusy(`${monthNum}???E????????????E????`, async () => {\n        const r
+pos=65495 len=2
+  cands: 空欄化 (2.6) | 空欄化(2.6) | 空欄(2.6) | 空欄'(2.6) | 空欄"(2.6) | 空欄,(2.6) | 空欄<(2.6) | 空欄>(2.6)
+  ctx:  0;\n        if (filled) notify(`${monthNum}?????????E?E{filled}?${cleared ? ` / ??E?? ${cleared}?` : ''}?E?`, 'ok');\n        else no
+pos=65498 len=2
+  cands: 全員 (2.6) | 」を (2.6) | 登録 (2.6) | 出勤 (1.7) | 休み (1.7) | から (1.0) | 欠勤 (0.9) | 社員 (0.9)
+  ctx: \n        if (filled) notify(`${monthNum}?????????E?E{filled}?${cleared ? ` / ??E?? ${cleared}?` : ''}?E?`, 'ok');\n        else notif
+pos=65721 len=7
+  cands: を保存しました(2.7) | 保存しました?(2.7) | 月に反映しています…?(2.3) | 月に反映しています…(2.3) | 選択中のスタッフ?(2.3) | 選択中のスタッフ(2.3) | 月間を準備中…(1.9) | 読み込み中…?(1.8)
+  ctx: .message || String(e), 'err');\n    }\n  }\n\n  /** ?E?????????????????????????????E???????E?????E?E*/\n  async function saveWeeklyAndApply(sc
+pos=65835 len=3
+  cands: 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？'(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？"(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？,(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？<(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？>(2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？ (2.4) | 全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？$(2.4)
+  ctx: n saveWeeklyAndApply(scope = 'employee') {\n    if (scope === 'all' && !confirm('???E????????????????????????????????????E?????E?E)) r
+pos=66156 len=2
+  cands: このスタッフ'(2.3) | このスタッフ(2.3) | 空欄化?(2.3) | 空欄化(2.3) | 空欄(2.3) | 空欄'(2.3) | 空欄"(2.3) | 空欄,(2.3)
+  ctx: ndef'\n      );\n      if (!hasTemplate) {\n        const nm = weeklyEmp?.name || '??E???E??';\n        if (!confirm(`${nm}?????????????
+pos=66159 len=3
+  cands: スタッフ'(2.3) | スタッフ(2.3) | 全員?(2.3) | 」を?(2.3) | 登録?(2.3) | から?(1.6) | 社員?(1.4) | 日　?(1.1)
+  ctx: f'\n      );\n      if (!hasTemplate) {\n        const nm = weeklyEmp?.name || '??E???E??';\n        if (!confirm(`${nm}????????????????E
+pos=66163 len=2
+  cands: 全員'(2.3) | 」を'(2.3) | 登録'(2.3) | から'(1.6) | 社員'(1.4) | 日　'(1.1) | 時間'(0.9) | 蜂谷'(0.7)
+  ctx:      );\n      if (!hasTemplate) {\n        const nm = weeklyEmp?.name || '??E???E??';\n        if (!confirm(`${nm}????????????????En??
+pos=66195 len=16
+  cands: の週間テンプレートが未登録です。\n(2.0) | の週間テンプレートが未登録です。(2.0) | の週間テンプレートが未登録です。'(2.0) | の週間テンプレートが未登録です。"(2.0) | の週間テンプレートが未登録です。,(2.0) | の週間テンプレートが未登録です。<(2.0) | の週間テンプレートが未登録です。>(2.0) | の週間テンプレートが未登録です。 (2.0)
+  ctx: {\n        const nm = weeklyEmp?.name || '??E???E??';\n        if (!confirm(`${nm}????????????????En????E??????????????En\n??E????????????E?????????
+pos=66236 len=2
+  cands: このまま進めると該当月は空欄に戻ります。続けますか？`(2.2) | 空欄化?(2.2) | 空欄化(2.2) | 空欄(2.2) | 空欄'(2.2) | 空欄"(2.2) | 空欄,(2.2) | 空欄<(2.2)
+  ctx: ??E???E??';\n        if (!confirm(`${nm}????????????????En????E??????????????En\n??E????????????E?????????????E?`)) return;\n      }\n 
+pos=66239 len=12
+  cands: 月間シフトを読み込み中…(0.8) | 日の登録に失敗しました?(0.4) | 氏名・社員番号・勤務時間(0.3) | 氏名・社員番号・勤務時間'(0.3) | 氏名・社員番号・勤務時間"(0.3) | 氏名・社員番号・勤務時間,(0.3) | 氏名・社員番号・勤務時間<(0.3) | 氏名・社員番号・勤務時間>(0.3)
+  ctx: ???E??';\n        if (!confirm(`${nm}????????????????En????E??????????????En\n??E????????????E?????????????E?`)) return;\n      }\n    }\n    if (
+pos=66252 len=13
+  cands: 月間シフトを読み込み中…?(0.8) | 該当するコードがありません(0.2)
+  ctx:     if (!confirm(`${nm}????????????????En????E??????????????En\n??E????????????E?????????????E?`)) return;\n      }\n    }\n    if (weeklySaveTime
+pos=66633 len=2
+  cands: 全員'(2.0) | 」を'(2.0) | 登録'(2.0) | 社員'(1.1) | から'(1.0) | 欠勤'(0.8) | 出勤'(0.7) | 休み'(0.7)
+  ctx: anel(null);\n        return;\n      }\n      const targetName = scope === 'all' ? '??' : (weeklyEmp?.name || '???????E??');\n      const
+pos=66660 len=7
+  cands: 選択中のスタッフ'(2.0) | 選択中のスタッフ(2.0) | を保存しました(2.0) | 保存しました?(2.0) | 登録を解除中…(1.3) | メールアドレス(1.3) | 読み込み中…?(1.3) | ログイン中…?(1.1)
+  ctx: \n      }\n      const targetName = scope === 'all' ? '??' : (weeklyEmp?.name || '???????E??');\n      const monthNum = Number(yearMonth.sli
+pos=66668 len=2
+  cands: 全員'(2.0) | 」を'(2.0) | 登録'(2.0) | 社員'(1.3) | から'(1.1) | 欠勤'(0.9) | 翌月'(0.7) | 出勤'(0.6)
+  ctx: \n      const targetName = scope === 'all' ? '??' : (weeklyEmp?.name || '???????E??');\n      const monthNum = Number(yearMonth.slice(
+pos=66775 len=7
+  cands: 月に反映しています…`(2.8) | 月に反映しています…(2.8) | 選択中のスタッフ?(2.8) | 選択中のスタッフ(2.8) | を保存しました(2.8) | 保存しました?(2.8) | 登録を解除中…(1.3) | 読み込み中…?(1.3)
+  ctx: = Number(yearMonth.slice(5, 7));\n      await withBusy(`${targetName}?${monthNum}???????E????`, async () => {\n        const res = await ap
+pos=67666 len=2
+  cands: 日）`(2.4) | 空欄(2.4) | 空欄'(2.4) | 空欄"(2.4) | 空欄,(2.4) | 空欄<(2.4) | 空欄>(2.4) | 空欄 (2.4)
+  ctx:  || 0;\n        if (filled) notify(`${targetName}?${monthNum}?????????E?E{filled}??E?`, 'ok');\n        else if (cleared) notify(`?E??
+pos=67764 len=2
+  cands: 日）`(1.7) | 空欄(1.7) | 空欄'(1.7) | 空欄"(1.7) | 空欄,(1.7) | 空欄<(1.7) | 空欄>(1.7) | 空欄 (1.7)
+  ctx:     else if (cleared) notify(`?E????????????${monthNum}????E????????E?E{cleared}??E?`, 'err');\n        else notify('??????????????',
+pos=68832 len=6
+  cands: 保存しました(0.9) | 法定休日出勤(0.8) | 法定外休日?(0.8) | 読み込み中…(0.6) | 追加・変更?(0.5) | 新規追加に切替?(0.4) | 新規追加に切替(0.4) | 登録を解除?(0.3)
+  ctx:  => {\n      if (gen !== loadMonthGenRef.current) return false;\n      // ???????E??????E?????????E      if (dirtyKeysRef.current.size || 
+pos=68839 len=9
+  cands: 従業員を保存中…?(0.4) | 横で掲示用に印刷?(0.3) | 報連相・メモの共有(0.2) | 報連相・メモの共有'(0.2) | 報連相・メモの共有"(0.2) | 報連相・メモの共有,(0.2) | 報連相・メモの共有<(0.2) | 報連相・メモの共有>(0.2)
+  ctx:      if (gen !== loadMonthGenRef.current) return false;\n      // ???????E??????E?????????E      if (dirtyKeysRef.current.size || dirtyMemoK
+pos=69983 len=2
+  cands: 件）`(3.0) | 設定(3.0) | 設定'(3.0) | 設定"(3.0) | 設定,(3.0) | 設定<(3.0) | 設定>(3.0) | 設定 (3.0)
+  ctx: applied.created) {\n          notify(`${ym}?E?????E??????????E?E{applied.created}??E?`, 'ok');\n        } else if (applied && applied.
+pos=70108 len=4
+  cands: シフトテンプレートが未保存です。先にテンプレート作成で (2.5) | シフトテンプレートが未保存です。先にテンプレート作成で(2.5) | 準備中…(2.5) | シフト?(2.5) | 登録中…(0.4) | 従業員?(0.1) | 小野寺?(0.1) | 仲村渠?(0.1)
+  ctx: pplied.applied === false && applied.reason === 'no_weekly') {\n          notify('????E??????????????E??E????????E? ??ÁE??????????E, 'er
+pos=70113 len=14
+  cands: カレンダー権限が未許可です。(0.4) | カレンダー権限が未許可です。'(0.4) | カレンダー権限が未許可です。"(0.4) | カレンダー権限が未許可です。,(0.4) | カレンダー権限が未許可です。<(0.4) | カレンダー権限が未許可です。>(0.4) | カレンダー権限が未許可です。 (0.4) | カレンダー権限が未許可です。$(0.4)
+  ctx: d.applied === false && applied.reason === 'no_weekly') {\n          notify('????E??????????????E??E????????E? ??ÁE??????????E, 'err');\n        } 
+pos=70128 len=2
+  cands: 設定(2.7) | 設定'(2.7) | 設定"(2.7) | 設定,(2.7) | 設定<(2.7) | 設定>(2.7) | 設定 (2.7) | 設定$(2.7)
+  ctx: alse && applied.reason === 'no_weekly') {\n          notify('????E??????????????E??E????????E? ??ÁE??????????E, 'err');\n        } els
+pos=70279 len=1
+  cands: テンプレ反映?(0.2) | テンプレ反映(0.2) | （読取不可?(0.1) | テリトリー?(0.1) | （読取不可(0.1) | テリトリー(0.1) | ティール?(0.0) | ティール(0.0)
+  ctx: plied.applied === false && applied.reason === 'no_pattern') {\n          notify('?E????????E???????×??????????????E, 'err');\n       
+pos=70298 len=14
+  cands: 反映する日がありませんでした(0.7) | カレンダー権限が未許可です。(0.5) | カレンダー権限が未許可です。'(0.5) | カレンダー権限が未許可です。"(0.5) | カレンダー権限が未許可です。,(0.5) | カレンダー権限が未許可です。<(0.5) | カレンダー権限が未許可です。>(0.5) | カレンダー権限が未許可です。 (0.5)
+  ctx: alse && applied.reason === 'no_pattern') {\n          notify('?E????????E???????×??????????????E, 'err');\n        } else {\n          notify(`${ym
+pos=70489 len=16
+  cands: の週間テンプレートが未登録です。(0.7) | の週間テンプレートが未登録です。'(0.7) | の週間テンプレートが未登録です。"(0.7) | の週間テンプレートが未登録です。,(0.7) | の週間テンプレートが未登録です。<(0.7) | の週間テンプレートが未登録です。>(0.7) | の週間テンプレートが未登録です。 (0.7) | の週間テンプレートが未登録です。$(0.7)
+  ctx:     }\n      }\n      return true;\n    };\n\n    const run = async () => {\n      // ????????????????E?E???E?????????E?????E      const res = await api
+pos=70506 len=1
+  cands: いいえ(0.7) | いいえ'(0.7) | いいえ"(0.7) | いいえ`(0.7) | いいえ,(0.7) | いいえ<(0.7) | いいえ>(0.7) | いいえ (0.7)
+  ctx:    return true;\n    };\n\n    const run = async () => {\n      // ????????????????E?E???E?????????E?????E      const res = await api.g
+pos=70508 len=3
+  cands: ○／×(1.7) | ○／×'(1.7) | ○／×"(1.7) | ○／×,(1.7) | ○／×<(1.7) | ○／×>(1.7) | ○／× (1.7) | ○／×$(1.7)
+  ctx:  return true;\n    };\n\n    const run = async () => {\n      // ????????????????E?E???E?????????E?????E      const res = await api.getSh
+pos=70512 len=9
+  cands: をクリアしました?(0.7) | 登録を解除しました(0.7) | 従業員を保存中…?(0.5) | 変更はありません?(0.3) | 横で掲示用に印刷?(0.2) | 非表示にしたコード(0.1) | 非表示にしたコード'(0.1) | 非表示にしたコード"(0.1)
+  ctx: urn true;\n    };\n\n    const run = async () => {\n      // ????????????????E?E???E?????????E?????E      const res = await api.getShifts(sid, 
+pos=70967 len=3
+  cands: ○／×(1.3) | ○／×'(1.3) | ○／×"(1.3) | ○／×,(1.3) | ○／×<(1.3) | ○／×>(1.3) | ○／× (1.3) | ○／×$(1.3)
+  ctx:  else {\n        try {\n          await run();\n        } catch (e) {\n          // ???E????????????E??????E          if (!opts.quiet) no
+pos=70971 len=12
+  cands: 日の登録に失敗しました?(1.0) | 月間シフトを読み込み中…(0.8) | 氏名・社員番号・勤務時間(0.3) | 氏名・社員番号・勤務時間'(0.3) | 氏名・社員番号・勤務時間"(0.3) | 氏名・社員番号・勤務時間,(0.3) | 氏名・社員番号・勤務時間<(0.3) | 氏名・社員番号・勤務時間>(0.3)
+  ctx: e {\n        try {\n          await run();\n        } catch (e) {\n          // ???E????????????E??????E          if (!opts.quiet) notify(e.messag
+pos=72317 len=2
+  cands: 店舗?(2.6) | 年月(2.6) | 年月'(2.6) | 年月"(2.6) | 年月`(2.6) | 年月,(2.6) | 年月<(2.6) | 年月>(2.6)
+  ctx: k, 800);\n    }\n  }\n\n  async function resetMonthFromWeekly() {\n    if (!confirm('??E??????E????????E???????????????????????E?????E?E)
+pos=73121 len=4
+  cands: 準備中…(1.8) | シフト?(1.8) | 保存中…(1.3) | 登録中…(1.0) | 初回登録(0.9) | 従業員?(0.9) | 法定休日(0.8) | 振替休日(0.8)
+  ctx: res.canEdit,\n        });\n        const g = res.generated || {};\n        notify(`????E??????????E?????E?E{g.created || 0}??E?`, 'ok');\n
+pos=73161 len=2
+  cands: 空欄(2.1) | 空欄'(2.1) | 空欄"(2.1) | 空欄,(2.1) | 空欄<(2.1) | 空欄>(2.1) | 空欄 (2.1) | 空欄$(2.1)
+  ctx:  = res.generated || {};\n        notify(`????E??????????E?????E?E{g.created || 0}??E?`, 'ok');\n      });\n    } catch (e) {\n      noti
+pos=73588 len=2
+  cands: 店舗と年月を選んでください。(2.4) | 店舗と年月を選んでください。'(2.4) | 店舗と年月を選んでください。"(2.4) | 店舗と年月を選んでください。,(2.4) | 店舗と年月を選んでください。<(2.4) | 店舗と年月を選んでください。>(2.4) | 店舗と年月を選んでください。 (2.4) | 店舗と年月を選んでください。$(2.4)
+  ctx:  copyByeBye() {\n    if (!storeId || !yearMonth) {\n      showKintaiToast('err', '??E????????????E);\n      return;\n    }\n    const loc
+pos=73591 len=12
+  cands: 日の登録に失敗しました?(0.7) | カレンダー登録・クリア?(0.7) | 氏名・社員番号・勤務時間(0.6) | 氏名・社員番号・勤務時間'(0.6) | 氏名・社員番号・勤務時間"(0.6) | 氏名・社員番号・勤務時間,(0.6) | 氏名・社員番号・勤務時間<(0.6) | 氏名・社員番号・勤務時間>(0.6)
+  ctx: pyByeBye() {\n    if (!storeId || !yearMonth) {\n      showKintaiToast('err', '??E????????????E);\n      return;\n    }\n    const local = buildBye
+pos=74243 len=2
+  cands: 店舗と年月を選んでください。(1.5) | 店舗と年月を選んでください。'(1.5) | 店舗と年月を選んでください。"(1.5) | 店舗と年月を選んでください。,(1.5) | 店舗と年月を選んでください。<(1.5) | 店舗と年月を選んでください。>(1.5) | 店舗と年月を選んでください。 (1.5) | 店舗と年月を選んでください。$(1.5)
+  ctx: yncCalendar() {\n    if (!storeId || !yearMonth || !user?.email) {\n      notify('??E????????????E, 'err');\n      return;\n    }\n    if
+pos=74605 len=4
+  cands: 登録中…'(4.5) | 準備中…'(4.5) | 登録中…(4.5) | 準備中…(4.5) | クリア?(2.1) | 保存中…'(1.7) | 保存中…(1.7) | ログイン'(1.1)
+  ctx: th: yearMonth,\n    };\n    try {\n      setCalendarProgress({ percent: 2, label: '????' });\n      const prep = await api.syncCalendarMon
+pos=75009 len=4
+  cands: 登録中…'(3.8) | 準備中…'(3.8) | 登録中…(3.8) | 準備中…(3.8) | 従業員?(1.1) | 保存中…'(1.1) | 保存中…(1.1) | クリア?(1.0)
+  ctx: y, m, 0).getDate();\n      })();\n      setCalendarProgress({ percent: 8, label: '????' });\n\n      let day = 1;\n      let totalCreated =
+pos=75730 len=2
+  cands: 完了(2.7) | 完了'(2.7) | 完了"(2.7) | 完了`(2.7) | 完了,(2.7) | 完了<(2.7) | 完了>(2.7) | 完了 (2.7)
+  ctx:     day = dayTo + 1;\n      }\n\n      setCalendarProgress({ percent: 100, label: '??E });\n      notify(`${formatYmJa(yearMonth)} ?????
+pos=75807 len=2
+  cands: 件）`(4.3) | 完了(4.3) | 完了'(4.3) | 完了"(4.3) | 完了`(4.3) | 完了,(4.3) | 完了<(4.3) | 完了>(4.3)
+  ctx: : '??E });\n      notify(`${formatYmJa(yearMonth)} ?????????????E?E{totalCreated}??E?`, 'ok');\n      window.setTimeout(() => setCalen
+pos=75998 len=2
+  cands: 権限|(4.1) | 」を|(4.1) | 失敗|(4.1) | 登録|(4.1) | 設定|(1.1) | 出勤|(1.1) | 休み|(1.1) | 空欄|(1.0)
+  ctx:  e.message || String(e);\n      setCalendarProgress(null);\n      if (/permission|??|auth\/calendar|Authorization/i.test(m)) {\n       
+pos=76059 len=14
+  cands: カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。'(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。"(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。,(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。<(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。>(4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。 (4.1) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。$(4.1)
+  ctx:    if (/permission|??|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E
+pos=76076 len=2
+  cands: 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。'(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。"(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。,(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。<(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。>(4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。 (4.3) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。$(4.3)
+  ctx: n|??|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'er
+pos=76079 len=5
+  cands: クリア中…(4.3) | カレンダー(4.3) | 月シフト?(4.0) | 登録中…?(3.6) | 準備中…?(1.3) | 保存中…?(1.2) | ログイン?(1.2) | 登録を解除(1.1)
+  ctx: ?|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n 
+pos=76105 len=2
+  cands: 」を1回実行して許可してください。(4.0) | 」を1回実行して許可してください。'(4.0) | 」を1回実行して許可してください。"(4.0) | 」を1回実行して許可してください。,(4.0) | 」を1回実行して許可してください。<(4.0) | 」を1回実行して許可してください。>(4.0) | 」を1回実行して許可してください。 (4.0) | 」を1回実行して許可してください。$(4.0)
+  ctx: tion/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n      } else {\n        n
+pos=76108 len=14
+  cands: カレンダー権限が未許可です。(4.0) | カレンダー権限が未許可です。'(4.0) | カレンダー権限が未許可です。"(4.0) | カレンダー権限が未許可です。,(4.0) | カレンダー権限が未許可です。<(4.0) | カレンダー権限が未許可です。>(4.0) | カレンダー権限が未許可です。 (4.0) | カレンダー権限が未許可です。$(4.0)
+  ctx: n/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n      } else {\n        notify(m, 'err')
+pos=76346 len=2
+  cands: 店舗と年月を選んでください。(1.2) | 店舗と年月を選んでください。'(1.2) | 店舗と年月を選んでください。"(1.2) | 店舗と年月を選んでください。,(1.2) | 店舗と年月を選んでください。<(1.2) | 店舗と年月を選んでください。>(1.2) | 店舗と年月を選んでください。 (1.2) | 店舗と年月を選んでください。$(1.2)
+  ctx: earCalendar() {\n    if (!storeId || !yearMonth || !user?.email) {\n      notify('??E????????????E, 'err');\n      return;\n    }\n    if
+pos=76578 len=5
+  cands: クリア中…'(2.8) | カレンダー'(2.8) | クリア中…(2.8) | カレンダー(2.8) | 登録中…?(1.8) | 準備中…?(1.8) | 保存中…?(1.3) | 登録を解除'(0.9)
+  ctx: bRef.current = true;\n    try {\n      setCalendarProgress({ percent: 15, label: '?????' });\n      const res = await api.clearCalendarMon
+pos=76788 len=2
+  cands: 店舗 (3.7) | 完了(3.7) | 完了'(3.7) | 完了"(3.7) | 完了`(3.7) | 完了,(3.7) | 完了<(3.7) | 完了>(3.7)
+  ctx: r_month: yearMonth,\n      });\n      setCalendarProgress({ percent: 100, label: '??E });\n      const fails = (res.results || []).filt
+pos=76940 len=2
+  cands: 店舗}(2.8) | 完了(2.8) | 完了'(2.8) | 完了"(2.8) | 完了`(2.8) | 完了,(2.8) | 完了<(2.8) | 完了>(2.8)
+  ctx:     if (!res.ok || fails.length) {\n        notify(\n          `${res.message || '??E} / ${fails.slice(0, 2).map((f) => f.message || '
+pos=77311 len=2
+  cands: 権限|(4.0) | 」を|(4.0) | 失敗|(4.0) | 登録|(4.0) | 設定|(0.9) | 出勤|(0.9) | 休み|(0.9) | 空欄|(0.8)
+  ctx:  e.message || String(e);\n      setCalendarProgress(null);\n      if (/permission|??|auth\/calendar|Authorization/i.test(m)) {\n       
+pos=77372 len=14
+  cands: カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。'(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。"(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。,(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。<(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。>(4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。 (4.0) | カレンダー権限が未許可です。GAS編集画面で「authorizeCalendarOnce」を1回実行して許可してください。$(4.0)
+  ctx:    if (/permission|??|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E
+pos=77389 len=2
+  cands: 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。'(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。"(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。,(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。<(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。>(4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。 (4.2) | 編集画面で「authorizeCalendarOnce」を1回実行して許可してください。$(4.2)
+  ctx: n|??|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'er
+pos=77392 len=5
+  cands: カレンダー(4.2) | 月シフト?(4.2) | クリア中…(4.0) | 登録中…?(3.5) | 準備中…?(1.1) | 社員番号?(0.9) | 保存中…?(0.8) | ログイン?(0.8)
+  ctx: ?|auth\/calendar|Authorization/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n 
+pos=77418 len=2
+  cands: 」を1回実行して許可してください。(4.0) | 」を1回実行して許可してください。'(4.0) | 」を1回実行して許可してください。"(4.0) | 」を1回実行して許可してください。,(4.0) | 」を1回実行して許可してください。<(4.0) | 」を1回実行して許可してください。>(4.0) | 」を1回実行して許可してください。 (4.0) | 」を1回実行して許可してください。$(4.0)
+  ctx: tion/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n      } else {\n        n
+pos=77421 len=14
+  cands: カレンダー権限が未許可です。(4.0) | カレンダー権限が未許可です。'(4.0) | カレンダー権限が未許可です。"(4.0) | カレンダー権限が未許可です。,(4.0) | カレンダー権限が未許可です。<(4.0) | カレンダー権限が未許可です。>(4.0) | カレンダー権限が未許可です。 (4.0) | カレンダー権限が未許可です。$(4.0)
+  ctx: n/i.test(m)) {\n        notify('??????????????EAS??E?????authorizeCalendarOnce??1??????????????E, 'err');\n      } else {\n        notify(m, 'err')
+pos=77784 len=3
+  cands: シフト'(1.6) | クリア'(1.6) | シフト(1.6) | クリア(1.6) | 」を?(1.6) | 出勤?(1.0) | 休み?(1.0) | 従業員'(0.9)
+  ctx: umber(mStr) || '';\n    const storeLabel = String(storeName || staffColLabel || '???').trim();\n    if (!y || !m) return storeLabel || 
+pos=77838 len=3
+  cands: シフト'(1.6) | クリア'(1.6) | シフト(1.6) | クリア(1.6) | 」を?(1.6) | 出勤?(1.0) | 休み?(1.0) | 従業員'(0.8)
+  ctx: Name || staffColLabel || '???').trim();\n    if (!y || !m) return storeLabel || '???';\n    return `${storeLabel}${y}?E?E{m}????`;\n  }\n
+pos=77880 len=4
+  cands: 月シフト`(1.6) | 月シフト(1.6) | シフト?(1.6) | クリア?(1.6) | 従業員?(0.8) | 登録中…`(0.8) | 保存中…`(0.8) | 社員番号`(0.8)
+  ctx:   if (!y || !m) return storeLabel || '???';\n    return `${storeLabel}${y}?E?E{m}????`;\n  }\n\n  function applyDocumentTitle(name) {\n    
+pos=80581 len=2
+  cands: 有休(1.5) | 有休'(1.5) | 有休"(1.5) | 有休,(1.5) | 有休<(1.5) | 有休>(1.5) | 有休 (1.5) | 有休$(1.5)
+  ctx: tLeave, timeLine], leave: true };\n      }\n      return { lines: [printLeave || '??E], leave: true };\n    }\n    if (status === 'work'
+pos=80749 len=2
+  cands: 有休(1.2) | 有休'(1.2) | 有休"(1.2) | 有休,(1.2) | 有休<(1.2) | 有休>(1.2) | 有休 (1.2) | 有休$(1.2)
+  ctx: : [timeLine], leave: false };\n    }\n    if (status === 'pto') return { lines: ['??E], leave: true };\n    if (status === 'absent') re
+pos=80882 len=2
+  cands: 有休(2.4) | 有休'(2.4) | 有休"(2.4) | 有休,(2.4) | 有休<(2.4) | 有休>(2.4) | 有休 (2.4) | 有休$(2.4)
+  ctx: urn { lines: ['??'], leave: true };\n    if (status === 'off') return { lines: ['??E], leave: true };\n    return { lines: [], leave: 
+pos=90887 len=3
+  cands: 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休'(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休"(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休,(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休<(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休>(2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休 (2.0) | 入力例: 13-22 / 13:00↵22:00 / 公休 / 有休$(2.0)
+  ctx: onst parsed = parseShiftDraft(editDraft, emp);\n    if (!parsed) {\n      notify('???E 13-22 / 13:00?22:00 / ??E/ ??E, 'err');\n      se
+pos=90905 len=1
+  cands: ↵22:00 / 公休 / 有休(2.0) | ↵22:00 / 公休 / 有休'(2.0) | ↵22:00 / 公休 / 有休"(2.0) | ↵22:00 / 公休 / 有休,(2.0) | ↵22:00 / 公休 / 有休<(2.0) | ↵22:00 / 公休 / 有休>(2.0) | ↵22:00 / 公休 / 有休 (2.0) | ↵22:00 / 公休 / 有休$(2.0)
+  ctx: eShiftDraft(editDraft, emp);\n    if (!parsed) {\n      notify('???E 13-22 / 13:00?22:00 / ??E/ ??E, 'err');\n      setTimeout(() => c
+pos=90914 len=2
+  cands: 公休 / 有休(1.7) | 公休 / 有休'(1.7) | 公休 / 有休"(1.7) | 公休 / 有休,(1.7) | 公休 / 有休<(1.7) | 公休 / 有休>(1.7) | 公休 / 有休 (1.7) | 公休 / 有休$(1.7)
+  ctx: ft(editDraft, emp);\n    if (!parsed) {\n      notify('???E 13-22 / 13:00?22:00 / ??E/ ??E, 'err');\n      setTimeout(() => cellEditRef
+pos=90919 len=2
+  cands: 有休(1.7) | 有休'(1.7) | 有休"(1.7) | 有休,(1.7) | 有休<(1.7) | 有休>(1.7) | 有休 (1.7) | 有休$(1.7)
+  ctx: itDraft, emp);\n    if (!parsed) {\n      notify('???E 13-22 / 13:00?22:00 / ??E/ ??E, 'err');\n      setTimeout(() => cellEditRef.curr
+pos=111418 len=2
+  cands: 出勤'(0.8) | 欠勤'(0.8) | 振出'(0.8) | 有給'(0.8) | 半欠'(0.8) | 生理'(0.8) | 介護'(0.8) | 看護'(0.8)
+  ctx:  'off': return 'ÁE;\n      case 'pto': return '??E;\n      case 'absent': return '??';\n      default: return '';\n    }\n  }\n\n  function
+pos=118795 len=3
+  cands: 表示名(3.5) | 表示名'(3.5) | 表示名"(3.5) | 表示名,(3.5) | 表示名<(3.5) | 表示名>(3.5) | 表示名 (3.5) | 表示名$(3.5)
+  ctx: v>\n                    <label className="login-form-label" htmlFor="login-name">???E/label>\n                    <input id="login-name
+pos=118970 len=2
+  cands: 日下 竜汰"(4.9) | 日下 竜汰(4.9) | 日下(4.9) | 日下'(4.9) | 日下"(4.9) | 日下,(4.9) | 日下<(4.9) | 日下>(4.9)
+  ctx: egDisplayName} onChange={(e) => setRegDisplayName(e.target.value)} placeholder="??E??" className="login-form-input" />\n             
+pos=118973 len=2
+  cands: 社員"(5.3) | 竜汰"(5.3) | 登録"(3.4) | 蜂谷"(2.6) | 有加"(2.6) | 時間"(2.5) | 名称"(1.6) | から"(1.3)
+  ctx: isplayName} onChange={(e) => setRegDisplayName(e.target.value)} placeholder="??E??" className="login-form-input" />\n                
+pos=119575 len=3
+  cands: エリア<(3.4) | すべて<(3.4) | エリア(3.4) | すべて(3.4) | 社員?(3.4) | 竜汰?(3.0) | 登録?(2.0) | 時間?(1.5)
+  ctx: \n                      <label className="login-form-label" htmlFor="login-area">???</label>\n                      <select id="login-a
+pos=119791 len=3
+  cands: エリア<(3.0) | すべて<(3.0) | エリア(3.0) | すべて(3.0) | 社員?(3.0) | 竜汰?(2.6) | 登録?(1.7) | 時間?(1.2)
+  ctx: arget.value); setRegTerritory(''); }}>\n                        <option value="">???</option>\n                        {(meta.areas || 
+pos=120982 len=2
+  cands: 管轄店舗<(4.8) | 管轄店舗(4.8) | 店舗?(4.8) | 経堂(4.8) | 経堂'(4.8) | 経堂"(4.8) | 経堂,(4.8) | 経堂<(4.8)
+  ctx: ()}\n                  <div>\n                    <p className="login-form-label">??E???E</p>\n                    <div className="flex
+pos=120985 len=3
+  cands: エリア(4.8) | すべて(4.8) | 時間?(1.3) | 出勤?(1.3) | 休み?(1.3) | 未使用(1.2) | 社員?(1.2) | 翌月?(1.1)
+  ctx: \n                  <div>\n                    <p className="login-form-label">??E???E</p>\n                    <div className="flex fle
+pos=121162 len=2
+  cands: 店舗,(4.7) | 経堂(4.7) | 経堂'(4.7) | 経堂"(4.7) | 経堂,(4.7) | 経堂<(4.7) | 経堂>(4.7) | 経堂 (4.7)
+  ctx: ">\n                      {(meta?.allStores || [{ store_id: 'S001', store_name: '??E, area: '?7???' }, { store_id: 'S002', store_name
+pos=124753 len=2
+  cands: 前月"(3.4) | 翌月"(3.4) | 登録"(3.0) | 印刷"(2.7) | メモ"(2.5) | 社員"(1.9) | 時間"(1.9) | 名称"(1.6)
+  ctx: ck={() => changeMonth(shiftYearMonth(baseYm, -1))}\n                      title="??"\n                      aria-label="??"\n          
+pos=124791 len=2
+  cands: 前月"(4.0) | 翌月"(4.0) | 登録"(3.6) | 印刷"(3.3) | 社員"(2.5) | 時間"(2.5) | メモ"(2.5) | 名称"(1.6)
+  ctx: aseYm, -1))}\n                      title="??"\n                      aria-label="??"\n                    >\n                      <svg
+pos=126471 len=2
+  cands: 前月"(3.4) | 翌月"(3.4) | 登録"(3.0) | 印刷"(2.7) | メモ"(2.5) | 社員"(1.9) | 時間"(1.9) | 名称"(1.6)
+  ctx: ick={() => changeMonth(shiftYearMonth(baseYm, 1))}\n                      title="??"\n                      aria-label="??"\n          
+pos=126509 len=2
+  cands: 前月"(4.0) | 翌月"(4.0) | 登録"(3.6) | 印刷"(3.3) | 社員"(2.5) | 時間"(2.5) | メモ"(2.5) | 名称"(1.6)
+  ctx: baseYm, 1))}\n                      title="??"\n                      aria-label="??"\n                    >\n                      <svg
+pos=128052 len=7
+  cands: キンタイコピー（押したら自動コピー）(3.8) | キンタイコピー（押したら自動コピー）'(3.8) | キンタイコピー（押したら自動コピー）"(3.8) | キンタイコピー（押したら自動コピー）,(3.8) | キンタイコピー（押したら自動コピー）<(3.8) | キンタイコピー（押したら自動コピー）>(3.8) | キンタイコピー（押したら自動コピー） (3.8) | キンタイコピー（押したら自動コピー）$(3.8)
+  ctx: pyByeBye}\n                  className="app-kintai-btn"\n                  title="???????E?E??????E????E?E?E\n                  aria-label="
+pos=130478 len=3
+  cands: クリア(3.2) | 登録?(3.2) | 前月?(1.9) | 未使用(1.1) | 非表示(1.1) | 名称?(1.1) | 時間?(1.1) | メモ?(1.1)
+  ctx:     title="?????????E???????E??E?E??E?E\n                  >\n                    ???\n                  </button>\n                </div
+pos=130653 len=2
+  cands: 戻す(3.2) | 戻す'(3.2) | 戻す"(3.2) | 戻す,(3.2) | 戻す<(3.2) | 戻す>(3.2) | 戻す (3.2) | 戻す$(3.2)
+  ctx: && (\n                <div className="app-tool-group" role="toolbar" aria-label="??E>\n                  <button\n                    t
+pos=133326 len=11
+  cands: カレンダー操作を閉じる(3.6) | カレンダー操作を閉じる'(3.6) | カレンダー操作を閉じる"(3.6) | カレンダー操作を閉じる,(3.6) | カレンダー操作を閉じる<(3.6) | カレンダー操作を閉じる>(3.6) | カレンダー操作を閉じる (3.6) | カレンダー操作を閉じる$(3.6)
+  ctx: => setExportPanelOpen((v) => !v)}\n                    title={exportPanelOpen ? '???????????E : '???????????'}\n                    aria-label=
+pos=134514 len=4
+  cands: 保存中…'(4.6) | 保存済み'(4.6) | 保存中…(4.6) | 保存済み(4.6) | クリア?(0.7) | 準備中…'(0.4) | 準備中…(0.4) | 従業員?(0.4)
+  ctx:    }`}>\n                  {saveState === 'saving' || saveState === 'pending' ? '????'\n                    : saveState === 'error' ? '?
+pos=134567 len=5
+  cands: カレンダー'(3.1) | 保存エラー'(3.1) | カレンダー(3.1) | 保存エラー(3.1) | 保存中…?(3.1) | 保存済み?(3.1) | 準備中…?(0.4) | 法定外休日'(0.3)
+  ctx: saveState === 'pending' ? '????'\n                    : saveState === 'error' ? '?????'\n                      : saveState === 'saved' &&
+pos=134643 len=4
+  cands: 保存中…'(3.3) | 保存済み'(3.3) | 保存中…(3.3) | 保存済み(3.3) | クリア?(1.4) | 準備中…'(0.8) | 準備中…(0.8) | 従業員?(0.8)
+  ctx:  ? '?????'\n                      : saveState === 'saved' && dirtyTotal === 0 ? '????'\n                        : dirtyTotal > 0 ? `???E
+pos=135008 len=5
+  cands: カレンダー (3.5) | 保存エラー (3.5) | カレンダー(3.5) | 保存エラー(3.5) | 保存中…?(3.5) | 保存済み?(3.5) | 非表示へ?(1.4) | ログイン?(1.4)
+  ctx:           title="???????E???E???E???E???E?E\n                >\n                  ????? {calendarProgress.percent}% {calendarProgress.lab
+pos=137776 len=3
+  cands: 最新データを同期中…(5.5) | シフト(5.5) | 従業員(3.0) | 登録?(3.0) | から?(2.4) | エリア(1.9) | すべて(1.9) | 」を?(1.9)
+  ctx: text-[11px] text-slate-500 bg-slate-50 border-b border-zinc-100">\n              ???E?E??????\n            </p>\n          ) : null}\n\n  
+pos=137784 len=4
+  cands: 準備中…(5.9) | シフト?(5.9) | 従業員?(3.4) | エリア?(2.4) | すべて?(2.4) | クリア?(1.8) | 取得時の(1.6) | 保存中…(1.3)
+  ctx: px] text-slate-500 bg-slate-50 border-b border-zinc-100">\n              ???E?E??????\n            </p>\n          ) : null}\n\n          {
+pos=138385 len=2
+  cands: この店舗に登録されている従業員がいません<(5.0) | この店舗に登録されている従業員がいません(5.0) | 店舗?(5.0) | 店舗(5.0) | 編集(1.7) | 編集'(1.7) | 編集"(1.7) | 編集`(1.7)
+  ctx:  text-center">\n              <p className="font-semibold text-sm text-zinc-500">??E??E???????E??????????</p>\n              <p classN
+pos=138478 len=3
+  cands: スタッフ (6.6) | スタッフ(6.6) | 従業員(6.6) | シフト(6.6) | 登録?(6.6) | から?(6.6) | 閉じる(1.4) | 閉じる'(1.4)
+  ctx: E??????????</p>\n              <p className="text-xs text-zinc-400">?????? ?????E???E?? ???????????E?????????E/p>\n            </div>\n 
+pos=138482 len=2
+  cands: 登録 (7.1) | から (7.1) | メモ (1.4) | 全員 (1.3) | 」を (1.2) | 名称 (1.1) | 時間 (0.9) | 出勤 (0.9)
+  ctx: ???????</p>\n              <p className="text-xs text-zinc-400">?????? ?????E???E?? ???????????E?????????E/p>\n            </div>\n    
+pos=138497 len=9
+  cands: 報連相・メモの共有(0.5) | 報連相・メモの共有'(0.5) | 報連相・メモの共有"(0.5) | 報連相・メモの共有,(0.5) | 報連相・メモの共有<(0.5) | 報連相・メモの共有>(0.5) | 報連相・メモの共有 (0.5) | 報連相・メモの共有$(0.5)
+  ctx:            <p className="text-xs text-zinc-400">?????? ?????E???E?? ???????????E?????????E/p>\n            </div>\n          ) : (\n          
+pos=145679 len=3
+  cands: クリックで編集 / 長押しして上下に並べ替え(5.4) | クリックで編集 / 長押しして上下に並べ替え'(5.4) | クリックで編集 / 長押しして上下に並べ替え"(5.4) | クリックで編集 / 長押しして上下に並べ替え`(5.4) | クリックで編集 / 長押しして上下に並べ替え,(5.4) | クリックで編集 / 長押しして上下に並べ替え<(5.4) | クリックで編集 / 長押しして上下に並べ替え>(5.4) | クリックで編集 / 長押しして上下に並べ替え (5.4)
+  ctx: Id ? 'none' : 'manipulation' }}\n                              title={canEdit ? '???E?????E/ ????????????E : ''}\n                     
+pos=153416 len=3
+  cands: クリックで選択 / ダブルクリックで編集(4.1) | クリックで選択 / ダブルクリックで編集'(4.1) | クリックで選択 / ダブルクリックで編集"(4.1) | クリックで選択 / ダブルクリックで編集`(4.1) | クリックで選択 / ダブルクリックで編集,(4.1) | クリックで選択 / ダブルクリックで編集<(4.1) | クリックで選択 / ダブルクリックで編集>(4.1) | クリックで選択 / ダブルクリックで編集 (4.1)
+  ctx:                               title={leaveName ? `${leaveCode} ${leaveName}` : '???E?????E/ ??????E?????E}\n                          
+pos=159992 len=3
+  cands: クリックで選択 / ダブルクリックで編集(7.3) | クリックで選択 / ダブルクリックで編集'(7.3) | クリックで選択 / ダブルクリックで編集"(7.3) | クリックで選択 / ダブルクリックで編集`(7.3) | クリックで選択 / ダブルクリックで編集,(7.3) | クリックで選択 / ダブルクリックで編集<(7.3) | クリックで選択 / ダブルクリックで編集>(7.3) | クリックで選択 / ダブルクリックで編集 (7.3)
+  ctx:         style={{ height: MEMO_ROW_H }}\n                                  title="???E?????E/ ??????E?????E\n                           
+pos=163924 len=3
+  cands: 閉じる(4.3) | 閉じる'(4.3) | 閉じる"(4.3) | 閉じる,(4.3) | 閉じる<(4.3) | 閉じる>(4.3) | 閉じる (4.3) | 閉じる$(4.3)
+  ctx: nt-semibold bg-white/15 border border-white/40 text-white">\n                    ???E                  </button>\n                </div
+pos=164391 len=2
+  cands: 社員'(2.9) | 時間'(2.9) | から'(2.6) | 外部'(1.5) | 」を'(1.2) | 登録'(1.2) | 全員'(1.1) | メモ'(1.0)
+  ctx: ment_type: '??',\n                        work_hours: carryOverHours(empEditor, '??'),\n                      })}\n                    
+pos=165309 len=4
+  cands: 勤務時間(2.6) | 勤務時間'(2.6) | 勤務時間"(2.6) | 勤務時間,(2.6) | 勤務時間<(2.6) | 勤務時間>(2.6) | 勤務時間 (2.6) | 勤務時間$(2.6)
+  ctx: v>\n                    <p className="text-[14px] font-bold text-slate-800 mb-2">????E/p>\n                    <div className="flex flex
+pos=170454 len=6
+  cands: 有休取得時のIN・OUT時間<(4.2) | 有休取得時のIN・OUT時間(4.2) | 有休取得時のIN・(4.2) | 有休取得時の(4.2) | で改行（表の(2.4) | 登録を解除?(2.1) | 保存しました(1.8) | 全員を反映?(1.8)
+  ctx: y-3">\n                      <p className="text-[14px] font-bold text-slate-800">??????IN?OUT??</p>\n                      <p className="t
+pos=170578 len=2
+  cands: この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。'(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。"(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。,(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。<(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。>(5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。 (5.5) | この人用に保存されます。有休などを選ぶと、ここに設定した時間が入ります。$(5.5)
+  ctx: className="text-[12px] text-slate-500 leading-relaxed">\n                        ??E??????????????????????????????????E              
+pos=173032 len=2
+  cands: この人の有休IN・OUTを保存しました'(0.7) | この人の有休IN・OUTを保存しました(0.7) | この人の有休IN・(0.7) | 店舗?(0.7) | 有休(0.7) | 有休'(0.7) | 有休"(0.7) | 有休,(0.7)
+  ctx:                  setPtoTemplateOpen(false);\n                            notify('??E????IN?OUT???????', 'ok');\n                      
+pos=173035 len=4
+  cands: 取得時のIN・(0.5) | 取得時の(0.5) | 従業員?(0.5) | シフト?(0.5) | クリア?(0.5) | 時参加?(0.5) | 非表示へ(0.4) | 保存中…(0.4)
+  ctx:               setPtoTemplateOpen(false);\n                            notify('??E????IN?OUT???????', 'ok');\n                          }
+pos=173041 len=1
+  cands: ・OUTを保存しました'(0.8) | ・OUTを保存しました(0.8) | ・OUT時間?(0.8) | ・OUT時間(0.8)
+  ctx:         setPtoTemplateOpen(false);\n                            notify('??E????IN?OUT???????', 'ok');\n                          }}\n 
+pos=173045 len=7
+  cands: を保存しました'(1.1) | を保存しました(1.1) | 保存しました?(1.1) | 有休取得時の?(0.5) | 登録を解除する'(0.5) | 登録を解除する(0.5) | メモを閉じる?(0.5) | 従業員を変更?(0.5)
+  ctx:     setPtoTemplateOpen(false);\n                            notify('??E????IN?OUT???????', 'ok');\n                          }}\n           
+pos=173143 len=2
+  cands: 有休(1.6) | 有休'(1.6) | 有休"(1.6) | 有休,(1.6) | 有休<(1.6) | 有休>(1.6) | 有休 (1.6) | 有休$(1.6)
+  ctx:                          }}\n                        >\n                          ??E                        </button>\n               
+pos=173446 len=3
+  cands: 閉じる(2.5) | 閉じる'(2.5) | 閉じる"(2.5) | 閉じる,(2.5) | 閉じる<(2.5) | 閉じる>(2.5) | 閉じる (2.5) | 閉じる$(2.5)
+  ctx:  setPtoTemplateOpen(false)}\n                        >\n                          ???E                        </button>\n               
+pos=173922 len=2
+  cands: 有休(3.4) | 有休'(3.4) | 有休"(3.4) | 有休,(3.4) | 有休<(3.4) | 有休>(3.4) | 有休 (3.4) | 有休$(3.4)
+  ctx: text-slate-600">\n                          {leaveCodeLabel(editorLeaveCode) || '??E}????IN?OUT?????????E                        </p>
+pos=173926 len=4
+  cands: 取得時のIN・OUT時間を設定可能です(3.4) | 取得時のIN・OUT時間を設定可能です'(3.4) | 取得時のIN・OUT時間を設定可能です"(3.4) | 取得時のIN・OUT時間を設定可能です,(3.4) | 取得時のIN・OUT時間を設定可能です<(3.4) | 取得時のIN・OUT時間を設定可能です>(3.4) | 取得時のIN・OUT時間を設定可能です (3.4) | 取得時のIN・OUT時間を設定可能です$(3.4)
+  ctx: -slate-600">\n                          {leaveCodeLabel(editorLeaveCode) || '??E}????IN?OUT?????????E                        </p>\n     
+pos=173932 len=1
+  cands: ・OUT時間を設定可能です(3.4) | ・OUT時間を設定可能です'(3.4) | ・OUT時間を設定可能です"(3.4) | ・OUT時間を設定可能です,(3.4) | ・OUT時間を設定可能です<(3.4) | ・OUT時間を設定可能です>(3.4) | ・OUT時間を設定可能です (3.4) | ・OUT時間を設定可能です$(3.4)
+  ctx: -600">\n                          {leaveCodeLabel(editorLeaveCode) || '??E}????IN?OUT?????????E                        </p>\n        
+pos=174179 len=4
+  cands: 既定時間(2.2) | 既定時間'(2.2) | 既定時間"(2.2) | 既定時間,(2.2) | 既定時間<(2.2) | 既定時間>(2.2) | 既定時間 (2.2) | 既定時間$(2.2)
+  ctx:                        <p className="text-[14px] font-bold text-slate-800 mb-2">????E/p>\n                          <div className="fle
+pos=177474 len=2
+  cands: から+9時間'(1.9) | から+9時間(1.9) | 時間+(1.9) | から+(1.9) | 外部+(1.9) | 社員+(1.5) | 名称+(1.4) | 登録+(1.0)
+  ctx: heet-chip-off"\n                            title={isFullTimeEmp(editorEmp) ? 'IN??+9??' : `IN??+${spanHoursForEmp(editorEmp)}??`}\n  
+pos=177478 len=2
+  cands: 時間'(1.9) | から'(1.9) | 外部'(1.9) | 社員'(1.5) | 名称'(1.4) | 登録'(1.0) | メモ'(0.9) | 出勤'(0.9)
+  ctx: -chip-off"\n                            title={isFullTimeEmp(editorEmp) ? 'IN??+9??' : `IN??+${spanHoursForEmp(editorEmp)}??`}\n      
+pos=177487 len=2
+  cands: 時間+(1.8) | から+(1.8) | 外部+(1.8) | 社員+(1.4) | 名称+(1.3) | 登録+(0.8) | メモ+(0.8) | 出勤+(0.7)
+  ctx: "\n                            title={isFullTimeEmp(editorEmp) ? 'IN??+9??' : `IN??+${spanHoursForEmp(editorEmp)}??`}\n               
+pos=177519 len=2
+  cands: 時間`(2.6) | 経堂`(2.6) | から`(2.6) | 自動`(2.6) | 外部`(2.6) | 有休`(1.7) | 設定`(1.7) | 保存`(1.7)
+  ctx: tle={isFullTimeEmp(editorEmp) ? 'IN??+9??' : `IN??+${spanHoursForEmp(editorEmp)}??`}\n                          >\n                   
+pos=178223 len=3
+  cands: 報告会15時参加\n(5.6) | 報告会15時参加(5.6) | 報告会(5.6) | 報告会'(5.6) | 報告会"(5.6) | 報告会,(5.6) | 報告会<(5.6) | 報告会>(5.6)
+  ctx:                     rows={MEMO_MAX_LINES}\n                      placeholder={'TF???E5???\n18???EN\n19?ET??'}\n                      cl
+pos=178228 len=3
+  cands: 報告会\n(5.6) | 時参加\n(5.6) | 時参加(5.6) | 外部?(5.6) | 最大?(5.6) | 時間?(5.2) | から?(5.1) | コード\n(3.4)
+  ctx:                rows={MEMO_MAX_LINES}\n                      placeholder={'TF???E5???\n18???EN\n19?ET??'}\n                      classNa
+pos=178235 len=3
+  cands: 報告会(5.6) | 報告会'(5.6) | 報告会"(5.6) | 報告会,(5.6) | 報告会<(5.6) | 報告会>(5.6) | 報告会 (5.6) | 報告会$(5.6)
+  ctx:         rows={MEMO_MAX_LINES}\n                      placeholder={'TF???E5???\n18???EN\n19?ET??'}\n                      className="w-f
+pos=178538 len=2
+  cands: 最大5行(5.9) | 最大5行'(5.9) | 最大5行"(5.9) | 最大5行,(5.9) | 最大5行<(5.9) | 最大5行>(5.9) | 最大5行 (5.9) | 最大5行$(5.9)
+  ctx:                />\n                    <p className="text-[12px] text-slate-500">??5?E· Enter??????MEMO????E?E/p>\n                  <
+pos=178550 len=6
+  cands: で改行（表のMEMOと同じ）(5.7) | で改行（表のMEMOと同じ）'(5.7) | で改行（表のMEMOと同じ）"(5.7) | で改行（表のMEMOと同じ）,(5.7) | で改行（表のMEMOと同じ）<(5.7) | で改行（表のMEMOと同じ）>(5.7) | で改行（表のMEMOと同じ） (5.7) | で改行（表のMEMOと同じ）$(5.7)
+  ctx:    />\n                    <p className="text-[12px] text-slate-500">??5?E· Enter??????MEMO????E?E/p>\n                  </div>\n          
+pos=178560 len=4
+  cands: と同じ）(5.2) | と同じ）'(5.2) | と同じ）"(5.2) | と同じ）,(5.2) | と同じ）<(5.2) | と同じ）>(5.2) | と同じ） (5.2) | と同じ）$(5.2)
+  ctx:                 <p className="text-[12px] text-slate-500">??5?E· Enter??????MEMO????E?E/p>\n                  </div>\n                </
+pos=180604 len=3
+  cands: 表示名(4.5) | 表示名'(4.5) | 表示名"(4.5) | 表示名,(4.5) | 表示名<(4.5) | 表示名>(4.5) | 表示名 (4.5) | 表示名$(4.5)
+  ctx: me="text-[14px] font-bold text-white/90 px-3 py-1 rounded-lg hover:bg-white/15">???E/button>\n                  )}\n                </d
+pos=180952 len=3
+  cands: 表示名(3.3) | 表示名'(3.3) | 表示名"(3.3) | 表示名,(3.3) | 表示名<(3.3) | 表示名>(3.3) | 表示名 (3.3) | 表示名$(3.3)
+  ctx:                    <label className={labelCls}>\n                          <span>???E/span>\n                          <input className
+pos=181099 len=2
+  cands: 日下 竜汰"(3.3) | 日下 竜汰(3.3) | 勤務(3.3) | 勤務'(3.3) | 勤務"(3.3) | 勤務,(3.3) | 勤務<(3.3) | 勤務>(3.3)
+  ctx: lue={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="??E??" />\n                        </label>\n         
+pos=181102 len=2
+  cands: 社員"(3.1) | 時間"(3.1) | 竜汰"(3.1) | 蜂谷"(3.1) | 有加"(3.1) | 名称"(1.8) | 登録"(1.7) | 前月"(1.3)
+  ctx: ={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="??E??" />\n                        </label>\n            
+pos=181227 len=4
+  cands: 社員番号<(2.4) | 社員番号(2.4) | エリア?(2.4) | すべて?(2.4) | ログイン<(2.1) | ログイン(2.1) | 登録する<(1.7) | 登録する(1.7)
+  ctx:                    <label className={labelCls}>\n                          <span>????<span className="text-rose-600 ml-0.5" aria-hidden
+pos=181888 len=4
+  cands: エリア（絞り込み）(2.2) | エリア（絞り込み）'(2.2) | エリア（絞り込み）"(2.2) | エリア（絞り込み）,(2.2) | エリア（絞り込み）<(2.2) | エリア（絞り込み）>(2.2) | エリア（絞り込み） (2.2) | エリア（絞り込み）$(2.2)
+  ctx:                    <label className={labelCls}>\n                          <span>????E??????E?E/span>\n                          <select
+pos=182078 len=3
+  cands: エリア<(1.4) | すべて<(1.4) | エリア(1.4) | すべて(1.4) | 社員?(1.4) | 時間?(1.4) | 前月?(1.4) | 翌月?(1.4)
+  ctx:  => onAreaChange(e.target.value)}>\n                            <option value="">???</option>\n                            {catalogArea
+pos=182410 len=1
+  cands: テリトリー（絞り込み）(1.4) | テリトリー（絞り込み）'(1.4) | テリトリー（絞り込み）"(1.4) | テリトリー（絞り込み）,(1.4) | テリトリー（絞り込み）<(1.4) | テリトリー（絞り込み）>(1.4) | テリトリー（絞り込み） (1.4) | テリトリー（絞り込み）$(1.4)
+  ctx:                    <label className={labelCls}>\n                          <span>?E??????E??????E?E/span>\n                          
+pos=182614 len=3
+  cands: エリア<(1.4) | すべて<(1.4) | エリア(1.4) | すべて(1.4) | 社員?(1.4) | 時間?(1.4) | 前月?(1.4) | 翌月?(1.4)
+  ctx: nTerritoryChange(e.target.value)}>\n                            <option value="">???</option>\n                            {territoryOp
+pos=182928 len=2
+  cands: 管轄店舗（タップして選択）(1.6) | 管轄店舗（タップして選択）'(1.6) | 管轄店舗（タップして選択）"(1.6) | 管轄店舗（タップして選択）,(1.6) | 管轄店舗（タップして選択）<(1.6) | 管轄店舗（タップして選択）>(1.6) | 管轄店舗（タップして選択） (1.6) | 管轄店舗（タップして選択）$(1.6)
+  ctx: >\n                      <p className="text-[15px] font-semibold text-slate-700">??E???E?E???E?E?????E/p>\n                      {!cat
+pos=182935 len=1
+  cands: いいえ(0.9) | いいえ'(0.9) | いいえ"(0.9) | いいえ`(0.9) | いいえ,(0.9) | いいえ<(0.9) | いいえ>(0.9) | いいえ (0.9)
+  ctx:                  <p className="text-[15px] font-semibold text-slate-700">??E???E?E???E?E?????E/p>\n                      {!catalogSt
+pos=183081 len=2
+  cands: 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。'(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。"(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。,(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。<(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。>(1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。 (1.4) | 店舗一覧を読み込めません。スプレッドシートの「店舗データ」または「アルバイト登録」を確認してください。$(1.4)
+  ctx: \n                        <p className="text-[13px] text-rose-600 font-semibold">??E???????????????E??????E???E?E?E?????E????????????
+pos=183084 len=15
+  cands: 先に従業員を登録してください?(0.7) | 反映する日がありませんでした?(0.1) | 週間テンプレートを保存しました(0.0) | カレンダー準備に失敗しました?(0.0)
+  ctx:                       <p className="text-[13px] text-rose-600 font-semibold">??E???????????????E??????E???E?E?E?????E???????????????????E/p>\n    
+pos=183107 len=3
+  cands: エリア(1.6) | すべて(1.6) | 」を?(1.6) | 登録?(1.6) | 欠勤?(1.1) | 社員?(1.1) | コード(1.0) | コード'(1.0)
+  ctx: p className="text-[13px] text-rose-600 font-semibold">??E???????????????E??????E???E?E?E?????E???????????????????E/p>\n               
+pos=184255 len=2
+  cands: 店舗}(2.1) | 店舗(2.1) | 編集(2.1) | 編集'(2.1) | 編集"(2.1) | 編集`(2.1) | 編集,(2.1) | 編集<(2.1)
+  ctx: me={btnPrimary}>\n                        {user?.needsJurisdiction ? '??????' : '??E}\n                      </button>\n               
+pos=184749 len=3
+  cands: 」を?(3.9) | 登録?(3.9) | スタッフ'(3.7) | スタッフ(3.7) | エリア(3.4) | すべて(3.4) | から?(3.0) | シフト(2.7)
+  ctx:                               {empForm.employee_id ? `${String(empForm.name || '???E??').trim()} ???E : '???E?????'}\n                
+pos=184753 len=2
+  cands: 」を'(3.9) | 登録'(3.9) | から'(3.0) | 社員'(2.7) | 最大'(2.1) | 蜂谷'(2.1) | 有加'(2.1) | 時間'(1.7)
+  ctx:                           {empForm.employee_id ? `${String(empForm.name || '???E??').trim()} ???E : '???E?????'}\n                   
+pos=184766 len=3
+  cands: 」を?(3.4) | 登録?(3.4) | から?(3.0) | エリア(2.9) | すべて(2.9) | シフト(2.7) | 社員?(2.7) | 閉じる(2.6)
+  ctx:              {empForm.employee_id ? `${String(empForm.name || '???E??').trim()} ???E : '???E?????'}\n                            </p>\n
+pos=184774 len=3
+  cands: 」を?(3.1) | 登録?(3.1) | スタッフ?(3.0) | スタッフ(3.0) | から?(3.0) | スタッフを追加'(2.9) | スタッフを追加(2.9) | シフト(2.7)
+  ctx:      {empForm.employee_id ? `${String(empForm.name || '???E??').trim()} ???E : '???E?????'}\n                            </p>\n        
+pos=185100 len=3
+  cands: コード(4.0) | コード'(4.0) | コード"(4.0) | コード,(4.0) | コード<(4.0) | コード>(4.0) | コード (4.0) | コード$(4.0)
+  ctx:                  <label className={labelCls}>\n                            <span>???E?????E??E???E??E?Espan className="text-rose-600 m
+pos=185110 len=2
+  cands: 勤務(3.7) | 勤務'(3.7) | 勤務"(3.7) | 勤務,(3.7) | 勤務<(3.7) | 勤務>(3.7) | 勤務 (3.7) | 勤務$(3.7)
+  ctx:        <label className={labelCls}>\n                            <span>???E?????E??E???E??E?Espan className="text-rose-600 ml-0.5" ar
+pos=185113 len=3
+  cands: コード(4.0) | コード'(4.0) | コード"(4.0) | コード,(4.0) | コード<(4.0) | コード>(4.0) | コード (4.0) | コード$(4.0)
+  ctx:     <label className={labelCls}>\n                            <span>???E?????E??E???E??E?Espan className="text-rose-600 ml-0.5" aria-h
+pos=185117 len=2
+  cands: 勤務(3.6) | 勤務'(3.6) | 勤務"(3.6) | 勤務,(3.6) | 勤務<(3.6) | 勤務>(3.6) | 勤務 (3.6) | 勤務$(3.6)
+  ctx: <label className={labelCls}>\n                            <span>???E?????E??E???E??E?Espan className="text-rose-600 ml-0.5" aria-hidd
+pos=185352 len=2
+  cands: 蜂谷 有加"(2.7) | 蜂谷 有加(2.7) | 蜂谷 (2.7) | 有加 (2.7) | 社員 (2.6) | 時間 (2.4) | 竜汰 (2.4) | 登録 (1.9)
+  ctx: onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })} placeholder="?? ??" autoFocus={!empForm.employee_id} />\n         
+pos=185355 len=2
+  cands: 蜂谷"(2.7) | 有加"(2.7) | 社員"(2.6) | 時間"(2.4) | 竜汰"(2.4) | 登録"(1.9) | 名称"(1.8) | 翌月"(1.5)
+  ctx: hange={(e) => setEmpForm({ ...empForm, name: e.target.value })} placeholder="?? ??" autoFocus={!empForm.employee_id} />\n            
+pos=185520 len=4
+  cands: 社員番号<(2.4) | 社員番号(2.4) | エリア?(2.4) | すべて?(2.4) | ログイン<(2.2) | ログイン(2.2) | 登録する<(1.9) | 登録する(1.9)
+  ctx:                  <label className={labelCls}>\n                            <span>????<span className="text-rose-600 ml-0.5" aria-hidden
+pos=185920 len=3
+  cands: 社員?(2.8) | 時間?(2.8) | 蜂谷?(2.4) | 有加?(2.4) | すべて (2.4) | すべて(2.4) | エリア (2.2) | エリア(2.2)
+  ctx:                        <span className="text-[12px] text-slate-400 font-medium">??? 0 ??????????E30400?E?E/span>\n                    
+pos=185926 len=10
+  cands: 週間テンプレート作成3(0.9) | 週間テンプレート作成(0.9) | 月間シフトを準備中…(0.7) | つ以上選んでください(0.2) | 従業員を更新しました(0.2) | 登録を解除しました?(0.2) | を保存してください。(0.0) | を保存してください。'(0.0)
+  ctx:                  <span className="text-[12px] text-slate-400 font-medium">??? 0 ??????????E30400?E?E/span>\n                          </label
+pos=187207 len=3
+  cands: 社員?(1.7) | 時間?(1.7) | 閉じる(1.5) | 閉じる'(1.5) | 閉じる"(1.5) | 閉じる,(1.5) | 閉じる<(1.5) | 閉じる>(1.5)
+  ctx:         <div className={labelCls}>\n                            <span>1?????????E???E?E/span>\n                            <div classNa
+pos=188340 len=2
+  cands: 設定(1.2) | 設定'(1.2) | 設定"(1.2) | 設定,(1.2) | 設定<(1.2) | 設定>(1.2) | 設定 (1.2) | 設定$(1.2)
+  ctx:               >\n                              {empForm.employee_id ? '?????E : '??E???E?????'}\n                            </button>
+pos=188343 len=3
+  cands: スタッフを追加'(1.2) | スタッフを追加(1.2) | スタッフ?(1.2) | スタッフ(1.2) | シフト(1.2) | クリア(1.2) | コード(1.0) | コード'(1.0)
+  ctx:            >\n                              {empForm.employee_id ? '?????E : '??E???E?????'}\n                            </button>\n   
+pos=189079 len=2
+  cands: 設定(1.7) | 設定'(1.7) | 設定"(1.7) | 設定,(1.7) | 設定<(1.7) | 設定>(1.7) | 設定 (1.7) | 設定$(1.7)
+  ctx: ation-rose-200"\n                              >\n                                ??E???E??????????\n                              </bu
+pos=189082 len=3
+  cands: スタッフを追加?(1.7) | スタッフを追加(1.7) | スタッフ?(1.7) | スタッフ(1.7) | シフト(1.7) | クリア(1.7) | 登録?(1.7) | から?(1.7)
+  ctx: on-rose-200"\n                              >\n                                ??E???E??????????\n                              </button
+pos=189086 len=10
+  cands: 月間シフトを準備中…(0.3) | つ以上選んでください(0.0) | 従業員を更新しました(0.0) | 登録を解除しました?(0.0)
+  ctx: ose-200"\n                              >\n                                ??E???E??????????\n                              </button>\n         
+pos=189223 len=11
+  cands: 月間シフトを準備中…?(0.8) | カレンダー操作を閉じる(0.3) | カレンダー操作を閉じる'(0.3) | カレンダー操作を閉じる"(0.3) | カレンダー操作を閉じる,(0.3) | カレンダー操作を閉じる<(0.3) | カレンダー操作を閉じる>(0.3) | カレンダー操作を閉じる (0.3)
+  ctx:                         <p className={panelSubCls + ' mt-1'}>??????E?????E?????E???????????E/p>\n                            </div>\n          
+pos=189540 len=2
+  cands: 」を (2.2) | 登録 (2.2) | 社員 (2.1) | から (2.1) | 時間 (1.3) | 名称 (1.1) | 最大 (1.0) | 出勤 (0.9)
+  ctx: ween gap-3">\n                            <p className="app-section-title">?????E?? {employees.length}?E/p>\n                         
+pos=189716 len=3
+  cands: スタッフを追加<(2.2) | スタッフを追加(2.2) | スタッフ?(2.2) | スタッフ(2.2) | 」を?(2.2) | 登録?(2.2) | 社員?(2.0) | から?(2.0)
+  ctx:    <button type="button" onClick={openEmpFormForNew} className={btnPrimary}>?E?E???E?????</button>\n                            )}\n   
+pos=189903 len=3
+  cands: スタッフ?(3.2) | スタッフ(3.2) | 社員?(3.2) | 登録?(3.2) | から?(3.2) | エリア(1.5) | すべて(1.5) | 」を?(1.5)
+  ctx:   {!employees.length ? (\n                            <p className={panelSubCls}>???E???????E???E?????????????????E/p>\n               
+pos=189907 len=7
+  cands: 登録済みスタッフ?(3.2) | 登録済みスタッフ(3.2) | 登録を解除する(3.2) | 登録して進む?(1.2) | 保存しました?(1.2) | 全部休みに戻す(1.1) | 全部休みに戻す'(1.1) | 全部休みに戻す"(1.1)
+  ctx: employees.length ? (\n                            <p className={panelSubCls}>???E???????E???E?????????????????E/p>\n                       
+pos=189915 len=3
+  cands: スタッフ?(3.0) | スタッフ(3.0) | 社員?(3.0) | 登録?(3.0) | から?(3.0) | エリア(1.4) | すべて(1.4) | 」を?(1.4)
+  ctx: s.length ? (\n                            <p className={panelSubCls}>???E???????E???E?????????????????E/p>\n                          )
+pos=189919 len=17
+  cands: 該当する非表示コードがありません?(0.6) | 月に週間テンプレートを反映します。(0.2) | 月に週間テンプレートを反映します。'(0.2) | 月に週間テンプレートを反映します。"(0.2) | 月に週間テンプレートを反映します。,(0.2) | 月に週間テンプレートを反映します。<(0.2) | 月に週間テンプレートを反映します。>(0.2) | 月に週間テンプレートを反映します。 (0.2)
+  ctx: ngth ? (\n                            <p className={panelSubCls}>???E???????E???E?????????????????E/p>\n                          ) : (\n             
+pos=191950 len=14
+  cands: 該当するコードがありません?(0.6) | 反映する日がありませんでした(0.3) | 先に従業員を登録してください(0.3) | カレンダー権限が未許可です。(0.1) | カレンダー権限が未許可です。'(0.1) | カレンダー権限が未許可です。"(0.1) | カレンダー権限が未許可です。,(0.1) | カレンダー権限が未許可です。<(0.1)
+  ctx:      )}\n                          <p className={panelSubCls}>??????????????????E??????????????E/p>\n                        </>\n                 
+pos=192238 len=14
+  cands: 該当するコードがありません?(0.9) | 反映する日がありませんでした<(0.5) | 反映する日がありませんでした(0.5) | 先に従業員を登録してください<(0.4) | 先に従業員を登録してください(0.4) | カレンダー準備に失敗しました<(0.0) | カレンダー準備に失敗しました(0.0)
+  ctx:       {!employees.length ? (\n                        <p className={panelSubCls}>??????????????</p>\n                      ) : (\n                 
+pos=193985 len=5
+  cands: 拘束時間（休憩込み）(2.3) | 拘束時間（休憩込み）'(2.3) | 拘束時間（休憩込み）"(2.3) | 拘束時間（休憩込み）,(2.3) | 拘束時間（休憩込み）<(2.3) | 拘束時間（休憩込み）>(2.3) | 拘束時間（休憩込み） (2.3) | 拘束時間（休憩込み）$(2.3)
+  ctx: ng(weeklySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="?????E???E???E?E>\n                                    {
+pos=193991 len=3
+  cands: 時間?(2.2) | 出勤?(2.2) | 休み?(2.0) | 前月?(1.8) | 社員?(1.8) | から?(1.7) | 翌月?(1.7) | コード(1.5)
+  ctx: klySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="?????E???E???E?E>\n                                    {WEEK
+pos=193995 len=3
+  cands: 時間?(2.2) | 出勤?(2.2) | 休み?(2.0) | 前月?(1.8) | 社員?(1.8) | から?(1.7) | 翌月?(1.7) | コード(1.5)
+  ctx: pan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="?????E???E???E?E>\n                                    {WEEKLY_S
+pos=194100 len=2
+  cands: 時間<(2.7) | 出勤<(2.7) | 休み<(2.7) | 社員<(2.2) | 前月<(2.1) | 翌月<(1.9) | から<(1.9) | 名称<(1.5)
+  ctx:                    {WEEKLY_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}??</option>)}\n                                  </se
+pos=196088 len=2
+  cands: 出勤"(4.0) | 休み"(4.0) | 時間"(2.0) | 社員"(1.8) | 欠勤"(1.7) | 」を"(1.7) | 登録"(1.7) | 竜汰"(1.6)
+  ctx:                                <button type="button" disabled={!canEdit} title="??" onClick={() => setWeeklyCell(weeklyEmpId, wd, we
+pos=196468 len=2
+  cands: 出勤"(4.7) | 休み"(4.7) | 」を"(1.8) | 登録"(1.8) | 時間"(1.7) | から"(1.6) | 社員"(1.5) | 欠勤"(1.4)
+  ctx:                                <button type="button" disabled={!canEdit} title="??" onClick={() => setWeeklyLeave(weeklyEmpId, wd, l
+pos=199285 len=9
+  cands: 自動保存しました（そのまま閉じてOK）(1.6) | 自動保存しました（そのまま閉じてOK）'(1.6) | 自動保存しました（そのまま閉じてOK）"(1.6) | 自動保存しました（そのまま閉じてOK）,(1.6) | 自動保存しました（そのまま閉じてOK）<(1.6) | 自動保存しました（そのまま閉じてOK）>(1.6) | 自動保存しました（そのまま閉じてOK） (1.6) | 自動保存しました（そのまま閉じてOK）$(1.6)
+  ctx:                 : weeklyStatus === 'saved'\n                                  ? '?????????E????????OK?E?E\n                                  
+pos=199295 len=8
+  cands: 法定外休日出勤?(0.3) | 横で掲示用に印刷(0.1) | カレンダー連携?(0.1) | メールアドレス?(0.1) | を保存しました?(0.1) | 登録を解除する?(0.1) | をご利用ください(0.0) | 従業員を保存中…(0.0)
+  ctx:       : weeklyStatus === 'saved'\n                                  ? '?????????E????????OK?E?E\n                                  : weeklyS
+pos=199410 len=4
+  cands: 未保存の変更があります…'(1.9) | 未保存の変更があります…(1.9) | 保存中…(1.9) | 平日を出勤?(1.2) | 平日を出勤(1.2) | 勤務時間(1.2) | 勤務時間'(1.2) | 勤務時間"(1.2)
+  ctx:               : weeklyStatus === 'dirty'\n                                    ? '????E????????'\n                                    : '
+pos=199415 len=8
+  cands: 登録を解除する?(0.7) | 横で掲示用に印刷'(0.6) | 横で掲示用に印刷(0.6) | メールアドレス?(0.6) | を保存しました?(0.6) | 法定外休日出勤?(0.3) | カレンダー連携?(0.2) | 従業員を保存中…'(0.1)
+  ctx:          : weeklyStatus === 'dirty'\n                                    ? '????E????????'\n                                    : '??E??????
+pos=199464 len=2
+  cands: 「出」「休」で切替。変更は自動保存されます(2.8) | 「出」「休」で切替。変更は自動保存されます'(2.8) | 「出」「休」で切替。変更は自動保存されます"(2.8) | 「出」「休」で切替。変更は自動保存されます,(2.8) | 「出」「休」で切替。変更は自動保存されます<(2.8) | 「出」「休」で切替。変更は自動保存されます>(2.8) | 「出」「休」で切替。変更は自動保存されます (2.8) | 「出」「休」で切替。変更は自動保存されます$(2.8)
+  ctx:                        ? '????E????????'\n                                    : '??E??????E??????????????E}\n                         
+pos=199787 len=3
+  cands: 未保存(3.8) | 未保存'(3.8) | 未保存"(3.8) | 未保存,(3.8) | 未保存<(3.8) | 未保存>(3.8) | 未保存 (3.8) | 未保存$(3.8)
+  ctx: unded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700">???E/button>\n                              <button ty
+pos=200313 len=2
+  cands: このスタッフを反映<(3.0) | このスタッフを反映(3.0) | このスタッフ?(3.0) | このスタッフ(3.0) | 店舗?(2.6) | 店舗(2.6) | 編集(2.5) | 編集'(2.5)
+  ctx: ed-xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">??E???E?????</button>\n                            </
+pos=200316 len=3
+  cands: スタッフ?(3.0) | スタッフ(3.0) | 閉じる(3.0) | 閉じる'(3.0) | 閉じる"(3.0) | 閉じる,(3.0) | 閉じる<(3.0) | 閉じる>(3.0)
+  ctx: xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">??E???E?????</button>\n                            </div>

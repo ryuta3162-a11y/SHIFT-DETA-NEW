@@ -1,0 +1,324 @@
+pos=995 len=1
+  : '休職, pto: '休職, absent: '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テン
+pos=1000 len=1
+  , pto: '休職, absent: '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未
+pos=1005 len=1
+  : '休職, absent: '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のため
+pos=1010 len=1
+  , absent: '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のためEキンタイ
+pos=1015 len=1
+  ent: '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のためEキンタイコピー? 
+pos=1020 len=1
+  '振出', undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のためEキンタイコピー? weekd
+pos=1025 len=1
+   undef: '休職 };\nconst WEEKDAY_LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のためEキンタイコピー? weekday ? 
+pos=1054 len=1
+  LABELS = ['?', '?E, '?', '?', '?', '?E, '?E];\n/** テンプレート未登録のためEキンタイコピー? weekday ? 0=振出6=管轄店舗を*/\nconst WEEKDAY_T
+pos=1152 len=1
+  nst WEEKDAY_TEMPLATE_ORDER = [1, 2, 3, 4, 5, 6, 0];\n/** 法定外)→半日有休・半日欠勤?報連相・メモの共有*/\nfunction weekdayTextClass(wd
+pos=1333 len=1
+  ext-[#1565c0]';\n  return 'text-slate-700';\n}\n\n/** 第7エリア / （読取不可2 / パート?E-2新規追加に切替?E*/\nfunction formatStoreStaff
+pos=1344 len=1
+  0]';\n  return 'text-slate-700';\n}\n\n/** 第7エリア / （読取不可2 / パート?E-2新規追加に切替?E*/\nfunction formatStoreStaffHeader(stor
+pos=2200 len=1
+   return s;\n  const parts = s.split('-');\n  return `${Number(parts[1])}?E{Number(parts[2])}パート{WEEKDAY_LABELS[wd
+pos=10515 len=1
+  Clock className="w-3.5 h-3.5" />\n          <span>{ptoHoursLabel || 'IN?OUT'}</span>\n        </button>\n        <
+pos=11970 len=1
+  </div>\n  );\n}\n\nfunction initialOf(name) {\n  const s = String(name || '?').trim();\n  return s ? s.charAt(0) : '?
+pos=12010 len=1
+  {\n  const s = String(name || '?').trim();\n  return s ? s.charAt(0) : '?';\n}\n\nfunction pad2(n) {\n  const s = Str
+pos=12278 len=1
+   return m ? `${pad2(m[1])}:${m[2]}` : '';\n}\n\n/** キンタイミライ: 未保存の変更があります…?E振休(法定*/\nfunction formatByeByePersonName
+pos=12383 len=1
+  onName(name) {\n  let s = String(name || '').trim().replace(/[ 前]+/g, '?');\n  if (!s) return '';\n  if (s.include
+pos=12427 len=1
+  trim().replace(/[ 前]+/g, '?');\n  if (!s) return '';\n  if (s.includes('?')) return s;\n  // 法定外)→休出?E3テンプレート未登録のた
+pos=12454 len=1
+  ');\n  if (!s) return '';\n  if (s.includes('?')) return s;\n  // 法定外)→休出?E3テンプレート未登録のためE2－—–〜～スタッフを追加しました?パート  co
+pos=12487 len=1
+  includes('?')) return s;\n  // 法定外)→休出?E3テンプレート未登録のためE2－—–〜～スタッフを追加しました?パート  const three = ['→休出, '→休出, 'ブルー', '
+pos=12705 len=1
+  if (s.length > sur.length && s.startsWith(sur)) {\n      return `${sur}?${s.slice(sur.length)}`;\n    }\n  }\n  if 
+pos=12786 len=1
+  sur.length)}`;\n    }\n  }\n  if (s.length >= 3) return `${s.slice(0, 2)}?${s.slice(2)}`;\n  return s;\n}\n\nfunction 
+pos=13538 len=1
+  0' : 'R0:00';\n  }\n  return `${s}-${e}${breakStr}`;\n}\n\n/** 未保存の変更があります…?テンプレ反映E?TSVブルー */\nfunction buildByeByeTs
+pos=13546 len=1
+  :00';\n  }\n  return `${s}-${e}${breakStr}`;\n}\n\n/** 未保存の変更があります…?テンプレ反映E?TSVブルー */\nfunction buildByeByeTsv(employ
+pos=14760 len=1
+  }(${WEEKDAY_LABELS[t.getDay()]})`);\n  }\n  // 第7エリアGAS振出: D日下 竜汰1テンプレ反映?振休(法定)→休出 担当店舗を選ぶE?E  const headerRow = 
+pos=14779 len=1
+  t.getDay()]})`);\n  }\n  // 第7エリアGAS振出: D日下 竜汰1テンプレ反映?振休(法定)→休出 担当店舗を選ぶE?E  const headerRow = [`${year}/${month}/
+pos=17117 len=1
+  x] = valForShift;\n    }\n\n    // オレンジ2法定)→半日有休振出7ブルーGAS週間テンプレートを保存しましたE?E    rowsForStaff.forEach((rr) => output
+pos=18526 len=1
+  String(ym || '').split('-');\n  if (!y || !m) return '';\n  return `${y}?${Number(m)}?E;\n}\n\n/** キンタイコピー 法定)→半日有休 
+pos=18539 len=1
+  '').split('-');\n  if (!y || !m) return '';\n  return `${y}?${Number(m)}?E;\n}\n\n/** キンタイコピー 法定)→半日有休 "8"読み込み中… "8:
+pos=18794 len=1
+  ng(Number(m[1]));\n  return m[2] === '00' ? h : `${h}:${m[2]}`;\n}\n\n/** ?E 8-17 / 8:30-17 / 8-17:30 / 8:30-17:30 
+pos=19036 len=1
+  ;\n  if (a && b) return `${a}-${b}`;\n  return a || b || '';\n}\n\n/** 0:00?E4:00 ?Estep テンプレ反映E */\nfunction buildTi
+pos=19043 len=1
+  (a && b) return `${a}-${b}`;\n  return a || b || '';\n}\n\n/** 0:00?E4:00 ?Estep テンプレ反映E */\nfunction buildTimeOptio
+pos=20114 len=1
+  _FOCUS_RING = 'inset 0 0 0 2px #18181b';\n/** →半日有休(前eparate + 1px－—–〜～? sheet-name-cell →休出*/\nconst SHEET_DAY =
+pos=20688 len=1
+  { id: 'blank', label: '休職, title: '子の看護休暇' },\n  { id: 'work', label: '?E, title: '振出' },\n  { id: 'off', label: 
+pos=21204 len=1
+  | lc === 10 || lc === 20) return 'off';\n  return '';\n}\n\n/** 週間テンプレート作成?インディゴ?E*/\nconst PART_HOUR_OPTIONS = [3, 
+pos=21210 len=1
+  == 10 || lc === 20) return 'off';\n  return '';\n}\n\n/** 週間テンプレート作成?インディゴ?E*/\nconst PART_HOUR_OPTIONS = [3, 3.5, 4
+pos=21316 len=1
+  .5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8];\n/** 詳細を閉じる（任意）メールアドレスを入力してください?E*/\nconst FULL_HOUR_OPTIONS = [6, 6.5, 7
+pos=22034 len=1
+  meEmp(emp) ? FULL_HOUR_OPTIONS : PART_HOUR_OPTIONS;\n}\n\n/** 管轄店舗を更新しました?いいえ→半日有休・半日欠勤E週間テンプレート作成*/\nfunction carr
+pos=23347 len=1
+  turn Math.round((diff / 60) * 10) / 10;\n}\n\n/** コード・名称で検索E社員番号を入力してください?インディゴ? */\nconst WEEKLY_SPAN_OPTIONS = [4
+pos=23353 len=1
+  ath.round((diff / 60) * 10) / 10;\n}\n\n/** コード・名称で検索E社員番号を入力してください?インディゴ? */\nconst WEEKLY_SPAN_OPTIONS = [4, 4.5,
+pos=25429 len=1
+  .stringify(all));\n  } catch {\n    /* ignore */\n  }\n}\n\n/** 未保存の変更があります…?新規追加に切替?E?E0-16 / 12:30-21:30 →休出?E*/\nco
+pos=25437 len=1
+  fy(all));\n  } catch {\n    /* ignore */\n  }\n}\n\n/** 未保存の変更があります…?新規追加に切替?E?E0-16 / 12:30-21:30 →休出?E*/\nconst SHIF
+pos=25439 len=1
+  (all));\n  } catch {\n    /* ignore */\n  }\n}\n\n/** 未保存の変更があります…?新規追加に切替?E?E0-16 / 12:30-21:30 →休出?E*/\nconst SHIFT_
+pos=25463 len=1
+  /* ignore */\n  }\n}\n\n/** 未保存の変更があります…?新規追加に切替?E?E0-16 / 12:30-21:30 →休出?E*/\nconst SHIFT_TIME_RANGE_RE = /(\d{1,2
+pos=25507 len=1
+  ?E?E0-16 / 12:30-21:30 →休出?E*/\nconst SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~〜ー－—/／]\s*(\d{1,2})(?::
+pos=25518 len=1
+  12:30-21:30 →休出?E*/\nconst SHIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~〜ー－—/／]\s*(\d{1,2})(?::(\d{2}))?/;
+pos=25545 len=1
+  HIFT_TIME_RANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~〜ー－—/／]\s*(\d{1,2})(?::(\d{2}))?/;\nconst SHIFT_TIME_ONLY_RE =
+pos=25556 len=1
+  ANGE_RE = /(\d{1,2})(?::(\d{2}))?\s*[-~〜ー－—/／]\s*(\d{1,2})(?::(\d{2}))?/;\nconst SHIFT_TIME_ONLY_RE = /^(\d{1,2}
+pos=25599 len=1
+  /／]\s*(\d{1,2})(?::(\d{2}))?/;\nconst SHIFT_TIME_ONLY_RE = /^(\d{1,2})(?::(\d{2}))?$/;\n\nfunction normalizeShiftR
+pos=25610 len=1
+  ,2})(?::(\d{2}))?/;\nconst SHIFT_TIME_ONLY_RE = /^(\d{1,2})(?::(\d{2}))?$/;\n\nfunction normalizeShiftRaw(raw) {\n 
+pos=26123 len=1
+  s: 'work', start_time: start, end_time: end, leave_code: '' };\n}\n\n/** ?E3:00\\n22:00はい、解除する?? IN/OUT 法定外休日 */\nf
+pos=26738 len=1
+  n !!parseStackedTimes(normalizeShiftRaw(text));\n}\n\n/** 社員番号を入力してください: ?E0-16休職2:00-21:00週間の固定パターン?? */\nfunction
+pos=26960 len=1
+  : 'undef', start_time: '', end_time: '', leave_code: '' };\n\n  // 　スタッフ? IN / OUT）3:00\\n22:00）  const stacked =
+pos=27080 len=1
+  ckedTimes(original);\n  if (stacked) return stacked;\n\n  // テンプレート未登録のため?氏名・社員番号・勤務時間  const firstLine = original
+pos=27242 len=1
+  || '';\n  const text = firstLine.replace(/\s+/g, '');\n\n  if (text === '?E || text === '?' || text === '?E) retur
+pos=27258 len=1
+  ext = firstLine.replace(/\s+/g, '');\n\n  if (text === '?E || text === '?' || text === '?E) return workTimesFromI
+pos=27274 len=1
+  replace(/\s+/g, '');\n\n  if (text === '?E || text === '?' || text === '?E) return workTimesFromIn(emp, '12:00');
+pos=27348 len=1
+  return workTimesFromIn(emp, '12:00');\n  if (text === 'ÁE || text === '?E || text === '?E || text.toLowerCase() 
+pos=27364 len=1
+  FromIn(emp, '12:00');\n  if (text === 'ÁE || text === '?E || text === '?E || text.toLowerCase() === 'x') {\n    r
+pos=27917 len=1
+  ', end_time: '' };\n  }\n\n  const leaveMap = [\n    { keys: ['休職, '振出', '?E, '振出', 'off'], status: 'off' },\n    { 
+pos=28444 len=1
+  imesFromIn(emp, '12:00');\n  }\n\n  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~〜ー－—/／](\d{1,2})(?::(\d{2}
+pos=28455 len=1
+  emp, '12:00');\n  }\n\n  const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~〜ー－—/／](\d{1,2})(?::(\d{2}))?$/);\n  i
+pos=28476 len=1
+   const range = text.match(/^(\d{1,2})(?::(\d{2}))?[-~〜ー－—/／](\d{1,2})(?::(\d{2}))?$/);\n  if (range) return shif
+pos=28487 len=1
+  e = text.match(/^(\d{1,2})(?::(\d{2}))?[-~〜ー－—/／](\d{1,2})(?::(\d{2}))?$/);\n  if (range) return shiftFromTimeMa
+pos=28700 len=1
+  In(emp, `${pad2(Number(single[1]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 →半日有休・半日欠勤?テンプレート未登録のためE9-15店舗と年月を
+pos=28717 len=1
+  umber(single[1]))}:${single[2] || '00'}`);\n  }\n\n  // ?E0-16 →半日有休・半日欠勤?テンプレート未登録のためE9-15店舗と年月を選んでください。エメラルド  co
+pos=29069 len=2
+      return null;\n  }\n\n  return null;\n}\n\n/**\n * Sheets/Excel ? TSV　スタッフ??E "..." つ以上選んでください split('\\n') 現場のすべてを、
+pos=30057 len=1
+  ength) || rows.length === 0) rows.push(row);\n  return rows;\n}\n\n/** →休出?E振休(法定heets/Excel行 ·??×いいえ? */\nfunction 
+pos=30078 len=2
+   === 0) rows.push(row);\n  return rows;\n}\n\n/** →休出?E振休(法定heets/Excel行 ·??×いいえ? */\nfunction parseClipboardGrid(tex
+pos=30084 len=1
+  ) rows.push(row);\n  return rows;\n}\n\n/** →休出?E振休(法定heets/Excel行 ·??×いいえ? */\nfunction parseClipboardGrid(text) {\n
+pos=30394 len=1
+  ) {\n    return [[normalized.trim()]];\n  }\n  // →半日有休・半日欠勤Eheets 健康維持代休?E  return parseTsvGrid(normalized.replac
+pos=30623 len=1
+  rn true;\n  return (grid[0]?.length || 0) > 1;\n}\n\n/** 月に週間テンプレートを反映します。?E */\nfunction detectPasteLabelColumn(gri
+pos=35322 len=1
+  cusCell, setFocusCell] = useState(null); // { employee_id, date, layer?: 'shift'|'memo', editing?: boolean }\n  
+pos=35348 len=1
+  seState(null); // { employee_id, date, layer?: 'shift'|'memo', editing?: boolean }\n  const [shiftEditor, setShi
+pos=35604 len=1
+  oOpenIds, setMemoOpenIds] = useState(() => new Set()); // employee_id ?EMEMO日下 竜汰\n  const [editDraft, setEditDr
+pos=37857 len=1
+  yAccentTheme(readStoredAccentId());\n  }, []);\n\n  // 貼り付けできる勤務データがありません?行 ·?scrollIntoView 現場のすべてを、  useEffect((
+pos=37861 len=1
+  entTheme(readStoredAccentId());\n  }, []);\n\n  // 貼り付けできる勤務データがありません?行 ·?scrollIntoView 現場のすべてを、  useEffect(() =>
+pos=38704 len=1
+  Timer.current) clearTimeout(autoSaveTimer.current);\n    // 初回登録が完了しました?E初回登録が完了しました??E    const delay = total >
+pos=38717 len=2
+  ) clearTimeout(autoSaveTimer.current);\n    // 初回登録が完了しました?E初回登録が完了しました??E    const delay = total > 40 ? 1800 : 6
+pos=39158 len=1
+  er.email));\n  }, [user?.email]);\n\n  /** 管轄店舗変更E氏名・社員番号・勤務時間スタッフを追加しました?振休(法定*/\n  useEffect(() => {\n    if (auth
+pos=41584 len=1
+  s, dirtyKeys, dirtyMemoKeys]);\n\n  // 月に反映しました（該当するコードがありませんE週間テンプレート作成?E  useEffect(() => {\n    if (authStep !=
+pos=41992 len=1
+  hStep, yearMonth, storeName]);\n\n  // Ctrl+P / の週間テンプレートが未登録です。現場のすべてを、?E  useEffect(() => {\n    if (authStep !=
+pos=43944 len=2
+  LoginEmail(boot.sessionEmail);\n        // GAS 現場のすべてを、ひとつに。初回登録が完了しました??E        localStorage.removeItem(STAFF_T
+pos=44389 len=1
+  \n    return () => { cancelled = true; };\n  }, []);\n\n  /** 未保存の変更があります…?Eつ以上選んでください。カレンダー権限が未許可です。*/\n  function 
+pos=45454 len=1
+  nt = setTimeout(() => setProgress(null), 420);\n  }\n\n  /** パート登録が完了しました?振休(法定テンプレ反映E*/\n  function resetWorkspace
+pos=50329 len=1
+        territory: s.territory || '',\n      }));\n    }\n    // 週間テンプレート作成?パートテンプレート未登録のため?→半日有休(前    return [\n    
+pos=50345 len=1
+   s.territory || '',\n      }));\n    }\n    // 週間テンプレート作成?パートテンプレート未登録のため?→半日有休(前    return [\n      { store_id: 'S
+pos=59376 len=1
+  l ? Number(weeklySpanH) : spanHoursForEmp(weeklyEmp);\n\n  /** 登録が完了しました?詳細を閉じる（任意））*/\n  function weeklyWorkPatch
+pos=61695 len=1
+  lySave();\n  }\n\n  async function saveWeekly(opts = {}) {\n    // キンタイコピー?E氏名・社員番号・勤務時間週間の固定パターン\n    const pending
+pos=61888 len=1
+  h { /* ignore */ }\n    }\n    // カレンダー権限が未許可です。印刷ダイアログでレイアウトを「横」にしてください?アンバー    if (!weeklyLoadedRef.current) re
+pos=62108 len=1
+  ched = Array.from(weeklyTouchedEmps.current || []);\n    // 振休(法定テンプレ反映?Eインディゴ?E新規追加に切替?E週間テンプレート作成    // 　スタッフ?
+pos=62115 len=1
+  Array.from(weeklyTouchedEmps.current || []);\n    // 振休(法定テンプレ反映?Eインディゴ?E新規追加に切替?E週間テンプレート作成    // 　スタッフ?E週間テンプレ
+pos=62124 len=1
+  m(weeklyTouchedEmps.current || []);\n    // 振休(法定テンプレ反映?Eインディゴ?E新規追加に切替?E週間テンプレート作成    // 　スタッフ?E週間テンプレート作成?健康維持
+pos=62148 len=1
+  ent || []);\n    // 振休(法定テンプレ反映?Eインディゴ?E新規追加に切替?E週間テンプレート作成    // 　スタッフ?E週間テンプレート作成?健康維持代休－—–〜～    const empIds 
+pos=62160 len=1
+      // 振休(法定テンプレ反映?Eインディゴ?E新規追加に切替?E週間テンプレート作成    // 　スタッフ?E週間テンプレート作成?健康維持代休－—–〜～    const empIds = [];\n    co
+pos=63329 len=1
+         items,\n        employee_ids: empIds,\n      });\n      // はい、解除する?報連相・メモの共有登録が完了しました?：勤務なのに時刻不正?E      if 
+pos=63348 len=1
+     employee_ids: empIds,\n      });\n      // はい、解除する?報連相・メモの共有登録が完了しました?：勤務なのに時刻不正?E      if (weeklyEditSeq.curr
+pos=63359 len=1
+  _ids: empIds,\n      });\n      // はい、解除する?報連相・メモの共有登録が完了しました?：勤務なのに時刻不正?E      if (weeklyEditSeq.current === seq
+pos=63860 len=1
+  null;\n    }\n  }\n\n  /** ）→休出: 貼り付けできる勤務データがありませんE氏名・社員番号・勤務時間→半日有休(前→休出?E*/\n  async function applyWeeklyTemplate
+pos=65076 len=1
+  cleared || 0;\n        if (filled) notify(`${monthNum}月に反映しました（{filled}?${cleared ? ` / 日下 竜汰 ${cleared}?` : ''}
+pos=65109 len=1
+   notify(`${monthNum}月に反映しました（{filled}?${cleared ? ` / 日下 竜汰 ${cleared}?` : ''}行 ·`, 'ok');\n        else notify(
+pos=65294 len=1
+    notify(e.message || String(e), 'err');\n    }\n  }\n\n  /** テンプレート未登録のため?の週間テンプレートが未登録です。初回登録が完了しましたE?E*/\n  async
+pos=65323 len=1
+  e), 'err');\n    }\n  }\n\n  /** テンプレート未登録のため?の週間テンプレートが未登録です。初回登録が完了しましたE?E*/\n  async function saveWeeklyAndApply(
+pos=66333 len=1
+  m = Number(yearMonth.slice(5, 7));\n      await withBusy(`${targetName}?${monthNum}月に反映しています…`, async () => {\n  
+pos=67202 len=1
+  st cleared = g.cleared || 0;\n        if (filled) notify(`${targetName}?${monthNum}月に反映しました（{filled}日）`, 'ok');\n
+pos=68389 len=1
+  f (gen !== loadMonthGenRef.current) return false;\n      // 初回登録が完了しました?E報連相・メモの共有      if (dirtyKeysRef.current
+pos=69404 len=1
+  eady_filled') {\n          notify(`${ym} / ${(res.shifts || []).length}?`, 'ok');\n        } else if (applied?.ap
+pos=69820 len=1
+  = false && applied.reason === 'no_pattern') {\n          notify('テンプレ反映?テンプレ反映?×カレンダー権限が未許可です。, 'err');\n        
+pos=69827 len=1
+   && applied.reason === 'no_pattern') {\n          notify('テンプレ反映?テンプレ反映?×カレンダー権限が未許可です。, 'err');\n        } else 
+pos=69924 len=1
+         } else {\n          notify(`${ym} / ${(res.shifts || []).length}?`, 'ok');\n        }\n      }\n      return
+pos=70508 len=2
+       await run();\n        } catch (e) {\n          // 月にテンプレートを反映しています…??E          if (!opts.quiet) notify(e.mes
+pos=71850 len=1
+  sync function resetMonthFromWeekly() {\n    if (!confirm('法定)→半日有休・半日欠勤?スタッフを追加しました?該当するコードがありませんE→半日有休(前)) retu
+pos=71862 len=1
+  n resetMonthFromWeekly() {\n    if (!confirm('法定)→半日有休・半日欠勤?スタッフを追加しました?該当するコードがありませんE→半日有休(前)) return;\n    try 
+pos=72647 len=1
+  );\n        const g = res.generated || {};\n        notify(`未保存の変更があります…?－—–〜～?E{g.created || 0}日）`, 'ok');\n     
+pos=72653 len=1
+       const g = res.generated || {};\n        notify(`未保存の変更があります…?－—–〜～?E{g.created || 0}日）`, 'ok');\n      });\n 
+pos=74886 len=1
+   if (!chunk?.ok) {\n          throw new Error(chunk?.message || `${day}?E{dayTo}つ以上選んでください。`);\n        }\n       
+pos=75125 len=1
+     setCalendarProgress({ percent: pct, label: `${dayTo}/${daysInMonth}?` });\n        day = dayTo + 1;\n      }\n\n
+pos=77855 len=1
+  se if (n <= 14) scale = 'sm';\n    else scale = 'xs';\n    // 振出/読み込み中… ?E95mm行 ·?E：勤務なのに時刻不正?Eスタッフを追加しました?→休出   
+pos=77864 len=1
+  <= 14) scale = 'sm';\n    else scale = 'xs';\n    // 振出/読み込み中… ?E95mm行 ·?E：勤務なのに時刻不正?Eスタッフを追加しました?→休出    const ro
+pos=77876 len=1
+   = 'sm';\n    else scale = 'xs';\n    // 振出/読み込み中… ?E95mm行 ·?E：勤務なのに時刻不正?Eスタッフを追加しました?→休出    const rowHmm = Math.
+pos=77889 len=1
+  else scale = 'xs';\n    // 振出/読み込み中… ?E95mm行 ·?E：勤務なのに時刻不正?Eスタッフを追加しました?→休出    const rowHmm = Math.max(5.5, Math
+pos=79456 len=1
+    }, 120000);\n    }, 80);\n  }\n\n  /** 詳細を閉じる（任意） 8-17 / 8:30-17オレンジ2行 ·?E*/\n  function printCellContent(employee
+pos=83197 len=1
+  xtRow.leave_code))) {\n        // カレンダー権限が未許可です。氏名・社員番号・勤務時間はい、解除するE→休出?E      } else if (patch.status && patch.
+pos=85072 len=1
+    setShiftEditor({ employee_id: employeeId, date });\n  }\n\n  /** スタッフ情報?行 ·?Eコピーできませんでした。もう一度お試しください。振出 */\n  fun
+pos=85076 len=1
+  tShiftEditor({ employee_id: employeeId, date });\n  }\n\n  /** スタッフ情報?行 ·?Eコピーできませんでした。もう一度お試しください。振出 */\n  functio
+pos=90836 len=1
+  xtFocus), 0);\n    }\n    return nextFocus;\n  }\n\n  /**\n   * 未保存の変更があります…?→休出   * 1インディゴ?Eインディゴ?E　スタッフEスタッフを追加しました
+pos=90851 len=1
+     }\n    return nextFocus;\n  }\n\n  /**\n   * 未保存の変更があります…?→休出   * 1インディゴ?Eインディゴ?E　スタッフEスタッフを追加しました?氏名・社員番号・勤務時間  
+pos=90858 len=1
+    return nextFocus;\n  }\n\n  /**\n   * 未保存の変更があります…?→休出   * 1インディゴ?Eインディゴ?E　スタッフEスタッフを追加しました?氏名・社員番号・勤務時間   */\n  f
+pos=90877 len=1
+  \n  }\n\n  /**\n   * 未保存の変更があります…?→休出   * 1インディゴ?Eインディゴ?E　スタッフEスタッフを追加しました?氏名・社員番号・勤務時間   */\n  function applySpread
+pos=96459 len=1
+   grid[0]\n      ? ` · ${Math.max(0, (grid[0].length || 0) - colOffset)}?`\n      : '';\n    notify(`${parts.join('
+pos=96500 len=1
+  0].length || 0) - colOffset)}?`\n      : '';\n    notify(`${parts.join('?')} をご利用ください${skipNote}${colNote}`, 'ok'
+pos=96996 len=3
+  eld = tag === 'INPUT' || tag === 'TEXTAREA';\n\n    // 　スタッフE初回登録が完了しました???\n    if (!multi && inField) return;\n\n   
+pos=101874 len=1
+  ntercancel', earlyUp);\n  }\n\n  /**\n   * 健康維持代休テンプレート未登録のためE   * 新規追加に切替?Eの週間テンプレートが未登録です。新規追加に切替E   * 未保存の変更がありま
+pos=101917 len=1
+  代休テンプレート未登録のためE   * 新規追加に切替?Eの週間テンプレートが未登録です。新規追加に切替E   * 未保存の変更があります…?E月に週間テンプレートを反映します。   */\n  async function
+pos=106793 len=1
+  cur.leave_code || '',\n    });\n  }\n\n  /** つ以上選んでください。休日休暇コードOUT はい、解除する?E新規追加に切替E*/\n  async function applyEditor
+pos=110721 len=1
+   (name) return name;\n    switch (status) {\n      case 'work': return '?E;\n      case 'off': return 'ÁE;\n      c
+pos=112227 len=1
+  = Math.ceil(daysInMonth / 2);\n    return [\n      { key: 'a', label: `1?E{mid}?`, days: monthDays(mid) },\n      
+pos=112234 len=1
+  ceil(daysInMonth / 2);\n    return [\n      { key: 'a', label: `1?E{mid}?`, days: monthDays(mid) },\n      { key: 
+pos=112298 len=1
+  E{mid}?`, days: monthDays(mid) },\n      { key: 'b', label: `${mid + 1}?E{daysInMonth}?`, days: Array.from({ len
+pos=112313 len=1
+   monthDays(mid) },\n      { key: 'b', label: `${mid + 1}?E{daysInMonth}?`, days: Array.from({ length: daysInMont
+pos=115366 len=1
+  ring(e), 'err');\n      }\n      return;\n    }\n    // 貼り付けできる勤務データがありません?パートで貼り付けて下さい。バイオレットE    setSettingsPanel
+pos=122735 len=1
+  elative flex flex-col overflow-hidden">\n      {/* ===== 社員番号を入力してくださいE?E===== */}\n      <div className="absolut
+pos=124977 len=1
+       </select>\n                    <span className="app-ym-nav__unit">?</span>\n                    <select\n    
+pos=125566 len=1
+       </select>\n                    <span className="app-ym-nav__unit">?E/span>\n                    <button\n    
+pos=137791 len=1
+                <p className="text-xs text-zinc-400">読み込み中… シフト一元管理蜂谷 有加?現場のすべてを、報連相・メモの共有/p>\n            </div>\n
+pos=145517 len=1
+  rRadius: 2 }}>\n                                  {isFullTimeEmp(e) ? '?' : '?'}\n                               
+pos=145523 len=1
+  s: 2 }}>\n                                  {isFullTimeEmp(e) ? '?' : '?'}\n                                </spa
+pos=146317 len=1
+  ys}日</div>\n                                        <div>{sum.shiftHm} ?E{sum.prescribedHm}</div>\n              
+pos=146486 len=2
+        ) : (\n                                      <div>{sum.shiftDays}??{sum.shiftHm}</div>\n                    
+pos=160128 len=1
+        <p className="print-sheet-banner__title">{formatYmJa(yearMonth)}?{storeName || staffColLabel}</p>\n       
+pos=184314 len=1
+   className={labelCls}>\n                            <span>上へ（よく使う）産休・育休?Espan className="text-rose-600 ml-0.5" a
+pos=186397 len=1
+   className={labelCls}>\n                            <span>1報連相・メモの共有→休出?E/span>\n                            <div
+pos=188272 len=3
+                           >\n                                管轄店舗を更新しました???\n                              </button>
+pos=188402 len=1
+                <p className={panelSubCls + ' mt-1'}>ダブルクリックで編集登録が完了しました?エメラルド/p>\n                            </d
+pos=188732 len=1
+              <p className="app-section-title">バイオレット {employees.length}?E/p>\n                            {canEdi
+pos=189090 len=1
+                        <p className={panelSubCls}>コピーができました。スタッフを追加しました?キンタイコピー/p>\n                          ) :
+pos=190500 len=1
+  "text-[12px] font-medium text-slate-400 tabular-nums">{e.bye_code || '?E}</span>\n                              
+pos=190848 len=1
+  an className="shrink-0 text-[13px] font-bold text-[var(--acc-500)]">休職?</span>}\n                               
+pos=192802 len=1
+                             <span className="text-slate-400 font-bold">?E/span>\n                                
+pos=195517 len=1
+  e border-emerald-500' : 'bg-white text-slate-400 border-slate-200'}`}>?</button>\n                              
+pos=195841 len=1
+  ite border-slate-600' : 'bg-white text-slate-400 border-slate-200'}`}>?E/button>\n                              
+pos=196481 len=1
+                             <span className="text-slate-400 font-bold">?E/span>\n                                
