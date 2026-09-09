@@ -4,7 +4,7 @@ import { APP_TAGLINE } from './appBrand.js';
 import { IconLoginArrow, LoginBgDecor, LoginHeroCopy, LoginLoadingPanel } from './LoginHero.jsx';
 import { STAFF_TOKEN_KEY } from './staffAuth.js';
 import { api } from './api.js';
-import { readMonthCache, writeMonthCache } from './monthCache.js';
+import { readMonthCache, writeMonthCache, patchCachedEmployee } from './monthCache.js';
 import {
   LEAVE_BY_CODE,
   applyAutoHouteiToShifts,
@@ -2836,6 +2836,7 @@ export default function App() {
     if (ev.button != null && ev.button !== 0) return;
     const instant = !!opts.instant; // 押した直後に並べ替えを開始するか
     const pointerId = ev.pointerId;
+    const isTouch = ev.pointerType === 'touch' || ev.pointerType === 'pen';
     endEmpDrag_(false);
 
     const onMove = (e) => {
@@ -2871,7 +2872,8 @@ export default function App() {
       if (!cur || cur.pointerId !== e.pointerId) return;
       if (cur.armed) return;
       endEmpDrag_(false);
-      openEmpEditor(employeeId);
+      // マウスはダブルクリックで開く。タッチ／ペンは単タップでも開く
+      if (isTouch) openEmpEditor(employeeId);
     };
 
     if (instant) {
@@ -2947,6 +2949,11 @@ export default function App() {
     };
 
     setEmployees((prev) => prev.map((e) => (e.employee_id === employeeId ? next : e)));
+    // 他の月のキャッシュも合わせて更新し、月を移動しても元に戻らないようにする
+    patchCachedEmployee(storeId, employeeId, {
+      employment_type: next.employment_type,
+      work_hours: next.work_hours,
+    });
 
     try {
       await api.upsertEmployee({
@@ -3851,14 +3858,20 @@ export default function App() {
                               type="button"
                               disabled={!canEdit}
                               onPointerDown={(ev) => onEmpNamePointerDown(ev, e.employee_id)}
+                              onDoubleClick={(ev) => {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                endEmpDrag_(false);
+                                openEmpEditor(e.employee_id);
+                              }}
                               className={`min-w-0 flex-1 px-3 text-left hover:bg-[#f7fafc] disabled:opacity-60 outline-none select-none ${empDragId ? 'cursor-grabbing' : canEdit ? 'cursor-grab' : ''}`}
                               style={{ height: SHIFT_ROW_H, touchAction: empDragId ? 'none' : 'manipulation' }}
-                              title={canEdit ? 'クリックで編集 / 長押しして上下に並べ替え' : ''}
+                              title={canEdit ? 'ダブルクリックで編集 / 長押しして上下に並べ替え' : ''}
                             >
                               <div className="font-bold text-[15px] leading-snug whitespace-nowrap truncate text-zinc-900">{e.name}</div>
                               <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
-                                <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 ${isFullTimeEmp(e) ? 'bg-[#3a4a5a] text-white' : 'bg-[#2f7ec4] text-white'}`} style={{ borderRadius: 2 }}>
-                                  {isFullTimeEmp(e) ? 'ア' : '日'}
+                                <span className={`sheet-emp-tag ${isFullTimeEmp(e) ? 'sheet-emp-tag-full' : 'sheet-emp-tag-part'}`} title={isFullTimeEmp(e) ? '社員' : 'アルバイト'}>
+                                  {isFullTimeEmp(e) ? '社' : 'ア'}
                                 </span>
                                 <span className="text-[12px] font-medium text-zinc-400 truncate">{e.bye_code || ''}</span>
                               </div>
@@ -4145,7 +4158,7 @@ export default function App() {
               <div className="km-dialog" onClick={(ev) => ev.stopPropagation()}>
                 <div className="km-dialog-head flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[12px] font-semibold tracking-wide opacity-90">従業員を変更</p>
+                    <p className="text-[12px] font-semibold tracking-wide opacity-90">スタッフ情報</p>
                     <p className="text-[20px] font-bold leading-tight mt-0.5">{empEditor.name}</p>
                   </div>
                   <button type="button" onClick={closeEmpEditor} className="h-9 px-3 text-[13px] font-semibold bg-white/15 border border-white/40 text-white">

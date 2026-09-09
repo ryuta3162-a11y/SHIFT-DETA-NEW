@@ -64,6 +64,31 @@ export function writeMonthCache(storeId, yearMonth, payload) {
   writeAll_(all);
 }
 
+/** 同じ店舗の全キャッシュ月について、従業員1名の情報を部分更新する */
+export function patchCachedEmployee(storeId, employeeId, patch) {
+  const sid = String(storeId || '').trim();
+  const eid = String(employeeId || '').trim();
+  if (!sid || !eid || !patch) return;
+  const all = readAll_();
+  let touched = false;
+  for (const key of Object.keys(all)) {
+    if (!key.startsWith(`${sid}__`)) continue;
+    const emps = all[key]?.employees;
+    if (!Array.isArray(emps)) continue;
+    let hit = false;
+    const next = emps.map((e) => {
+      if (String(e?.employee_id || '').trim() !== eid) return e;
+      hit = true;
+      return { ...e, ...patch };
+    });
+    if (hit) {
+      all[key] = { ...all[key], employees: next };
+      touched = true;
+    }
+  }
+  if (touched) writeAll_(all);
+}
+
 export function hasMonthCache(storeId, yearMonth) {
   return !!readMonthCache(storeId, yearMonth);
 }

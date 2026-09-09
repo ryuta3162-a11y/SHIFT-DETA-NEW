@@ -142,6 +142,24 @@
   .sheet-chip-ghost {
     @apply bg-transparent text-zinc-600 border-transparent hover:bg-[#eef3f8];
   }
+  /* 氏名列の区分バッジ（社＝社員／ア＝アルバイト） */
+  .sheet-emp-tag {
+    @apply shrink-0 inline-flex items-center justify-center text-white;
+    width: 17px;
+    height: 17px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .sheet-emp-tag-full {
+    background: linear-gradient(180deg, #4c5f72 0%, #33424f 100%);
+  }
+  .sheet-emp-tag-part {
+    background: linear-gradient(180deg, #4f9fdf 0%, #2f7ec4 100%);
+  }
   .sheet-nav {
     @apply h-9 px-3 text-[13px] font-medium text-zinc-600 border border-transparent
       hover:text-zinc-900 hover:bg-[#eef3f8] transition disabled:opacity-40;
