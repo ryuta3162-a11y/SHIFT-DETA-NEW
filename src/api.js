@@ -74,6 +74,10 @@ function actionParams(fnName, args) {
       return { action: 'syncCalendarMonth', payload: JSON.stringify(args[0]) };
     case 'clearCalendarMonth':
       return { action: 'clearCalendarMonth', payload: JSON.stringify(args[0]) };
+    case 'listStoreChat':
+      return { action: 'listStoreChat', storeId: args[0], userEmail: args[1], limit: args[2] || 80 };
+    case 'postStoreChat':
+      return { action: 'postStoreChat', payload: JSON.stringify(args[0]) };
     default:
       throw new Error(`PWA API 未対応: ${fnName}`);
   }
@@ -235,4 +239,6 @@ export const api = {
   buildByeByePaste: (storeId, yearMonth, userEmail) => run('buildByeByePaste', storeId, yearMonth, userEmail),
   syncCalendarMonth: (payload) => run('syncCalendarMonth', payload),
   clearCalendarMonth: (payload) => run('clearCalendarMonth', payload),
+  listStoreChat: (storeId, userEmail, limit) => run('listStoreChat', storeId, userEmail, limit),
+  postStoreChat: (payload) => run('postStoreChat', payload),
 };

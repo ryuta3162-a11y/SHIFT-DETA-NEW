@@ -2549,6 +2549,219 @@
   }
 }
 
+/* ── 店舗チャット（右下FAB） ── */
+.store-chat-fab {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 260;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 9999px;
+  border: 1px solid #1f2a33;
+  background: #111827;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.28);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.store-chat-fab:hover {
+  background: #0b1220;
+  transform: translateY(-1px);
+}
+.store-chat-fab.is-open {
+  background: #334155;
+  border-color: #334155;
+}
+.store-chat-fab-badge {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.15rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.28rem;
+  border-radius: 9999px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15rem;
+  text-align: center;
+  box-shadow: 0 0 0 2px #fff;
+}
+.store-chat-panel {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 4.7rem;
+  z-index: 259;
+  width: min(22.5rem, calc(100vw - 1.5rem));
+  height: min(32rem, calc(100dvh - 6.5rem));
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #c5d4e0;
+  border-radius: 4px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+  overflow: hidden;
+}
+.store-chat-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  background: linear-gradient(180deg, #2f7ec4 0%, #2469a8 100%);
+  color: #fff;
+}
+.store-chat-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+.store-chat-title {
+  margin-top: 0.1rem;
+  font-size: 15px;
+  font-weight: 800;
+}
+.store-chat-close {
+  height: 2rem;
+  padding: 0 0.7rem;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+}
+.store-chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.85rem 0.75rem;
+  background: #f4f7fa;
+}
+.store-chat-empty {
+  margin: 2.5rem 0.5rem;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
+}
+.store-chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.45rem;
+  margin-bottom: 0.7rem;
+}
+.store-chat-row.is-mine {
+  justify-content: flex-end;
+}
+.store-chat-avatar {
+  flex: 0 0 auto;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9999px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.store-chat-bubble {
+  max-width: calc(100% - 2.3rem);
+  padding: 0.55rem 0.7rem;
+  background: #fff;
+  border: 1px solid #d5e1ec;
+  border-radius: 4px 4px 4px 2px;
+}
+.store-chat-row.is-mine .store-chat-bubble {
+  background: #eaf3fb;
+  border-color: #b9d2e8;
+  border-radius: 4px 4px 2px 4px;
+}
+.store-chat-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+.store-chat-name {
+  font-size: 11px;
+  font-weight: 800;
+  color: #334155;
+}
+.store-chat-time {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.store-chat-body {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #0f172a;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.store-chat-link {
+  display: inline-flex;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 11px;
+  font-weight: 800;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 2px;
+}
+.store-chat-link:hover {
+  background: #dbeafe;
+}
+.store-chat-compose {
+  display: flex;
+  gap: 0.45rem;
+  padding: 0.65rem 0.7rem;
+  border-top: 1px solid #d5e1ec;
+  background: #fff;
+}
+.store-chat-input {
+  flex: 1;
+  min-width: 0;
+  height: 2.4rem;
+  padding: 0 0.7rem;
+  font-size: 13px;
+  border: 1px solid #9db4c8;
+  border-radius: 2px;
+  outline: none;
+}
+.store-chat-input:focus {
+  border-color: #2f7ec4;
+}
+.store-chat-send {
+  height: 2.4rem;
+  padding: 0 0.9rem;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  background: #2f7ec4;
+  border: 1px solid #2469a8;
+  border-radius: 2px;
+}
+.store-chat-send:disabled {
+  opacity: 0.4;
+}
+@media print {
+  .store-chat-fab,
+  .store-chat-panel {
+    display: none !important;
+  }
+}
+
 /* ── 掲示用印刷（A4横・半月2段・MEMO除外） ── */
 @media print {
   @page {

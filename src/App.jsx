@@ -5,6 +5,7 @@ import { IconLoginArrow, LoginBgDecor, LoginHeroCopy, LoginLoadingPanel } from '
 import { STAFF_TOKEN_KEY } from './staffAuth.js';
 import { api } from './api.js';
 import { readMonthCache, writeMonthCache, patchCachedEmployee } from './monthCache.js';
+import { StoreChatFab, StoreChatPanel, buildCellSharePayload, useStoreChat } from './StoreChat.jsx';
 import {
   LEAVE_BY_CODE,
   applyAutoHouteiToShifts,
@@ -1042,6 +1043,7 @@ export default function App() {
   const accountInitial = useMemo(() => initialOf(user?.name || user?.email), [user]);
   const domain = meta?.companyDomain || 'okamoto-group.co.jp';
   const storeName = user?.stores?.find((s) => s.store_id === storeId)?.store_name || '';
+  const chat = useStoreChat({ storeId, user, enabled: authStep === 'ready' && !!storeId });
 
   useEffect(() => {
     applyAccentTheme(readStoredAccentId());
@@ -2437,6 +2439,39 @@ export default function App() {
       else n.add(employeeId);
       return n;
     });
+  }
+
+  async function shareCellToChat(employeeId, date) {
+    if (!user?.email || !storeId) return;
+    const emp = employees.find((x) => x.employee_id === employeeId);
+    const shift = getCellShift(employeeId, date);
+    const payload = buildCellSharePayload(emp, date, shift, leaveCodeLabel, formatDateJa);
+    try {
+      await chat.send(payload);
+      notify('チャットに共有しました', 'ok');
+    } catch (e) {
+      notify(e.message || String(e), 'err');
+    }
+  }
+
+  async function openChatCellLink(msg) {
+    const eid = String(msg?.link_employee_id || '').trim();
+    const date = String(msg?.link_date || '').trim();
+    if (!eid || !date) return;
+    const ym = date.slice(0, 7);
+    chat.setOpen(false);
+    if (ym && ym !== yearMonth) {
+      try {
+        await changeMonth(ym);
+      } catch (e) {
+        notify(e.message || String(e), 'err');
+        return;
+      }
+    }
+    selectShiftCell(eid, date);
+    window.setTimeout(() => {
+      if (canEdit) openShiftEditor(eid, date);
+    }, 80);
   }
 
   function openShiftEditor(employeeId, date) {
@@ -4434,6 +4469,17 @@ export default function App() {
                       </div>
                     </div>
                   )}
+                  <div className="pt-1 border-t border-[#c5d4e0]">
+                    <button
+                      type="button"
+                      disabled={busy || !canEdit}
+                      onClick={() => shareCellToChat(shiftEditor.employee_id, shiftEditor.date)}
+                      className="sheet-chip h-10 px-4 sheet-chip-off w-full"
+                    >
+                      チャットに共有
+                    </button>
+                    <p className="mt-1.5 text-[12px] text-slate-500">このセルの内容を店舗チャットに投稿します</p>
+                  </div>
                   <div className="space-y-2 pt-1 border-t border-[#c5d4e0]">
                     <p className="text-[16px] font-bold text-slate-800">MEMO</p>
                     <textarea
@@ -4770,6 +4816,30 @@ export default function App() {
         >
           {kintaiToast.text}
         </div>
+      )}
+
+      {storeId && (
+        <>
+          <StoreChatFab
+            open={chat.open}
+            unread={chat.unread}
+            onToggle={() => chat.setOpen((v) => !v)}
+          />
+          <StoreChatPanel
+            open={chat.open}
+            storeId={storeId}
+            storeName={storeName}
+            user={user}
+            messages={chat.messages}
+            loading={chat.loading}
+            sending={chat.sending}
+            draft={chat.draft}
+            onDraft={chat.setDraft}
+            onSend={() => chat.send().catch((e) => notify(e.message || String(e), 'err'))}
+            onClose={() => chat.setOpen(false)}
+            onOpenLink={openChatCellLink}
+          />
+        </>
       )}
 
       <ConfirmDialog box={confirmBox} onCancel={() => setConfirmBox(null)} />

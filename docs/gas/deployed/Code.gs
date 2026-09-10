@@ -25,7 +25,8 @@ var SHIFT_APP = {
     ACL: '社員登録',
     ACL_LEGACY: '権限',
     SETTINGS: '設定',
-    LOG: '同期ログ'
+    LOG: '同期ログ',
+    STORE_CHAT: '店舗チャット'
   },
   STATUS: ['work', 'off', 'pto', 'absent', 'undef'],
   ROLES: { VIEWER: 'viewer', EDITOR: 'editor', ADMIN: 'admin' },
@@ -142,7 +143,14 @@ var HEADER_JA = {
   display_name: '表示名',
   staff_password_hash: '認証ハッシュ',
   staff_password_salt: '認証ソルト',
-  staff_registered: 'スタッフ登録済'
+  staff_registered: 'スタッフ登録済',
+  message_id: 'メッセージID',
+  user_email: '送信者メール',
+  user_name: '送信者名',
+  created_at: '作成日時',
+  link_employee_id: 'リンク従業員ID',
+  link_date: 'リンク日付',
+  link_label: 'リンクラベル'
 };
 
 /** 日本語／英語ヘッダ → 英語キー */
@@ -1766,6 +1774,8 @@ function handleStaffApiGet_(p, e) {
     else if (action === 'clearCalendarMonth') result = clearCalendarMonth(parseApiPayload_(p.payload));
     else if (action === 'migrateStoreSheets') result = runMigrateStoreSheets();
     else if (action === 'refreshShiftIndex') result = { ok: true, rows: rebuildShiftIndexSheet_() };
+    else if (action === 'listStoreChat') result = listStoreChat(p.storeId, p.userEmail, p.limit);
+    else if (action === 'postStoreChat') result = postStoreChat(parseApiPayload_(p.payload));
     else throw new Error('不明な action: ' + action);
     return jsonApiResponse_(result, e);
   } catch (err) {
@@ -5834,3 +5844,107 @@ function pad2_(n) {
   var s = String(n);
   return s.length < 2 ? '0' + s : s;
 }
+
+
+/* ============================================================
+ * 店舗チャット（管理者同士の簡単な連絡）
+ * ============================================================ */
+var STORE_CHAT_HEADERS = [
+  'メッセージID', '店舗ID', '送信者メール', '送信者名', '内容', '作成日時',
+  'リンク従業員ID', 'リンク日付', 'リンクラベル'
+];
+
+function ensureStoreChatSheet_() {
+  var ss = ss_();
+  var name = SHIFT_APP.SHEETS.STORE_CHAT;
+  var sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    sh.getRange(1, 1, 1, STORE_CHAT_HEADERS.length).setValues([STORE_CHAT_HEADERS]);
+    sh.setFrozenRows(1);
+    try { sh.hideSheet(); } catch (eHide) { /* ignore */ }
+    return sh;
+  }
+  var headers = getHeaders_(sh);
+  if (!headers.length) {
+    sh.getRange(1, 1, 1, STORE_CHAT_HEADERS.length).setValues([STORE_CHAT_HEADERS]);
+  }
+  return sh;
+}
+
+function listStoreChat(storeId, userEmail, limit) {
+  var email = resolveClientEmail_(userEmail);
+  var acl = resolveAcl_(email);
+  assertStoreAccess_(acl, storeId, false);
+  var lim = Math.max(1, Math.min(200, Number(limit) || 80));
+  var sh = ensureStoreChatSheet_();
+  var map = headerIndexMap_(getHeaders_(sh));
+  requireHeaders_(map, ['message_id', 'store_id', 'body', 'created_at']);
+  var values = getDataRows_(sh);
+  var sid = String(storeId || '').trim();
+  var out = [];
+  for (var i = 0; i < values.length; i++) {
+    var r = values[i];
+    if (String(r[map.store_id] || '').trim() !== sid) continue;
+    out.push({
+      message_id: String(r[map.message_id] || ''),
+      store_id: sid,
+      user_email: map.user_email != null ? String(r[map.user_email] || '') : '',
+      user_name: map.user_name != null ? String(r[map.user_name] || '') : '',
+      body: String(r[map.body] || ''),
+      created_at: String(r[map.created_at] || ''),
+      link_employee_id: map.link_employee_id != null ? String(r[map.link_employee_id] || '') : '',
+      link_date: map.link_date != null ? String(r[map.link_date] || '') : '',
+      link_label: map.link_label != null ? String(r[map.link_label] || '') : ''
+    });
+  }
+  if (out.length > lim) out = out.slice(out.length - lim);
+  return { ok: true, messages: out };
+}
+
+function postStoreChat(payload) {
+  var p = payload || {};
+  var email = resolveClientEmail_(p.user_email);
+  var acl = resolveAcl_(email);
+  var storeId = String(p.store_id || '').trim();
+  assertStoreAccess_(acl, storeId, true);
+  var body = String(p.body || '').trim();
+  if (!body) throw new Error('メッセージを入力してください。');
+  if (body.length > 500) body = body.slice(0, 500);
+
+  var sh = ensureStoreChatSheet_();
+  var headers = getHeaders_(sh);
+  var map = headerIndexMap_(headers);
+  requireHeaders_(map, ['message_id', 'store_id', 'body', 'created_at']);
+
+  var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
+  var id = 'CH' + Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMddHHmmss') + '-' + Math.floor(Math.random() * 900 + 100);
+  var row = new Array(headers.length).fill('');
+  row[map.message_id] = id;
+  row[map.store_id] = storeId;
+  if (map.user_email != null) row[map.user_email] = email;
+  var uname = String(p.user_name || acl.displayName || email.split('@')[0] || '').trim();
+  if (map.user_name != null) row[map.user_name] = uname;
+  row[map.body] = body;
+  row[map.created_at] = now;
+  if (map.link_employee_id != null) row[map.link_employee_id] = String(p.link_employee_id || '').trim();
+  if (map.link_date != null) row[map.link_date] = String(p.link_date || '').trim();
+  if (map.link_label != null) row[map.link_label] = String(p.link_label || '').trim();
+  sh.appendRow(row);
+
+  return {
+    ok: true,
+    message: {
+      message_id: id,
+      store_id: storeId,
+      user_email: email,
+      user_name: uname,
+      body: body,
+      created_at: now,
+      link_employee_id: String(p.link_employee_id || '').trim(),
+      link_date: String(p.link_date || '').trim(),
+      link_label: String(p.link_label || '').trim()
+    }
+  };
+}
+
