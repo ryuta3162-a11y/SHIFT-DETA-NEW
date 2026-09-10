@@ -69,10 +69,11 @@ export function StoreChatPanel({
   onClose,
   onOpenLink,
   onDelete,
+  embedded = false,
 }) {
   const listRef = useRef(null);
   const menuRef = useRef(null);
-  const me = String(user?.email || '').toLowerCase();
+  const me = String(user?.email || (user?.bye_code ? `staff:${user.bye_code}` : '')).toLowerCase();
   const [menu, setMenu] = useState(null); // { messageId, x, y }
 
   useEffect(() => {
@@ -102,13 +103,15 @@ export function StoreChatPanel({
   if (!open) return null;
 
   return (
-    <div className="store-chat-panel" role="dialog" aria-label="店舗チャット">
+    <div className={`store-chat-panel${embedded ? ' is-embedded' : ''}`} role="dialog" aria-label="店舗チャット">
       <div className="store-chat-head">
         <div className="min-w-0">
           <p className="store-chat-kicker">店舗チャット</p>
           <p className="store-chat-title truncate">{storeName || '店舗'}</p>
         </div>
-        <button type="button" className="store-chat-close" onClick={onClose}>閉じる</button>
+        {!embedded && (
+          <button type="button" className="store-chat-close" onClick={onClose}>閉じる</button>
+        )}
       </div>
 
       <div className="store-chat-list" ref={listRef}>
@@ -250,7 +253,7 @@ export function buildCellSharePayload(emp, date, shift, leaveLabelFn, dateLabelF
   };
 }
 
-export function useStoreChat({ storeId, user, enabled }) {
+export function useStoreChat({ storeId, user, enabled, sessionToken }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
@@ -261,11 +264,20 @@ export function useStoreChat({ storeId, user, enabled }) {
   const openRef = useRef(false);
   openRef.current = open;
 
+  const isStaff = user?.userType === 'staff';
+  const identity = isStaff
+    ? (user?.email || (user?.bye_code ? `staff:${user.bye_code}` : ''))
+    : (user?.email || '');
+  const token = sessionToken || user?.sessionToken || '';
+
   const load = async ({ quiet } = {}) => {
-    if (!enabled || !storeId || !user?.email) return;
+    if (!enabled || !storeId || !identity) return;
+    if (isStaff && !token) return;
     if (!quiet) setLoading(true);
     try {
-      const res = await api.listStoreChat(storeId, user.email, 80);
+      const res = isStaff
+        ? await api.staffListStoreChat(token, storeId, 80)
+        : await api.listStoreChat(storeId, user.email, 80);
       const list = res.messages || [];
       setMessages(list);
       const lastId = list.length ? list[list.length - 1].message_id : '';
@@ -291,7 +303,7 @@ export function useStoreChat({ storeId, user, enabled }) {
     lastSeenRef.current = '';
     if (enabled && storeId) load({ quiet: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId, enabled, user?.email]);
+  }, [storeId, enabled, identity, token]);
 
   useEffect(() => {
     if (!enabled || !storeId) return undefined;
@@ -300,7 +312,7 @@ export function useStoreChat({ storeId, user, enabled }) {
     }, open ? 12000 : 45000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId, enabled, open, user?.email]);
+  }, [storeId, enabled, open, identity, token]);
 
   useEffect(() => {
     if (open) {
@@ -315,18 +327,29 @@ export function useStoreChat({ storeId, user, enabled }) {
 
   const send = async (extra = {}) => {
     const body = String(extra.body != null ? extra.body : draft).trim();
-    if (!body || !storeId || !user?.email || sending) return null;
+    if (!body || !storeId || !identity || sending) return null;
+    if (isStaff && !token) return null;
     setSending(true);
     try {
-      const res = await api.postStoreChat({
-        user_email: user.email,
-        user_name: user.name || '',
-        store_id: storeId,
-        body,
-        link_employee_id: extra.link_employee_id || '',
-        link_date: extra.link_date || '',
-        link_label: extra.link_label || '',
-      });
+      const res = isStaff
+        ? await api.staffPostStoreChat({
+            token,
+            store_id: storeId,
+            user_name: user.name || '',
+            body,
+            link_employee_id: extra.link_employee_id || '',
+            link_date: extra.link_date || '',
+            link_label: extra.link_label || '',
+          })
+        : await api.postStoreChat({
+            user_email: user.email,
+            user_name: user.name || '',
+            store_id: storeId,
+            body,
+            link_employee_id: extra.link_employee_id || '',
+            link_date: extra.link_date || '',
+            link_label: extra.link_label || '',
+          });
       if (res.message) {
         setMessages((prev) => [...prev.filter((m) => m.message_id !== res.message.message_id), res.message]);
         lastSeenRef.current = res.message.message_id;
@@ -344,14 +367,22 @@ export function useStoreChat({ storeId, user, enabled }) {
 
   const remove = async (messageId) => {
     const id = String(messageId || '').trim();
-    if (!id || !storeId || !user?.email) return;
+    if (!id || !storeId || !identity) return;
     setMessages((prev) => prev.filter((m) => m.message_id !== id));
     try {
-      await api.deleteStoreChat({
-        user_email: user.email,
-        store_id: storeId,
-        message_id: id,
-      });
+      if (isStaff) {
+        await api.staffDeleteStoreChat({
+          token,
+          store_id: storeId,
+          message_id: id,
+        });
+      } else {
+        await api.deleteStoreChat({
+          user_email: user.email,
+          store_id: storeId,
+          message_id: id,
+        });
+      }
     } catch (e) {
       await load({ quiet: true });
       throw e;

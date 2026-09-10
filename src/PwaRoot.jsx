@@ -138,6 +138,7 @@ export default function PwaRoot() {
     return (
       <StaffApp
         user={user}
+        storeId={storeId}
         storeName={storeName}
         onLogout={staffLogout}
       />

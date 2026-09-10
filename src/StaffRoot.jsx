@@ -161,6 +161,7 @@ export default function StaffRoot() {
     return (
       <StaffApp
         user={user}
+        storeId={storeId}
         storeName={storeName}
         onLogout={logout}
       />

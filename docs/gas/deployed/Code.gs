@@ -26,7 +26,8 @@ var SHIFT_APP = {
     ACL_LEGACY: '権限',
     SETTINGS: '設定',
     LOG: '同期ログ',
-    STORE_CHAT: '店舗チャット'
+    STORE_CHAT: '店舗チャット',
+    STAFF_HOPE: 'シフト希望'
   },
   STATUS: ['work', 'off', 'pto', 'absent', 'undef'],
   ROLES: { VIEWER: 'viewer', EDITOR: 'editor', ADMIN: 'admin' },
@@ -46,7 +47,7 @@ var MANAGER_HEADERS = [
 var HIDDEN_SHEETS = [
   'シフト', '週間固定', 'シフトメモ', '設定', '同期ログ', 'バイバイ貼り付け', '週間診断',
   '権限', '確認_シフト', '確認_週間', 'マスターデータ', 'スタッフログイン',
-  '従業員一覧', '管理店舗'
+  '従業員一覧', '管理店舗', 'シフト希望', '店舗チャット'
 ];
 
 var DX_VISIBLE_SHEETS = ['社員登録', 'アルバイト登録', '店舗データ', 'シフト一覧'];
@@ -150,7 +151,11 @@ var HEADER_JA = {
   created_at: '作成日時',
   link_employee_id: 'リンク従業員ID',
   link_date: 'リンク日付',
-  link_label: 'リンクラベル'
+  link_label: 'リンクラベル',
+  hope_id: '希望ID',
+  hope_kind: '希望区分',
+  hope_state: '申請状態',
+  memo: 'メモ'
 };
 
 /** 日本語／英語ヘッダ → 英語キー */
@@ -1756,6 +1761,13 @@ function handleStaffApiGet_(p, e) {
     else if (action === 'staffSetPassword') result = staffSetPassword(p.byeCode, p.name, p.password);
     else if (action === 'staffLogin') result = staffLogin(p.byeCode, p.password);
     else if (action === 'staffResumeSession') result = staffResumeSession(p.token);
+    else if (action === 'staffGetMonth') result = staffGetMonth(p.token, p.storeId, p.yearMonth);
+    else if (action === 'staffListHopes') result = staffListHopes(p.token, p.storeId, p.yearMonth);
+    else if (action === 'staffSubmitHope') result = staffSubmitHope(parseApiPayload_(p.payload));
+    else if (action === 'staffCancelHope') result = staffCancelHope(parseApiPayload_(p.payload));
+    else if (action === 'staffListStoreChat') result = staffListStoreChat(p.token, p.storeId, p.limit);
+    else if (action === 'staffPostStoreChat') result = staffPostStoreChat(parseApiPayload_(p.payload));
+    else if (action === 'staffDeleteStoreChat') result = staffDeleteStoreChat(parseApiPayload_(p.payload));
     else if (action === 'saveJurisdiction') result = saveJurisdiction(parseApiPayload_(p.payload));
     else if (action === 'listEmployees') result = listEmployees(p.storeId, p.userEmail);
     else if (action === 'upsertEmployee') result = upsertEmployee(parseApiPayload_(p.payload));
@@ -2043,7 +2055,8 @@ function buildStaffLoginResponse_(emp, token) {
     userType: 'staff',
     sessionToken: token,
     bye_code: emp.bye_code,
-    email: '',
+    employee_id: emp.bye_code,
+    email: 'staff:' + emp.bye_code,
     name: emp.name,
     roleMax: SHIFT_APP.ROLES.VIEWER,
     isAdmin: false,
@@ -5633,9 +5646,7 @@ function namesMatch_(a, b, nameKey) {
 
 function assertStaffPassword_(password, byeCode) {
   var p = String(password || '');
-  if (p.length < 8) throw new Error('パスワードは8文字以上にしてください');
-  if (!/[A-Za-z]/.test(p)) throw new Error('英字を1文字以上含めてください');
-  if (!/[0-9]/.test(p)) throw new Error('数字を1文字以上含めてください');
+  if (p.length < 4) throw new Error('パスワードは4文字以上にしてください');
   if (byeCode && p === String(byeCode)) throw new Error('社員コードと同じパスワードは使えません');
 }
 
@@ -6027,6 +6038,327 @@ function deleteStoreChat(payload) {
     if (String(r[map.store_id] || '').trim() !== storeId) continue;
     var owner = map.user_email != null ? String(r[map.user_email] || '').trim().toLowerCase() : '';
     if (owner && owner !== String(email || '').toLowerCase()) {
+      throw new Error('自分のメッセージだけ削除できます。');
+    }
+    targetRow = i + 1;
+    break;
+  }
+  if (targetRow < 0) throw new Error('メッセージが見つかりません。');
+  sh.deleteRow(targetRow);
+  return { ok: true, deleted: messageId };
+}
+
+/* ============================================================
+ * アルバイト PWA 専用 API（セッション・メール不要）
+ * ============================================================ */
+
+function staffRequireSession_(token) {
+  var sess = resolveStaffSession_(token);
+  if (!sess || !sess.bye_code) {
+    throw new Error('セッションの有効期限が切れました。再度ログインしてください。');
+  }
+  return sess;
+}
+
+function staffAssertStoreAccess_(sess, storeId) {
+  var sid = String(storeId || '').trim();
+  if (!sid) throw new Error('店舗が必要です。');
+  var allowed = String(sess.store_id || '').trim();
+  if (!allowed) throw new Error('所属店舗が見つかりません。');
+  if (allowed === sid) return sid;
+  var all = listAllStores_();
+  var a = null;
+  var b = null;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].store_id === allowed || storeNamesMatch_(all[i].store_name, allowed)) a = all[i];
+    if (all[i].store_id === sid || storeNamesMatch_(all[i].store_name, sid)) b = all[i];
+  }
+  if (a && b && a.store_id === b.store_id) return b.store_id;
+  throw new Error('この店舗を見る権限がありません。');
+}
+
+function staffViewerAcl_(sess, storeId) {
+  var stores = {};
+  stores[storeId] = SHIFT_APP.ROLES.VIEWER;
+  return {
+    email: 'staff:' + sess.bye_code,
+    displayName: sess.name || '',
+    isAdmin: false,
+    roleMax: SHIFT_APP.ROLES.VIEWER,
+    stores: stores
+  };
+}
+
+function staffGetMonth(token, storeId, yearMonth) {
+  var sess = staffRequireSession_(token);
+  var sid = staffAssertStoreAccess_(sess, storeId || sess.store_id);
+  var ym = String(yearMonth || '').trim();
+  if (!/^\d{4}-\d{2}$/.test(ym)) throw new Error('年月は yyyy-MM 形式で指定してください。');
+  var acl = staffViewerAcl_(sess, sid);
+  var result = readShifts_(sid, ym, acl.email, acl, {});
+  result.me = {
+    bye_code: sess.bye_code,
+    employee_id: sess.bye_code,
+    name: sess.name || ''
+  };
+  result.canEdit = false;
+  result.ok = true;
+  return result;
+}
+
+var STAFF_HOPE_HEADERS = [
+  '希望ID', '店舗ID', '従業員ID', '氏名', '日付', '希望区分', '開始', '終了', 'メモ', '申請状態', '作成日時', '更新日時'
+];
+
+function ensureStaffHopeSheet_() {
+  var ss = ss_();
+  var name = SHIFT_APP.SHEETS.STAFF_HOPE;
+  var sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    sh.getRange(1, 1, 1, STAFF_HOPE_HEADERS.length).setValues([STAFF_HOPE_HEADERS]);
+    sh.setFrozenRows(1);
+    try { sh.hideSheet(); } catch (eHide) { /* ignore */ }
+    return sh;
+  }
+  var headers = getHeaders_(sh);
+  if (!headers.length) {
+    sh.getRange(1, 1, 1, STAFF_HOPE_HEADERS.length).setValues([STAFF_HOPE_HEADERS]);
+  }
+  return sh;
+}
+
+function staffListHopes(token, storeId, yearMonth) {
+  var sess = staffRequireSession_(token);
+  var sid = staffAssertStoreAccess_(sess, storeId || sess.store_id);
+  var ym = String(yearMonth || '').trim();
+  if (!/^\d{4}-\d{2}$/.test(ym)) throw new Error('年月は yyyy-MM 形式で指定してください。');
+  var sh = ensureStaffHopeSheet_();
+  var values = getDataRows_(sh);
+  var out = [];
+  var myCode = normalizeByeCode_(sess.bye_code);
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    if (String(row[1] || '').trim() !== sid) continue;
+    var date = normalizeDate_(row[4]);
+    if (!date || date.substring(0, 7) !== ym) continue;
+    if (!byeCodesMatch_(normalizeByeCode_(row[2]), myCode)) continue;
+    var state = String(row[9] || 'pending');
+    if (state === 'cancelled') continue;
+    var kind = String(row[5] || 'work');
+    if (kind !== 'work' && kind !== 'off') kind = (kind === '休み' ? 'off' : 'work');
+    out.push({
+      hope_id: String(row[0] || ''),
+      store_id: sid,
+      employee_id: String(row[2] || ''),
+      name: String(row[3] || ''),
+      date: date,
+      kind: kind,
+      start_time: formatHm_(row[6]),
+      end_time: formatHm_(row[7]),
+      memo: String(row[8] || ''),
+      status: state,
+      created_at: String(row[10] || '')
+    });
+  }
+  out.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+  return { ok: true, storeId: sid, yearMonth: ym, hopes: out };
+}
+
+function staffSubmitHope(payload) {
+  var p = payload || {};
+  var sess = staffRequireSession_(p.token);
+  var sid = staffAssertStoreAccess_(sess, p.store_id || sess.store_id);
+  var date = normalizeDate_(p.date);
+  if (!date) throw new Error('日付を選んでください。');
+  var kind = String(p.kind || 'work').trim();
+  if (kind !== 'work' && kind !== 'off') kind = 'work';
+  var start = formatHm_(p.start_time);
+  var end = formatHm_(p.end_time);
+  if (kind === 'work') {
+    if (!isHm_(start) || !isHm_(end)) throw new Error('出勤希望は開始・終了時刻が必要です。');
+  } else {
+    start = '';
+    end = '';
+  }
+  var memo = String(p.memo || '').trim();
+  if (memo.length > 200) memo = memo.slice(0, 200);
+
+  var sh = ensureStaffHopeSheet_();
+  var headers = getHeaders_(sh);
+  if (!headers.length) {
+    sh.getRange(1, 1, 1, STAFF_HOPE_HEADERS.length).setValues([STAFF_HOPE_HEADERS]);
+  }
+  var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
+  var id = 'HP' + Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMddHHmmss') + '-' + Math.floor(Math.random() * 900 + 100);
+  sh.appendRow([
+    id,
+    sid,
+    sess.bye_code,
+    sess.name || '',
+    date,
+    kind,
+    start,
+    end,
+    memo,
+    'pending',
+    now,
+    now
+  ]);
+
+  var hope = {
+    hope_id: id,
+    store_id: sid,
+    employee_id: sess.bye_code,
+    name: sess.name || '',
+    date: date,
+    kind: kind,
+    start_time: start,
+    end_time: end,
+    memo: memo,
+    status: 'pending',
+    created_at: now
+  };
+
+  try {
+    var label = kind === 'off'
+      ? ((sess.name || '') + ' · 休み希望')
+      : ((sess.name || '') + ' · ' + start + '-' + end + ' 希望');
+    var body = kind === 'off'
+      ? ((sess.name || '') + ' が ' + date + ' の休みを申請しました')
+      : ((sess.name || '') + ' が ' + date + ' の ' + start + '-' + end + ' 出勤を申請しました');
+    if (memo) body += '（' + memo + '）';
+    staffPostStoreChat({
+      token: p.token,
+      store_id: sid,
+      body: body,
+      link_employee_id: sess.bye_code,
+      link_date: date,
+      link_label: label
+    });
+  } catch (eChat) { /* ignore */ }
+
+  return { ok: true, hope: hope };
+}
+
+function staffCancelHope(payload) {
+  var p = payload || {};
+  var sess = staffRequireSession_(p.token);
+  var sid = staffAssertStoreAccess_(sess, p.store_id || sess.store_id);
+  var hopeId = String(p.hope_id || '').trim();
+  if (!hopeId) throw new Error('hope_id が必要です。');
+  var sh = ensureStaffHopeSheet_();
+  var data = sh.getDataRange().getValues();
+  var target = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0] || '').trim() !== hopeId) continue;
+    if (String(data[i][1] || '').trim() !== sid) continue;
+    if (!byeCodesMatch_(normalizeByeCode_(data[i][2]), normalizeByeCode_(sess.bye_code))) {
+      throw new Error('自分の申請だけ取り消せます。');
+    }
+    target = i + 1;
+    break;
+  }
+  if (target < 0) throw new Error('申請が見つかりません。');
+  var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
+  sh.getRange(target, 10).setValue('cancelled');
+  sh.getRange(target, 12).setValue(now);
+  return { ok: true, cancelled: hopeId };
+}
+
+function staffListStoreChat(token, storeId, limit) {
+  var sess = staffRequireSession_(token);
+  var sid = staffAssertStoreAccess_(sess, storeId || sess.store_id);
+  var lim = Math.max(1, Math.min(200, Number(limit) || 80));
+  var sh = ensureStoreChatSheet_();
+  var map = headerIndexMap_(getHeaders_(sh));
+  requireHeaders_(map, ['message_id', 'store_id', 'body', 'created_at']);
+  var values = getDataRows_(sh);
+  var out = [];
+  for (var i = 0; i < values.length; i++) {
+    var r = values[i];
+    if (String(r[map.store_id] || '').trim() !== sid) continue;
+    out.push({
+      message_id: String(r[map.message_id] || ''),
+      store_id: sid,
+      user_email: map.user_email != null ? String(r[map.user_email] || '') : '',
+      user_name: map.user_name != null ? String(r[map.user_name] || '') : '',
+      body: String(r[map.body] || ''),
+      created_at: String(r[map.created_at] || ''),
+      link_employee_id: map.link_employee_id != null ? String(r[map.link_employee_id] || '') : '',
+      link_date: map.link_date != null ? String(r[map.link_date] || '') : '',
+      link_label: map.link_label != null ? String(r[map.link_label] || '') : ''
+    });
+  }
+  if (out.length > lim) out = out.slice(out.length - lim);
+  return { ok: true, messages: out };
+}
+
+function staffPostStoreChat(payload) {
+  var p = payload || {};
+  var sess = staffRequireSession_(p.token);
+  var sid = staffAssertStoreAccess_(sess, p.store_id || sess.store_id);
+  var body = String(p.body || '').trim();
+  if (!body) throw new Error('メッセージを入力してください。');
+  if (body.length > 500) body = body.slice(0, 500);
+
+  var sh = ensureStoreChatSheet_();
+  var headers = getHeaders_(sh);
+  var map = headerIndexMap_(headers);
+  requireHeaders_(map, ['message_id', 'store_id', 'body', 'created_at']);
+
+  var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
+  var id = 'CH' + Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMddHHmmss') + '-' + Math.floor(Math.random() * 900 + 100);
+  var emailKey = 'staff:' + sess.bye_code;
+  var uname = String(p.user_name || sess.name || '').trim();
+  var row = new Array(headers.length).fill('');
+  row[map.message_id] = id;
+  row[map.store_id] = sid;
+  if (map.user_email != null) row[map.user_email] = emailKey;
+  if (map.user_name != null) row[map.user_name] = uname;
+  row[map.body] = body;
+  row[map.created_at] = now;
+  if (map.link_employee_id != null) row[map.link_employee_id] = String(p.link_employee_id || '').trim();
+  if (map.link_date != null) row[map.link_date] = String(p.link_date || '').trim();
+  if (map.link_label != null) row[map.link_label] = String(p.link_label || '').trim();
+  sh.appendRow(row);
+
+  return {
+    ok: true,
+    message: {
+      message_id: id,
+      store_id: sid,
+      user_email: emailKey,
+      user_name: uname,
+      body: body,
+      created_at: now,
+      link_employee_id: String(p.link_employee_id || '').trim(),
+      link_date: String(p.link_date || '').trim(),
+      link_label: String(p.link_label || '').trim()
+    }
+  };
+}
+
+function staffDeleteStoreChat(payload) {
+  var p = payload || {};
+  var sess = staffRequireSession_(p.token);
+  var sid = staffAssertStoreAccess_(sess, p.store_id || sess.store_id);
+  var messageId = String(p.message_id || '').trim();
+  if (!messageId) throw new Error('message_id が必要です。');
+  var emailKey = ('staff:' + sess.bye_code).toLowerCase();
+
+  var sh = ensureStoreChatSheet_();
+  var headers = getHeaders_(sh);
+  var map = headerIndexMap_(headers);
+  requireHeaders_(map, ['message_id', 'store_id']);
+  var data = sh.getDataRange().getValues();
+  var targetRow = -1;
+  for (var i = 1; i < data.length; i++) {
+    var r = data[i];
+    if (String(r[map.message_id] || '').trim() !== messageId) continue;
+    if (String(r[map.store_id] || '').trim() !== sid) continue;
+    var owner = map.user_email != null ? String(r[map.user_email] || '').trim().toLowerCase() : '';
+    if (owner && owner !== emailKey) {
       throw new Error('自分のメッセージだけ削除できます。');
     }
     targetRow = i + 1;

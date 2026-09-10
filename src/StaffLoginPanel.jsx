@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { IconLoginArrow } from './LoginHero.jsx';
-import { STAFF_CODE_KEY, validateStaffPassword } from './staffAuth.js';
+import { STAFF_CODE_KEY, STAFF_PASSWORD_HINT, validateStaffPassword } from './staffAuth.js';
 
 const inputCls = 'login-form-input';
 const labelCls = 'login-form-label';
@@ -98,7 +98,7 @@ export function StaffLoginPanel({
         </button>
       </div>
 
-      <h2 className="login-card-title">{phase === 'login' ? 'ログイン' : '登録'}</h2>
+      <h2 className="login-card-title">{phase === 'login' ? 'アルバイトログイン' : 'アルバイト登録'}</h2>
 
       {phase === 'login' ? (
         <form className="space-y-4 mt-5" onSubmit={handleLogin} autoComplete="on">
@@ -182,7 +182,9 @@ export function StaffLoginPanel({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={inputCls}
+              placeholder={STAFF_PASSWORD_HINT}
             />
+            <p className="mt-1.5 text-[12px] font-semibold text-slate-500">{STAFF_PASSWORD_HINT}</p>
           </div>
           <div>
             <label className={labelCls} htmlFor="staff-reg-password2">パスワード（確認）</label>

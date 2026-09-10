@@ -35,6 +35,20 @@ function actionParams(fnName, args) {
       return { action: 'staffLogin', byeCode: args[0], password: args[1] };
     case 'staffResumeSession':
       return { action: 'staffResumeSession', token: args[0] };
+    case 'staffGetMonth':
+      return { action: 'staffGetMonth', token: args[0], storeId: args[1], yearMonth: args[2] };
+    case 'staffListHopes':
+      return { action: 'staffListHopes', token: args[0], storeId: args[1], yearMonth: args[2] };
+    case 'staffSubmitHope':
+      return { action: 'staffSubmitHope', payload: JSON.stringify(args[0]) };
+    case 'staffCancelHope':
+      return { action: 'staffCancelHope', payload: JSON.stringify(args[0]) };
+    case 'staffListStoreChat':
+      return { action: 'staffListStoreChat', token: args[0], storeId: args[1], limit: args[2] || 80 };
+    case 'staffPostStoreChat':
+      return { action: 'staffPostStoreChat', payload: JSON.stringify(args[0]) };
+    case 'staffDeleteStoreChat':
+      return { action: 'staffDeleteStoreChat', payload: JSON.stringify(args[0]) };
     case 'saveJurisdiction':
       return { action: 'saveJurisdiction', payload: JSON.stringify(args[0]) };
     case 'listEmployees':
@@ -227,6 +241,13 @@ export const api = {
   staffSetPassword: (byeCode, name, password) => run('staffSetPassword', byeCode, name, password),
   staffLogin: (byeCode, password) => run('staffLogin', byeCode, password),
   staffResumeSession: (token) => run('staffResumeSession', token),
+  staffGetMonth: (token, storeId, yearMonth) => run('staffGetMonth', token, storeId, yearMonth),
+  staffListHopes: (token, storeId, yearMonth) => run('staffListHopes', token, storeId, yearMonth),
+  staffSubmitHope: (payload) => run('staffSubmitHope', payload),
+  staffCancelHope: (payload) => run('staffCancelHope', payload),
+  staffListStoreChat: (token, storeId, limit) => run('staffListStoreChat', token, storeId, limit),
+  staffPostStoreChat: (payload) => run('staffPostStoreChat', payload),
+  staffDeleteStoreChat: (payload) => run('staffDeleteStoreChat', payload),
   saveJurisdiction: (payload) => run('saveJurisdiction', payload),
   listEmployees: (storeId, userEmail) => run('listEmployees', storeId, userEmail),
   upsertEmployee: (payload) => run('upsertEmployee', payload),

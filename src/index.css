@@ -2202,6 +2202,250 @@
     color: #1565c0;
     background: rgba(21, 101, 192, 0.08);
   }
+  .staff-tabbar__icon-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .staff-tabbar__badge {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.55rem;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0 0.25rem;
+    border-radius: 9999px;
+    background: #e53935;
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    line-height: 1rem;
+    text-align: center;
+  }
+  .staff-chip--alert {
+    background: #ffebee;
+    color: #c62828;
+  }
+  .staff-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding-bottom: 0.5rem;
+  }
+  .staff-monthbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.35rem 0.15rem;
+  }
+  .staff-monthbar__label {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .staff-monthbar__btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #334155;
+  }
+  .staff-filter,
+  .staff-hope-kind {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .staff-filter__btn {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
+  .staff-filter__btn.is-on {
+    color: #1565c0;
+    background: rgba(21, 101, 192, 0.12);
+    border-color: rgba(21, 101, 192, 0.35);
+  }
+  .staff-panel__status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+  }
+  .staff-panel__error {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #c62828;
+    line-height: 1.45;
+  }
+  .staff-panel__ok {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1565c0;
+    line-height: 1.45;
+  }
+  .staff-emp-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .staff-emp-card.is-me {
+    border-color: rgba(21, 101, 192, 0.45);
+    box-shadow: 0 0 0 1px rgba(21, 101, 192, 0.12);
+  }
+  .staff-emp-card__head {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(248, 250, 252, 0.9);
+  }
+  .staff-emp-card__name {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .staff-day-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+  }
+  .staff-day-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .staff-day-row__date {
+    color: #475569;
+  }
+  .staff-day-row__val {
+    color: #0f172a;
+  }
+  .staff-day-row.is-work .staff-day-row__val {
+    color: #1565c0;
+  }
+  .staff-day-row.is-off .staff-day-row__val {
+    color: #64748b;
+  }
+  .staff-day-row.is-empty .staff-day-row__val {
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .staff-hope-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.9rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+  }
+  .staff-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #64748b;
+  }
+  .staff-field input,
+  .staff-field select {
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #fff;
+  }
+  .staff-hope-times {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  .staff-primary-btn {
+    margin-top: 0.25rem;
+    height: 2.75rem;
+    border-radius: 0.85rem;
+    background: #1565c0;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+  .staff-primary-btn:disabled {
+    opacity: 0.55;
+  }
+  .staff-hope-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .staff-hope-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 0.95rem;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+  }
+  .staff-hope-item__date {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .staff-hope-item__body {
+    margin-top: 0.15rem;
+    font-size: 0.78rem;
+    font-weight: 650;
+    color: #475569;
+  }
+  .staff-hope-item__state {
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #1565c0;
+  }
+  .staff-hope-item__cancel {
+    flex-shrink: 0;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #c62828;
+    background: #ffebee;
+  }
+  .staff-chat-tab {
+    margin: -0.25rem -0.15rem 0;
+    min-height: calc(100dvh - 8.5rem);
+  }
+  .store-chat-panel.is-embedded {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: calc(100dvh - 8.5rem);
+    max-height: none;
+    border-radius: 1rem;
+    box-shadow: none;
+  }
 
   /* 笏笏 繧｢繝励Μ繧｢繧､繧ｳ繝ｳ・・NG・・笏笏 */
   .app-icon-mark {
