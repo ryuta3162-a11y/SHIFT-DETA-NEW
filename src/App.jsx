@@ -1031,6 +1031,19 @@ export default function App() {
   dirtyKeysRef.current = dirtyKeys;
   const dirtyMemoKeysRef = useRef(dirtyMemoKeys);
   dirtyMemoKeysRef.current = dirtyMemoKeys;
+  const shiftsRef = useRef(shifts);
+  shiftsRef.current = shifts;
+  const memosRef = useRef(memos);
+  memosRef.current = memos;
+  const canEditRef = useRef(canEdit);
+  canEditRef.current = canEdit;
+  const storeIdRef = useRef(storeId);
+  storeIdRef.current = storeId;
+  const yearMonthRef = useRef(yearMonth);
+  yearMonthRef.current = yearMonth;
+  const userEmailRef = useRef(user?.email || '');
+  userEmailRef.current = user?.email || '';
+  const flushChainRef = useRef(Promise.resolve());
   const loadMonthGenRef = useRef(0);
   const autoSaveTimer = useRef(null);
   const weeklySaveTimer = useRef(null);
@@ -1076,6 +1089,37 @@ export default function App() {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
   }, [dirtyKeys, dirtyMemoKeys, canEdit, authStep]);
+
+  // タブを閉じる／裏に回したときも未送信を送る（操作は止めない）
+  useEffect(() => {
+    if (authStep !== 'ready') return undefined;
+    const kickFlush = () => {
+      if (!(dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size)) return;
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+        autoSaveTimer.current = null;
+      }
+      void flushDirtyShifts({ quiet: true });
+    };
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') kickFlush();
+    };
+    const onPageHide = () => kickFlush();
+    const onBeforeUnload = (ev) => {
+      if (!(dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size)) return;
+      kickFlush();
+      ev.preventDefault();
+      ev.returnValue = '';
+    };
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [authStep]);
 
   useEffect(() => {
     if (user?.email) setLeavePrefs(readLeavePrefs(user.email));
@@ -1294,6 +1338,19 @@ export default function App() {
     if (!sid || !user?.email) return;
     const allowed = (user?.stores || []).some((s) => s.store_id === sid);
     if (!allowed) return;
+    if (autoSaveTimer.current) {
+      clearTimeout(autoSaveTimer.current);
+      autoSaveTimer.current = null;
+    }
+    const prevSid = storeId;
+    const prevYm = yearMonth;
+    if (dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size) {
+      // 切替前の店舗データを捨てない（裏保存。キャッシュがあれば待たない）
+      const flushP = flushDirtyShifts({ quiet: true, storeId: prevSid, yearMonth: prevYm });
+      const cached = readMonthCache(sid, ym);
+      if (!cached?.employees?.length) await flushP;
+      else void flushP;
+    }
     resetWorkspaceState();
     setStoreId(sid);
     setAccountOpen(false);
@@ -2004,18 +2061,15 @@ export default function App() {
       if (!fromCache) {
         setMonthlyLoading(true);
         setMonthlyRefreshing(false);
-        if (opts.quiet) await run();
-        else await withBusy('月間を準備中…', run);
-      } else {
-        try {
-          await run();
-        } catch (e) {
-          // 静かに読み込むときはエラーを出さない
-          if (!opts.quiet) notify(e.message || String(e), 'err');
-        }
       }
+      // フルスクリーンの busy は使わない（入力・スクロールを止めない）
+      await run();
     } catch (e) {
-      if (gen === loadMonthGenRef.current) notify(e.message || String(e), 'err');
+      if (gen === loadMonthGenRef.current && !opts.quiet && !fromCache) {
+        notify(e.message || String(e), 'err');
+      } else if (gen === loadMonthGenRef.current && fromCache && !opts.quiet) {
+        notify(e.message || String(e), 'err');
+      }
     } finally {
       if (gen === loadMonthGenRef.current) {
         setMonthlyLoading(false);
@@ -3147,97 +3201,164 @@ export default function App() {
   }
 
   async function flushDirtyShifts(opts = {}) {
-    const quiet = !!opts.quiet;
-    const shiftCount = dirtyKeys.size;
-    const memoCount = dirtyMemoKeys.size;
-    if (!shiftCount && !memoCount) {
-      if (!quiet) notify('変更はありません');
-      return true;
-    }
-    const shiftItems = shiftCount
-      ? [...dirtyKeys].map((key) => {
-          const [employeeId, date] = key.split('__');
-          const s = shifts.find((row) => row.employee_id === employeeId && row.date === date) || {
-            shift_id: '', status: 'undef', start_time: '', end_time: '', leave_code: '',
-          };
-          const status = s.status || 'undef';
-          return {
-            shift_id: s.shift_id || '',
-            employee_id: employeeId,
-            date,
-            status,
-            leave_code: parseLeaveCode(s.leave_code) || houteiMaps[employeeId]?.[date] || '',
-            start_time: status === 'work' ? String(s.start_time || '').slice(0, 5) : '',
-            end_time: status === 'work' ? String(s.end_time || '').slice(0, 5) : '',
-          };
-        })
-      : [];
-    const memoItems = memoCount
-      ? [...dirtyMemoKeys].map((key) => {
-          const [employeeId, date] = key.split('__');
-          const m = memos.find((row) => row.employee_id === employeeId && row.date === date) || {
-            memo_id: '', body: '',
-          };
-          return {
-            memo_id: m.memo_id || '',
-            employee_id: employeeId,
-            date,
-            kind: 'note',
-            body: String(m.body || ''),
-          };
-        })
-      : [];
-    const run = async () => {
-      let latestMemos = memos;
-      let latestShifts = shifts;
-      let latestEmployees = employees;
-      let latestCanEdit = canEdit;
+    const quiet = opts.quiet !== false; // 既定は裏保存（操作を止めない）
+    const runFlush = async () => {
+      const sid = opts.store_id || opts.storeId || storeIdRef.current;
+      const ym = opts.year_month || opts.yearMonth || yearMonthRef.current;
+      const email = opts.user_email || opts.userEmail || userEmailRef.current || user?.email;
+      const keysSnap = new Set(dirtyKeysRef.current);
+      const memoKeysSnap = new Set(dirtyMemoKeysRef.current);
+      const shiftCount = keysSnap.size;
+      const memoCount = memoKeysSnap.size;
+      if (!shiftCount && !memoCount) {
+        if (!quiet) notify('変更はありません');
+        return true;
+      }
+      if (!email || !sid || !ym) return false;
+
+      const shiftRows = shiftsRef.current || [];
+      const memoRows = memosRef.current || [];
+      const shiftItems = shiftCount
+        ? [...keysSnap].map((key) => {
+            const [employeeId, date] = key.split('__');
+            const s = shiftRows.find((row) => row.employee_id === employeeId && row.date === date) || {
+              shift_id: '', status: 'undef', start_time: '', end_time: '', leave_code: '',
+            };
+            const status = s.status || 'undef';
+            return {
+              shift_id: s.shift_id || '',
+              employee_id: employeeId,
+              date,
+              status,
+              leave_code: parseLeaveCode(s.leave_code) || houteiMaps[employeeId]?.[date] || '',
+              start_time: status === 'work' ? String(s.start_time || '').slice(0, 5) : '',
+              end_time: status === 'work' ? String(s.end_time || '').slice(0, 5) : '',
+            };
+          })
+        : [];
+      const memoItems = memoCount
+        ? [...memoKeysSnap].map((key) => {
+            const [employeeId, date] = key.split('__');
+            const m = memoRows.find((row) => row.employee_id === employeeId && row.date === date) || {
+              memo_id: '', body: '',
+            };
+            return {
+              memo_id: m.memo_id || '',
+              employee_id: employeeId,
+              date,
+              kind: 'note',
+              body: String(m.body || ''),
+            };
+          })
+        : [];
+
+      setSaveState('saving');
+      let latestMemos = memoRows;
+      let latestShifts = shiftRows;
+      let latestEmployees = employeesRef.current;
+      let latestCanEdit = canEditRef.current;
+
       if (shiftItems.length) {
         const res = await api.upsertShiftsBatch({
-          user_email: user.email,
-          store_id: storeId,
+          user_email: email,
+          store_id: sid,
           items: shiftItems,
         });
-        if (res.shifts) {
-          latestEmployees = res.employees || employees;
-          latestShifts = res.shifts;
+        if (res.employees) latestEmployees = res.employees;
+        if (res.canEdit != null) latestCanEdit = !!res.canEdit;
+        if (Array.isArray(res.shifts)) {
+          // 保存中に追加編集されたセルはローカルを優先して残す
+          const stillDirty = dirtyKeysRef.current;
+          if (stillDirty.size <= keysSnap.size) {
+            const overlay = new Map();
+            (shiftsRef.current || []).forEach((row) => {
+              const k = `${row.employee_id}__${row.date}`;
+              if (stillDirty.has(k) && !keysSnap.has(k)) overlay.set(k, row);
+            });
+            if (overlay.size) {
+              latestShifts = (res.shifts || []).map((row) => {
+                const k = `${row.employee_id}__${row.date}`;
+                return overlay.get(k) || row;
+              });
+              overlay.forEach((row, k) => {
+                if (!latestShifts.some((r) => `${r.employee_id}__${r.date}` === k)) {
+                  latestShifts = latestShifts.concat([row]);
+                }
+              });
+            } else {
+              latestShifts = res.shifts;
+            }
+          } else {
+            const overlay = new Map();
+            (shiftsRef.current || []).forEach((row) => {
+              const k = `${row.employee_id}__${row.date}`;
+              if (stillDirty.has(k)) overlay.set(k, row);
+            });
+            latestShifts = (res.shifts || []).map((row) => {
+              const k = `${row.employee_id}__${row.date}`;
+              return overlay.get(k) || row;
+            });
+          }
           setEmployees(latestEmployees);
           setShifts(latestShifts);
+          if (res.canEdit != null) setCanEdit(latestCanEdit);
           if (res.memos) latestMemos = res.memos;
         }
-        if (res.canEdit != null) {
-          latestCanEdit = !!res.canEdit;
-          setCanEdit(latestCanEdit);
-        }
-        setDirtyKeys(new Set());
+        setDirtyKeys((prev) => {
+          const next = new Set(prev);
+          keysSnap.forEach((k) => next.delete(k));
+          return next;
+        });
       }
+
       if (memoItems.length) {
         const res = await api.upsertMemosBatch({
-          user_email: user.email,
-          store_id: storeId,
+          user_email: email,
+          store_id: sid,
           items: memoItems,
         });
-        if (res.memos) latestMemos = res.memos;
-        setDirtyMemoKeys(new Set());
+        if (res.memos) {
+          const stillDirty = dirtyMemoKeysRef.current;
+          if (stillDirty.size) {
+            const overlay = new Map();
+            (memosRef.current || []).forEach((row) => {
+              const k = `${row.employee_id}__${row.date}`;
+              if (stillDirty.has(k) && !memoKeysSnap.has(k)) overlay.set(k, row);
+            });
+            latestMemos = (res.memos || []).map((row) => {
+              const k = `${row.employee_id}__${row.date}`;
+              return overlay.get(k) || row;
+            });
+          } else {
+            latestMemos = res.memos;
+          }
+        }
+        setDirtyMemoKeys((prev) => {
+          const next = new Set(prev);
+          memoKeysSnap.forEach((k) => next.delete(k));
+          return next;
+        });
       }
+
       setMemos(latestMemos);
-      setSaveState('saved');
-      writeMonthCache(storeId, yearMonth, {
+      const remain =
+        [...dirtyKeysRef.current].filter((k) => !keysSnap.has(k)).length
+        + [...dirtyMemoKeysRef.current].filter((k) => !memoKeysSnap.has(k)).length;
+      setSaveState(remain ? 'pending' : 'saved');
+      writeMonthCache(sid, ym, {
         employees: latestEmployees,
         shifts: latestShifts,
         memos: latestMemos,
         canEdit: latestCanEdit,
       });
       if (!quiet) notify('保存しました', 'ok');
-    };
-    try {
-      if (quiet) {
-        setSaveState('saving');
-        await run();
-      } else {
-        await withBusy('保存中…', run);
-      }
       return true;
+    };
+
+    const queued = flushChainRef.current.then(runFlush, runFlush);
+    flushChainRef.current = queued.then(() => undefined, () => undefined);
+    try {
+      return await queued;
     } catch (e) {
       setSaveState('error');
       notify(e.message || String(e), 'err');
@@ -3334,14 +3455,29 @@ export default function App() {
 
   async function changeMonth(targetYm) {
     if (!targetYm || targetYm === yearMonth) return;
-    if (dirtyKeys.size || dirtyMemoKeys.size) {
-      await flushDirtyShifts({ quiet: true });
+    if (autoSaveTimer.current) {
+      clearTimeout(autoSaveTimer.current);
+      autoSaveTimer.current = null;
     }
+    const prevSid = storeId;
+    const prevYm = yearMonth;
+    const hasDirty = !!(dirtyKeysRef.current.size || dirtyMemoKeysRef.current.size);
+    const flushP = hasDirty
+      ? flushDirtyShifts({ quiet: true, storeId: prevSid, yearMonth: prevYm })
+      : Promise.resolve(true);
     setFocusCell(null);
     setShiftEditor(null);
     setEmpEditorId(null);
     setYearMonth(targetYm);
-    await loadMonthly(storeId, targetYm);
+    const cached = readMonthCache(storeId, targetYm);
+    if (cached?.employees?.length) {
+      // キャッシュがあれば即表示。前月の保存は裏で続ける
+      void flushP;
+      await loadMonthly(storeId, targetYm, { quiet: true });
+    } else {
+      await flushP;
+      await loadMonthly(storeId, targetYm, { quiet: true });
+    }
   }
 
   async function openSettings(panel) {
