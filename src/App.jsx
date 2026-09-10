@@ -1927,6 +1927,40 @@ export default function App() {
     }
   }
 
+  /** ツールバーの「白紙」: 表示中の月のシフトをすべて消す（メモは残す） */
+  async function clearMonthShifts() {
+    if (!canEdit || !storeId || !yearMonth) return;
+    const monthNum = Number(yearMonth.slice(5, 7));
+    const label = storeName ? `${storeName} / ${monthNum}月` : `${monthNum}月`;
+    if (!confirm(`${label} のシフトをすべて白紙に戻します。\n個別に直した内容も消えます（メモは残ります）。\nよろしいですか？`)) return;
+    if (!confirm(`最終確認：${label} を本当にすべて消しますか？\nこの操作は元に戻せません。`)) return;
+    try {
+      if (dirtyKeys.size || dirtyMemoKeys.size) await flushDirtyShifts({ quiet: true });
+      await withBusy(`${monthNum}月を白紙にしています…`, async () => {
+        const res = await api.clearMonthlyShifts({
+          user_email: user.email,
+          store_id: storeId,
+          year_month: yearMonth,
+        });
+        setEmployees(res.employees || []);
+        setShifts(res.shifts || []);
+        setMemos(res.memos || memos);
+        setCanEdit(!!res.canEdit);
+        setDirtyKeys(new Set());
+        setDirtyMemoKeys(new Set());
+        writeMonthCache(storeId, yearMonth, {
+          employees: res.employees || [],
+          shifts: res.shifts || [],
+          memos: res.memos || memos,
+          canEdit: !!res.canEdit,
+        });
+        const rows = res.cleared?.rows || 0;
+        notify(rows ? `${monthNum}月を白紙にしました（${rows}件）` : `${monthNum}月はすでに空欄でした`, 'ok');
+      });
+    } catch (e) {
+      notify(e.message || String(e), 'err');
+    }
+  }
   /** 週間テンプレートを保存してから、その月に反映する */
   async function saveWeeklyAndApply(scope = 'employee') {
     if (scope === 'all' && !confirm('全員分を週間テンプレートで作り直します（個別に直した日は消えます）。よろしいですか？')) return;
@@ -3753,21 +3787,26 @@ export default function App() {
                 </button>
               )}
               {canEdit && (
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={applyWeeklyTemplateToMonth}
-                  className="app-kintai-btn"
-                  title="週間テンプレートを表示中の月に反映（テンプレ未登録のスタッフは空欄）"
-                  aria-label="テンプレ反映"
-                >
-                  <svg viewBox="0 0 24 24" className="app-kintai-btn__icon" fill="none" aria-hidden="true">
-                    <rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
-                    <path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                    <path d="M9 15.2l2 2 4-4.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span>テンプレ反映</span>
-                </button>
+                <div className="app-tpl-dock" role="group" aria-label="テンプレート">
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={applyWeeklyTemplateToMonth}
+                    className="app-tpl-dock__btn"
+                    title="週間テンプレートを表示中の月に反映"
+                  >
+                    反映
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={clearMonthShifts}
+                    className="app-tpl-dock__btn app-tpl-dock__btn--danger"
+                    title="表示中の月のシフトをすべて白紙にする"
+                  >
+                    白紙
+                  </button>
+                </div>
               )}
               {canEdit && exportPanelOpen && (
                 <div className="app-cal-dock" role="group" aria-label="カレンダー">

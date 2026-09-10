@@ -1765,6 +1765,7 @@ function handleStaffApiGet_(p, e) {
     else if (action === 'saveWeeklySchedule') result = saveWeeklySchedule(parseApiPayload_(p.payload));
     else if (action === 'getShifts') result = getShifts(p.storeId, p.yearMonth, p.userEmail, p.applyWeekly);
     else if (action === 'generateMonthlyShifts') result = generateMonthlyShifts(parseApiPayload_(p.payload));
+    else if (action === 'clearMonthlyShifts') result = clearMonthlyShifts(parseApiPayload_(p.payload));
     else if (action === 'upsertShift') result = upsertShift(parseApiPayload_(p.payload));
     else if (action === 'upsertShiftsBatch') result = upsertShiftsBatch(parseApiPayload_(p.payload));
     else if (action === 'upsertMemosBatch') result = upsertMemosBatch(parseApiPayload_(p.payload));
@@ -3904,6 +3905,62 @@ function upsertShift(payload) {
  * 月間セル変更の一括保存
  * payload: { user_email, store_id, items: [{shift_id?, date, employee_id, status, start_time, end_time}] }
  */
+/**
+ * 表示中の月のシフトをすべて白紙にする（メモは残す）
+ * payload: { user_email, store_id, year_month }
+ */
+function clearMonthlyShifts(payload) {
+  var p = payload || {};
+  var email = resolveClientEmail_(p.user_email);
+  var storeId = String(p.store_id || '').trim();
+  var ym = String(p.year_month || '').trim();
+  var acl = resolveAcl_(email);
+  assertStoreAccess_(acl, storeId, true);
+  if (!/^\d{4}-\d{2}$/.test(ym)) throw new Error('年月は yyyy-MM 形式です。');
+
+  var clearedRows = 0;
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(20000); } catch (eLock) {
+    throw new Error('他の処理と競合しました。少し待ってからもう一度お試しください。');
+  }
+  try {
+    var sh = mustShiftSheetForStore_(storeId);
+    var ensured = ensureShiftHeadersLean_(sh);
+    var headers = ensured.headers;
+    var map = ensured.map;
+    requireHeaders_(map, ['date', 'employee_id']);
+    var data = sh.getDataRange().getValues();
+    var width = Math.max(headers.length, (data[0] || []).length);
+    var body = [];
+    for (var r = 1; r < data.length; r++) {
+      var row = data[r];
+      var d = normalizeDate_(row[map.date]);
+      if (shiftRowMatchesStore_(row, map, storeId) && d && d.substring(0, 7) === ym) {
+        clearedRows++;
+        continue;
+      }
+      var line = row.slice(0, width);
+      while (line.length < width) line.push('');
+      var hasEmp = String(line[map.employee_id] || '').trim();
+      var hasDate = String(line[map.date] || '').trim();
+      if (!hasEmp && !hasDate) continue;
+      body.push(line);
+    }
+    var prevRows = Math.max(0, data.length - 1);
+    if (body.length) writeSheetRows_(sh, 2, body);
+    else if (prevRows > 0) sh.getRange(2, 1, prevRows, Math.max(width, sh.getLastColumn())).clearContent();
+    if (prevRows > body.length) {
+      sh.getRange(body.length + 2, 1, prevRows - body.length, Math.max(width, sh.getLastColumn())).clearContent();
+    }
+    invalidateRequestCache_(['employees']);
+  } finally {
+    try { lock.releaseLock(); } catch (eRel) { /* ignore */ }
+  }
+  var result = readShifts_(storeId, ym, email, acl);
+  result.cleared = { rows: clearedRows };
+  return result;
+}
+
 function upsertShiftsBatch(payload) {
   var p = payload || {};
   var email = resolveClientEmail_(p.user_email);

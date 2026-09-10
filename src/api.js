@@ -12,6 +12,7 @@ const REQUEST_TIMEOUT_MS = 45000;
 // 反映・一括保存はシート書き込みが重いので待ち時間を長めにする
 const HEAVY_ACTIONS = new Set([
   'generateMonthlyShifts',
+  'clearMonthlyShifts',
   'saveWeeklySchedule',
   'upsertShiftsBatch',
   'upsertMemosBatch',
@@ -60,6 +61,8 @@ function actionParams(fnName, args) {
       };
     case 'generateMonthlyShifts':
       return { action: 'generateMonthlyShifts', payload: JSON.stringify(args[0]) };
+    case 'clearMonthlyShifts':
+      return { action: 'clearMonthlyShifts', payload: JSON.stringify(args[0]) };
     case 'upsertShift':
       return { action: 'upsertShift', payload: JSON.stringify(args[0]) };
     case 'upsertShiftsBatch':
@@ -234,6 +237,7 @@ export const api = {
   getShifts: (storeId, yearMonth, userEmail, applyWeekly) =>
     run('getShifts', storeId, yearMonth, userEmail, applyWeekly),
   generateMonthlyShifts: (payload) => run('generateMonthlyShifts', payload),
+  clearMonthlyShifts: (payload) => run('clearMonthlyShifts', payload),
   upsertShift: (payload) => run('upsertShift', payload),
   upsertShiftsBatch: (payload) => run('upsertShiftsBatch', payload),
   upsertMemosBatch: (payload) => run('upsertMemosBatch', payload),

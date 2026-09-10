@@ -577,6 +577,46 @@
   .app-cal-dock__btn:disabled {
     opacity: 0.4;
   }
+  /* テンプレ：反映 / 白紙（カレンダー登録・クリアと同型） */
+  .app-tpl-dock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 2.55rem;
+    padding: 0 0.3rem;
+    border: 1px solid #d5dde7;
+    border-radius: 0.7rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f6f9 100%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.85) inset,
+      0 2px 6px rgba(16, 24, 40, 0.06);
+  }
+  .app-tpl-dock__btn {
+    height: 2rem;
+    min-width: 2.6rem;
+    padding: 0 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: #121820;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .app-tpl-dock__btn:hover:not(:disabled) {
+    background: #eef3f8;
+    border-color: #c5d0db;
+  }
+  .app-tpl-dock__btn--danger {
+    color: #9f1239;
+  }
+  .app-tpl-dock__btn--danger:hover:not(:disabled) {
+    background: #fff1f2;
+    border-color: #fecdd3;
+  }
+  .app-tpl-dock__btn:disabled {
+    opacity: 0.4;
+  }
   .print-only {
     display: none !important;
   }
@@ -2818,6 +2858,7 @@
   .app-toolbar,
   .app-account-menu,
   .app-cal-dock,
+  .app-tpl-dock,
   .app-kintai-btn,
   .app-tool-group,
   .app-save-badge,
