@@ -1776,6 +1776,7 @@ function handleStaffApiGet_(p, e) {
     else if (action === 'refreshShiftIndex') result = { ok: true, rows: rebuildShiftIndexSheet_() };
     else if (action === 'listStoreChat') result = listStoreChat(p.storeId, p.userEmail, p.limit);
     else if (action === 'postStoreChat') result = postStoreChat(parseApiPayload_(p.payload));
+    else if (action === 'deleteStoreChat') result = deleteStoreChat(parseApiPayload_(p.payload));
     else throw new Error('不明な action: ' + action);
     return jsonApiResponse_(result, e);
   } catch (err) {
@@ -5946,5 +5947,36 @@ function postStoreChat(payload) {
       link_label: String(p.link_label || '').trim()
     }
   };
+}
+
+function deleteStoreChat(payload) {
+  var p = payload || {};
+  var email = resolveClientEmail_(p.user_email);
+  var acl = resolveAcl_(email);
+  var storeId = String(p.store_id || '').trim();
+  var messageId = String(p.message_id || '').trim();
+  assertStoreAccess_(acl, storeId, true);
+  if (!messageId) throw new Error('message_id が必要です。');
+
+  var sh = ensureStoreChatSheet_();
+  var headers = getHeaders_(sh);
+  var map = headerIndexMap_(headers);
+  requireHeaders_(map, ['message_id', 'store_id']);
+  var data = sh.getDataRange().getValues();
+  var targetRow = -1;
+  for (var i = 1; i < data.length; i++) {
+    var r = data[i];
+    if (String(r[map.message_id] || '').trim() !== messageId) continue;
+    if (String(r[map.store_id] || '').trim() !== storeId) continue;
+    var owner = map.user_email != null ? String(r[map.user_email] || '').trim().toLowerCase() : '';
+    if (owner && owner !== String(email || '').toLowerCase()) {
+      throw new Error('自分のメッセージだけ削除できます。');
+    }
+    targetRow = i + 1;
+    break;
+  }
+  if (targetRow < 0) throw new Error('メッセージが見つかりません。');
+  sh.deleteRow(targetRow);
+  return { ok: true, deleted: messageId };
 }
 

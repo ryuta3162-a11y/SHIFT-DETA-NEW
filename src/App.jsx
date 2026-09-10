@@ -4838,6 +4838,7 @@ export default function App() {
             onSend={() => chat.send().catch((e) => notify(e.message || String(e), 'err'))}
             onClose={() => chat.setOpen(false)}
             onOpenLink={openChatCellLink}
+            onDelete={(id) => chat.remove(id).catch((e) => notify(e.message || String(e), 'err'))}
           />
         </>
       )}

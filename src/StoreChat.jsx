@@ -1,4 +1,4 @@
-/** 店舗チャット（右下FAB・セルリンク付き） */
+/** 店舗チャット（右下FAB・セルリンク・自分の投稿削除） */
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
 
@@ -68,14 +68,36 @@ export function StoreChatPanel({
   onSend,
   onClose,
   onOpenLink,
+  onDelete,
 }) {
   const listRef = useRef(null);
+  const menuRef = useRef(null);
   const me = String(user?.email || '').toLowerCase();
+  const [menu, setMenu] = useState(null); // { messageId, x, y }
 
   useEffect(() => {
     if (!open || !listRef.current) return;
     listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [open, messages.length, loading]);
+
+  useEffect(() => {
+    if (!menu) return undefined;
+    const close = (ev) => {
+      if (menuRef.current?.contains?.(ev.target)) return;
+      setMenu(null);
+    };
+    const onKey = (ev) => {
+      if (ev.key === 'Escape') setMenu(null);
+    };
+    window.addEventListener('mousedown', close);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('mousedown', close);
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menu]);
 
   if (!open) return null;
 
@@ -108,7 +130,20 @@ export function StoreChatPanel({
                   {initialOf(name)}
                 </span>
               )}
-              <div className="store-chat-bubble">
+              <div
+                className={`store-chat-bubble ${mine ? 'is-mine' : ''}`}
+                title={mine ? '右クリックで削除' : undefined}
+                onContextMenu={(ev) => {
+                  if (!mine) return;
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                  const panel = ev.currentTarget.closest('.store-chat-panel');
+                  const rect = panel?.getBoundingClientRect?.();
+                  const x = rect ? ev.clientX - rect.left : ev.clientX;
+                  const y = rect ? ev.clientY - rect.top : ev.clientY;
+                  setMenu({ messageId: m.message_id, x, y });
+                }}
+              >
                 <div className="store-chat-meta">
                   <span className="store-chat-name">{mine ? '自分' : name}</span>
                   <span className="store-chat-time">{formatChatTime(m.created_at)}</span>
@@ -154,6 +189,28 @@ export function StoreChatPanel({
           送信
         </button>
       </form>
+
+      {menu && (
+        <div
+          ref={menuRef}
+          className="store-chat-menu"
+          style={{ left: Math.min(menu.x, 220), top: Math.min(menu.y, 420) }}
+          role="menu"
+        >
+          <button
+            type="button"
+            className="store-chat-menu-item is-danger"
+            role="menuitem"
+            onClick={() => {
+              const id = menu.messageId;
+              setMenu(null);
+              onDelete?.(id);
+            }}
+          >
+            削除する
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -285,6 +342,22 @@ export function useStoreChat({ storeId, user, enabled }) {
     }
   };
 
+  const remove = async (messageId) => {
+    const id = String(messageId || '').trim();
+    if (!id || !storeId || !user?.email) return;
+    setMessages((prev) => prev.filter((m) => m.message_id !== id));
+    try {
+      await api.deleteStoreChat({
+        user_email: user.email,
+        store_id: storeId,
+        message_id: id,
+      });
+    } catch (e) {
+      await load({ quiet: true });
+      throw e;
+    }
+  };
+
   return {
     open,
     setOpen,
@@ -296,5 +369,6 @@ export function useStoreChat({ storeId, user, enabled }) {
     unread,
     load,
     send,
+    remove,
   };
 }

@@ -2755,6 +2755,40 @@
 .store-chat-send:disabled {
   opacity: 0.4;
 }
+.store-chat-bubble.is-mine {
+  cursor: context-menu;
+}
+.store-chat-menu {
+  position: absolute;
+  z-index: 5;
+  min-width: 7.5rem;
+  padding: 0.25rem;
+  background: #fff;
+  border: 1px solid #c5d4e0;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+}
+.store-chat-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+}
+.store-chat-menu-item:hover {
+  background: #f1f5f9;
+}
+.store-chat-menu-item.is-danger {
+  color: #be123c;
+}
+.store-chat-menu-item.is-danger:hover {
+  background: #fff1f2;
+}
 @media print {
   .store-chat-fab,
   .store-chat-panel {
