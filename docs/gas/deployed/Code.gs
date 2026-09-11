@@ -200,6 +200,9 @@ function onOpen() {
   try {
     applyPilotSheetVisibility_();
   } catch (eVis) { /* ignore */ }
+  try {
+    ensureAutoArchiveTrigger_();
+  } catch (eTrig) { /* ignore */ }
 }
 
 function onInstall(e) {
@@ -214,6 +217,7 @@ function buildShiftMenu_() {
     .addItem('店舗シフトを最新日付順に整える', 'menuSortStoreShiftSheets')
     .addItem('不要シートだけ削除', 'menuCleanupObsoleteSheets')
     .addItem('雇用区分「パート」→「アルバイト」', 'menuUnifyEmploymentType')
+    .addItem('古いシフトを自動整理（今すぐ）', 'menuAutoArchiveStoreShiftsNow')
     .addSeparator()
     .addItem('カレンダー権限を許可（初回）', 'authorizeCalendarOnce')
     .addToUi();
@@ -2346,6 +2350,8 @@ function upsertEmployee(payload) {
   if (rowIndex > 0) sh.getRange(rowIndex, 1, 1, colCount).setValues([rowVals]);
   else sh.appendRow(rowVals);
 
+  invalidateRequestCache_(['employees']);
+  clearEmpScriptCache_(storeId);
   return { ok: true, employee: listEmployeesDetailed_(storeId).filter(function (e) { return e.employee_id === employeeId; })[0] };
 }
 
@@ -2367,6 +2373,8 @@ function deactivateEmployee(employeeId, storeId, userEmail) {
     }
     sh.deleteRow(r + 1);
     purgeWeeklyForEmployee_(storeId, id);
+    invalidateRequestCache_(['employees']);
+    clearEmpScriptCache_(storeId);
     return { ok: true, deleted: id };
   }
   throw new Error('従業員が見つかりません。');
@@ -2666,7 +2674,8 @@ function ensureShiftHeadersLean_(sh) {
   }
   var finalHeaders = getHeaders_(sh);
   var finalMap = headerIndexMap_(finalHeaders);
-  forceTextEmployeeIdColumn_(sh, finalMap);
+  // 毎回 getMaxRows 全体に書式を当てると起動が遅くなるので、シートごとに1回だけ
+  ensureEmployeeIdTextFormatOnce_(sh, finalMap);
   return { headers: finalHeaders, map: finalMap };
 }
 
@@ -3234,7 +3243,254 @@ function getShiftsCore_(storeId, yearMonth, email, acl, applyWeekly) {
   });
   result.appliedFromWeekly = applied;
   if (!doApply) writeShiftMonthCache_(storeId, ym, result);
+  // 起動は遅くせず、数分後／夜間に古い行を保管へ退避（手作業不要）
+  try {
+    ensureAutoArchiveTrigger_();
+    kickDeferredArchiveIfNeeded_(storeId, sh.getLastRow());
+  } catch (eTrig) { /* ignore */ }
   return result;
+}
+
+/* ============================================================
+ * 古いシフトの自動退避（運用者がスプシを触らなくてよい）
+ * - 表示用シートには直近数ヶ月だけ残す
+ * - 古い行は「シフト_{店}_保管」へ移動（削除ではない）
+ * - 夜のトリガー＋起動時の軽量キック
+ * ============================================================ */
+var SHIFT_AUTO_KEEP_BACK = 2; // 基準月の何ヶ月前まで残すか
+var SHIFT_AUTO_KEEP_FWD = 1;  // 基準月の何ヶ月先まで残すか
+var SHIFT_AUTO_ARCHIVE_MIN_ROWS = 700;
+var SHIFT_AUTO_ARCHIVE_MAX_MOVE = 4000;
+
+function storeShiftArchiveSheetName_(storeId) {
+  var base = storeShiftSheetName_(storeId);
+  var name = base + '_保管';
+  if (name.length > 95) name = name.substring(0, 95);
+  return name;
+}
+
+function ymToIndex_(ym) {
+  var p = String(ym || '').split('-');
+  return Number(p[0]) * 12 + Number(p[1]);
+}
+
+function shiftYmByMonths_(ym, delta) {
+  var p = String(ym || '').split('-');
+  var d = new Date(Number(p[0]), Number(p[1]) - 1 + Number(delta || 0), 1);
+  return d.getFullYear() + '-' + pad2_(d.getMonth() + 1);
+}
+
+function tokyoYmNow_() {
+  return Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM');
+}
+
+function isYmInKeepWindow_(rowYm, pivotYm, keepBack, keepFwd) {
+  if (!rowYm || !pivotYm) return true;
+  var row = ymToIndex_(rowYm);
+  var pivot = ymToIndex_(pivotYm);
+  return row >= (pivot - keepBack) && row <= (pivot + keepFwd);
+}
+
+function ensureAutoArchiveTrigger_() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'autoArchiveAllStoreShiftsNightly_') return;
+  }
+  ScriptApp.newTrigger('autoArchiveAllStoreShiftsNightly_')
+    .timeBased()
+    .atHour(3)
+    .everyDays(1)
+    .create();
+}
+
+/** 起動を止めず、しばらく後に当該店舗の古い行を退避 */
+function kickDeferredArchiveIfNeeded_(storeId, rowCount) {
+  if (Number(rowCount) < SHIFT_AUTO_ARCHIVE_MIN_ROWS) return;
+  var sid = String(storeId || '').trim();
+  if (!sid) return;
+  var sc = CacheService.getScriptCache();
+  if (sc.get('arch:v2:' + sid) || sc.get('arch:kick:' + sid)) return;
+  try { sc.put('arch:kick:' + sid, '1', 86400); } catch (eK) { /* ignore */ }
+
+  var props = PropertiesService.getDocumentProperties();
+  var q = [];
+  try { q = JSON.parse(props.getProperty('ARCH_QUEUE_V1') || '[]') || []; } catch (eQ) { q = []; }
+  if (q.indexOf(sid) < 0) q.push(sid);
+  props.setProperty('ARCH_QUEUE_V1', JSON.stringify(q));
+  ensureDeferredArchiveTrigger_();
+}
+
+function ensureDeferredArchiveTrigger_() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'drainArchiveQueue_') return;
+  }
+  ScriptApp.newTrigger('drainArchiveQueue_')
+    .timeBased()
+    .after(120000)
+    .create();
+}
+
+function drainArchiveQueue_() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'drainArchiveQueue_') {
+      try { ScriptApp.deleteTrigger(triggers[i]); } catch (eDel) { /* ignore */ }
+    }
+  }
+  var props = PropertiesService.getDocumentProperties();
+  var q = [];
+  try { q = JSON.parse(props.getProperty('ARCH_QUEUE_V1') || '[]') || []; } catch (eQ) { q = []; }
+  props.setProperty('ARCH_QUEUE_V1', '[]');
+  for (var j = 0; j < q.length; j++) {
+    try {
+      autoArchiveStoreShiftSheet_(q[j], { force: true, pivotYm: tokyoYmNow_() });
+    } catch (eOne) { /* continue */ }
+  }
+  try { ensureAutoArchiveTrigger_(); } catch (eNight) { /* ignore */ }
+}
+
+function autoArchiveAllStoreShiftsNightly_() {
+  var stores = [];
+  try { stores = listAllStoresCached_() || []; } catch (e) { stores = []; }
+  for (var i = 0; i < stores.length; i++) {
+    try {
+      autoArchiveStoreShiftSheet_(stores[i].store_id, {
+        force: true,
+        pivotYm: tokyoYmNow_()
+      });
+    } catch (eOne) { /* 1店失敗しても続行 */ }
+  }
+}
+
+function menuAutoArchiveStoreShiftsNow() {
+  ensureAutoArchiveTrigger_();
+  var stores = listAllStoresCached_() || [];
+  var moved = 0;
+  var touched = 0;
+  for (var i = 0; i < stores.length; i++) {
+    var r = autoArchiveStoreShiftSheet_(stores[i].store_id, {
+      force: true,
+      pivotYm: tokyoYmNow_()
+    });
+    touched++;
+    if (r && r.moved) moved += Number(r.moved) || 0;
+  }
+  SpreadsheetApp.getUi().alert(
+    '古いシフトの自動整理',
+    '対象店舗: ' + touched + ' / 保管へ移動: ' + moved + ' 行\n（直近数ヶ月以外は「シフト_*_保管」へ移しました）',
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}
+
+function maybeAutoArchiveStoreShifts_(storeId, sh, map, values, pivotYm) {
+  // 互換用（ホットパスでは呼ばない）。必要なら force 実行。
+  autoArchiveStoreShiftSheet_(storeId, {
+    force: true,
+    pivotYm: pivotYm || tokyoYmNow_(),
+    prefetchedSheet: sh,
+    prefetchedMap: map,
+    prefetchedValues: values
+  });
+}
+
+/**
+ * 直近ウィンドウ外の行を保管シートへ移し、表示用シートを軽くする
+ */
+function autoArchiveStoreShiftSheet_(storeId, opt) {
+  opt = opt || {};
+  var sid = String(storeId || '').trim();
+  if (!sid) return { ok: false, reason: 'no_store' };
+
+  var lock = LockService.getDocumentLock();
+  try {
+    if (!lock.tryLock(5000)) return { ok: false, reason: 'busy' };
+  } catch (eLock) {
+    return { ok: false, reason: 'busy' };
+  }
+
+  try {
+    var sh = opt.prefetchedSheet || ss_().getSheetByName(storeShiftSheetName_(sid));
+    if (!sh) return { ok: true, skipped: true, reason: 'no_sheet' };
+
+    var map = opt.prefetchedMap;
+    var values = opt.prefetchedValues;
+    if (!map || !values) {
+      var ensured = ensureShiftHeadersLean_(sh);
+      map = ensured.map;
+      values = getDataRows_(sh);
+    }
+    if (!map || map.date == null) return { ok: false, reason: 'no_date' };
+    if (values.length < SHIFT_AUTO_ARCHIVE_MIN_ROWS && !opt.force) {
+      return { ok: true, skipped: true, reason: 'small' };
+    }
+
+    var pivot = String(opt.pivotYm || tokyoYmNow_()).trim();
+    if (!/^\d{4}-\d{2}$/.test(pivot)) pivot = tokyoYmNow_();
+    var keepBack = opt.keepBack != null ? Number(opt.keepBack) : SHIFT_AUTO_KEEP_BACK;
+    var keepFwd = opt.keepFwd != null ? Number(opt.keepFwd) : SHIFT_AUTO_KEEP_FWD;
+
+    var headers = getHeaders_(sh);
+    var width = Math.max(headers.length, sh.getLastColumn());
+    var keep = [];
+    var move = [];
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      var d = normalizeDate_(row[map.date]);
+      var rowYm = d ? d.substring(0, 7) : '';
+      var line = row.slice(0, width);
+      while (line.length < width) line.push('');
+      if (!rowYm || isYmInKeepWindow_(rowYm, pivot, keepBack, keepFwd)) {
+        keep.push(line);
+      } else {
+        move.push(line);
+      }
+    }
+
+    if (!move.length) return { ok: true, moved: 0, kept: keep.length };
+
+    if (move.length > SHIFT_AUTO_ARCHIVE_MAX_MOVE) {
+      // 一度に移しすぎない（タイムアウト回避）。古い側から優先するため move 先頭を残す
+      var overflow = move.splice(SHIFT_AUTO_ARCHIVE_MAX_MOVE);
+      keep = keep.concat(overflow);
+    }
+
+    var archName = storeShiftArchiveSheetName_(sid);
+    var ash = ss_().getSheetByName(archName);
+    if (!ash) {
+      ash = ss_().insertSheet(archName);
+      ash.getRange(1, 1, 1, Math.max(headers.length, 1)).setValues([headers.slice()]);
+      try { ash.hideSheet(); } catch (eHide) { /* ignore */ }
+    } else {
+      // ヘッダが空なら埋める
+      if (ash.getLastRow() < 1) {
+        ash.getRange(1, 1, 1, Math.max(headers.length, 1)).setValues([headers.slice()]);
+      }
+      try { ash.hideSheet(); } catch (eHide2) { /* ignore */ }
+    }
+
+    if (move.length) {
+      writeSheetRows_(ash, ash.getLastRow() + 1, move);
+    }
+
+    var prevRows = Math.max(0, sh.getLastRow() - 1);
+    if (keep.length) writeSheetRows_(sh, 2, keep);
+    else if (prevRows > 0) {
+      sh.getRange(2, 1, prevRows, Math.max(width, sh.getLastColumn())).clearContent();
+    }
+    if (prevRows > keep.length) {
+      sh.getRange(keep.length + 2, 1, prevRows - keep.length, Math.max(width, sh.getLastColumn())).clearContent();
+    }
+
+    invalidateShiftMonthCache_(sid, '');
+    try {
+      CacheService.getScriptCache().put('arch:v2:' + sid, '1', 21600);
+    } catch (eC) { /* ignore */ }
+
+    return { ok: true, moved: move.length, kept: keep.length, archive: archName, pivotYm: pivot };
+  } finally {
+    try { lock.releaseLock(); } catch (eRel) { /* ignore */ }
+  }
 }
 
 function shiftMonthCacheKey_(storeId, ym) {
@@ -5117,7 +5373,17 @@ function invalidateRequestCache_(keys) {
       cache.stores = null;
       try { CacheService.getScriptCache().remove('allStores:v1'); } catch (eRm) { /* ignore */ }
     } else if (k === 'knownStoreMap') cache.knownStoreMap = null;
-    else if (k === 'employees') cache.employees = {};
+    else if (k === 'employees') {
+      cache.employees = {};
+      try {
+        // 店舗キーが不明なため近傍は残るが、リクエスト内は空に。全削除はしない。
+        var sc = CacheService.getScriptCache();
+        // よく使うパイロット店を中心に消す（残っても最大3分）
+        ['S001', 'S002'].forEach(function (sid) {
+          try { sc.remove('emp:v1:' + sid); } catch (e1) { /* ignore */ }
+        });
+      } catch (eEmpRm) { /* ignore */ }
+    }
   });
 }
 
@@ -5477,6 +5743,12 @@ function writeEmployeeOrder_(storeId, ids) {
   props.setProperty(EMP_ORDER_PROP, JSON.stringify(all));
 }
 
+function clearEmpScriptCache_(storeId) {
+  try {
+    CacheService.getScriptCache().remove('emp:v1:' + String(storeId || ''));
+  } catch (e) { /* ignore */ }
+}
+
 function applyEmployeeDisplayOrder_(list, storeId) {
   var order = readEmployeeOrder_(storeId);
   if (!order.length) {
@@ -5548,12 +5820,20 @@ function empIdResolver_(storeId, employees) {
 
 /** 社員番号の先頭ゼロが消えないよう、従業員ID列を書式「テキスト」にする */
 function forceTextEmployeeIdColumn_(sh, map) {
+  ensureEmployeeIdTextFormatOnce_(sh, map);
+}
+
+/** 社員コード列のテキスト書式（シートごと1回・最終行まで） */
+function ensureEmployeeIdTextFormatOnce_(sh, map) {
   if (!sh || !map || map.employee_id == null) return;
+  var props = PropertiesService.getDocumentProperties();
+  var key = 'EMP_TEXT_V2_' + sh.getSheetId();
+  if (props.getProperty(key) === '1') return;
   try {
+    var lastData = Math.max(sh.getLastRow() - 1, 1);
     var col = map.employee_id + 1;
-    var rows = Math.max(sh.getMaxRows() - 1, 1);
-    var range = sh.getRange(2, col, rows, 1);
-    if (range.getNumberFormat() !== '@') range.setNumberFormat('@');
+    sh.getRange(2, col, lastData, 1).setNumberFormat('@');
+    props.setProperty(key, '1');
   } catch (eFmt) { /* ignore */ }
 }
 
@@ -5561,6 +5841,17 @@ function listEmployeesDetailed_(storeId) {
   var cache = ensureRequestCache_();
   var key = String(storeId || '');
   if (cache.employees[key]) return cache.employees[key];
+
+  try {
+    var rawEmp = CacheService.getScriptCache().get('emp:v1:' + key);
+    if (rawEmp) {
+      var parsedEmp = JSON.parse(rawEmp);
+      if (Array.isArray(parsedEmp)) {
+        cache.employees[key] = parsedEmp;
+        return parsedEmp;
+      }
+    }
+  } catch (eEmpCache) { /* ignore */ }
 
   var sh = mustEmployeesSheet_();
   var map = headerIndexMap_(getHeaders_(sh));
@@ -5603,6 +5894,12 @@ function listEmployeesDetailed_(storeId) {
   }
   applyEmployeeDisplayOrder_(list, storeId);
   cache.employees[key] = list;
+  try {
+    var empText = JSON.stringify(list);
+    if (empText.length > 0 && empText.length < 90000) {
+      CacheService.getScriptCache().put('emp:v1:' + key, empText, 180);
+    }
+  } catch (eEmpWrite) { /* ignore */ }
   return list;
 }
 

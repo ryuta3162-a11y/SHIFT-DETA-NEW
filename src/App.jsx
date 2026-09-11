@@ -583,20 +583,28 @@ function formatYmJa(ym) {
   return `${y}年${Number(m)}月`;
 }
 
-/** 印刷用の時刻表示: 分が00なら "8"、それ以外は "8:30" */
+/** 印刷用の時刻: 常に "8:00" / "10:00" / "8:30"（00も出して揃える） */
 function formatPrintTimePart(hm) {
   const m = String(hm || '').trim().match(/^(\d{1,2}):(\d{2})/);
   if (!m) return '';
-  const h = String(Number(m[1]));
-  return m[2] === '00' ? h : `${h}:${m[2]}`;
+  return `${Number(m[1])}:${m[2]}`;
 }
 
-/** 例: 8-17 / 8:30-17 / 8-17:30 / 8:30-17:30 */
+/** 1行用（休暇＋時間など）: 8:00–17:00 */
 function formatPrintTimeRange(startHm, endHm) {
   const a = formatPrintTimePart(startHm);
   const b = formatPrintTimePart(endHm);
-  if (a && b) return `${a}-${b}`;
+  if (a && b) return `${a}–${b}`;
   return a || b || '';
+}
+
+/** 出勤セル用: 開始・終了を2行 */
+function formatPrintTimeLines(startHm, endHm) {
+  const a = formatPrintTimePart(startHm);
+  const b = formatPrintTimePart(endHm);
+  if (a && b) return [a, b];
+  if (a || b) return [a || b];
+  return [];
 }
 
 /** 0:00〜24:00 を step 分刻みで作る */
@@ -632,10 +640,23 @@ const SHIFT_ROW_H = 80;
 /** MEMO行の高さ（px） */
 const MEMO_ROW_H = 80;
 const MEMO_MAX_LINES = 5;
-const CELL_FOCUS_RING = 'inset 0 0 0 2px #18181b';
 /** 罫線を separate + 1px で描くためのセル用クラス */
 const SHEET_DAY = 'sheet-day-cell';
 const SHEET_NAME = 'sheet-name-cell';
+
+function tokyoTodayYmd() {
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+  } catch {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+}
 
 function clampMemoBody(text) {
   const lines = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
@@ -806,7 +827,10 @@ function normalizeShiftRaw(raw) {
   return String(raw ?? '')
     .replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
     .replace(/[：]/g, ':')
-    .replace(/[－—–〜～]/g, '-');
+    .replace(/[－—–〜～]/g, '-')
+    // キンタイ形式 10.00-19.00 / 10:00-19:00R01:00 も読めるようにする
+    .replace(/(\d{1,2})\.(\d{2})/g, '$1:$2')
+    .replace(/R\d{1,2}:\d{2}/gi, '');
 }
 
 function shiftFromTimeMatch(range) {
@@ -989,6 +1013,236 @@ function draftFromShift(s) {
   return '';
 }
 
+/** 月複製用セル文言（貼り付けで往復できる形） */
+function cloneCellText(s) {
+  if (!s) return '';
+  const leaveCode = parseLeaveCode(s.leave_code);
+  const status = String(s.status || 'undef');
+  const a = String(s.start_time || '').slice(0, 5);
+  const b = String(s.end_time || '').slice(0, 5);
+  const time = (/^\d{2}:\d{2}$/.test(a) && /^\d{2}:\d{2}$/.test(b)) ? `${a}-${b}` : '';
+  // 自動法定は公休に丸め、貼り付け先で再計算させる
+  if (leaveCode === 10 || leaveCode === 20) return '公休';
+  if (leaveCode) return String(leaveCode);
+  if (status === 'work' && time) return time;
+  if (status === 'off') return '公休';
+  if (status === 'pto') return '有休';
+  if (status === 'absent') return '欠勤';
+  return '';
+}
+
+function normalizePersonKey(s) {
+  return String(s || '').trim().replace(/[ 　]+/g, '');
+}
+
+function normalizeStaffCode(s) {
+  const d = String(s || '').trim().replace(/\D/g, '');
+  if (!d) return '';
+  // 先頭ゼロ差（0301532 と 301532）を同一視
+  return d.replace(/^0+/, '') || '0';
+}
+
+/** 月複製用TSV: 社員コード / 氏名 / 1日…末日 */
+function buildMonthCloneTsv(employees, shifts, yearMonth) {
+  const ym = String(yearMonth || '').trim();
+  const [y, m] = ym.split('-').map(Number);
+  if (!y || !m) return { tsv: '', staffCount: 0, dayCount: 0, warnings: ['年月が不正です'] };
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const byKey = new Map();
+  (shifts || []).forEach((s) => {
+    const date = String(s.date || '').slice(0, 10);
+    const eid = String(s.employee_id || '').trim();
+    if (eid && date) byKey.set(`${eid}__${date}`, s);
+  });
+  const header = ['社員コード', '氏名'].concat(
+    Array.from({ length: daysInMonth }, (_, i) => String(i + 1)),
+  );
+  const rows = [header];
+  const warnings = [];
+  (employees || []).forEach((emp) => {
+    const code = String(emp.bye_code || emp.employee_id || '').trim();
+    const name = String(emp.name || '').trim();
+    if (!code && !name) {
+      warnings.push('氏名もコードもないスタッフをスキップ');
+      return;
+    }
+    const cells = [code, name];
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const date = `${ym}-${pad2(day)}`;
+      cells.push(cloneCellText(byKey.get(`${emp.employee_id}__${date}`)));
+    }
+    rows.push(cells);
+  });
+  const tsv = rows.map((row) => row.map((c) => String(c ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+  return { tsv, staffCount: Math.max(0, rows.length - 1), dayCount: daysInMonth, warnings };
+}
+
+function isCloneHeaderRow(row) {
+  const a = String(row?.[0] ?? '').trim();
+  const b = String(row?.[1] ?? '').trim();
+  if (!a && !b) return true;
+  if (/コード|社員|氏名|名前|name|code/i.test(`${a}${b}`)) return true;
+  if (/^\d{1,2}$/.test(a) && /^\d{1,2}$/.test(b)) return true;
+  return false;
+}
+
+function findCloneEmployee(employees, codeRaw, nameRaw) {
+  const code = normalizeStaffCode(codeRaw);
+  const name = normalizePersonKey(nameRaw);
+  const list = employees || [];
+  if (code) {
+    const byCode = list.find((e) => normalizeStaffCode(e.bye_code) === code
+      || normalizeStaffCode(e.employee_id) === code);
+    if (byCode) return byCode;
+  }
+  if (name) {
+    const byName = list.find((e) => normalizePersonKey(e.name) === name);
+    if (byName) return byName;
+  }
+  const nameAsCode = normalizePersonKey(codeRaw);
+  if (nameAsCode) {
+    const byName2 = list.find((e) => normalizePersonKey(e.name) === nameAsCode);
+    if (byName2) return byName2;
+  }
+  return null;
+}
+
+/** 全角数字などを半角に */
+function normalizePasteCell(v) {
+  return String(v ?? '')
+    .replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .trim();
+}
+
+/** CSVの1行（簡易） */
+function splitCsvLine(line) {
+  const out = [];
+  let cur = '';
+  let q = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i];
+    if (q) {
+      if (ch === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i += 1;
+        continue;
+      }
+      if (ch === '"') {
+        q = false;
+        continue;
+      }
+      cur += ch;
+      continue;
+    }
+    if (ch === '"') {
+      q = true;
+      continue;
+    }
+    if (ch === ',') {
+      out.push(cur);
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** タブ／カンマ区切りの救済 */
+function parseClonePasteGrid(text) {
+  const raw = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  if (!raw.trim()) return [];
+  let grid = parseClipboardGrid(raw);
+  const multi = grid.some((r) => (r?.length || 0) > 1);
+  if (!multi) {
+    const lines = raw.replace(/\n+$/, '').split('\n').filter((l) => l.trim().length);
+    grid = lines.map((line) => {
+      if (line.includes('\t')) return line.split('\t');
+      const commas = (line.match(/,/g) || []).length;
+      if (commas >= 3) return splitCsvLine(line);
+      return line.split(/\s{2,}/).map((c) => c.trim());
+    });
+  }
+  return grid.map((row) => normalizeByeLikeRow(row.map((c) => normalizePasteCell(c))));
+}
+
+/** キンタイ日付列 9/1(火)。YYYY/M/D や Excelシリアルは使わない */
+function parseKintaiDayHeaderCell(cell) {
+  const s = normalizePasteCell(cell);
+  if (!s) return null;
+  let m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})\s*\(/);
+  if (m) return { month: Number(m[1]), day: Number(m[2]), style: 'md' };
+  m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})$/);
+  if (m) return { month: Number(m[1]), day: Number(m[2]), style: 'md' };
+  m = s.match(/^(\d{1,2})\s*\(/);
+  if (m) {
+    const day = Number(m[1]);
+    if (day >= 1 && day <= 31) return { day, style: 'd' };
+  }
+  if (/^\d{1,2}$/.test(s)) {
+    const day = Number(s);
+    if (day >= 1 && day <= 31) return { day, style: 'd' };
+  }
+  return null;
+}
+
+function findDateHeaderMeta(grid) {
+  for (let r = 0; r < Math.min(grid.length, 6); r += 1) {
+    const row = grid[r] || [];
+    const mdDays = [];
+    row.forEach((cell, col) => {
+      const d = parseKintaiDayHeaderCell(cell);
+      if (d?.day && d.style === 'md') mdDays.push({ col, ...d });
+    });
+    if (mdDays.length >= 3) return { rowIndex: r, days: mdDays };
+    const plainDays = [];
+    row.forEach((cell, col) => {
+      const d = parseKintaiDayHeaderCell(cell);
+      if (d?.day && d.style === 'd') plainDays.push({ col, ...d });
+    });
+    if (plainDays.length >= 3) return { rowIndex: r, days: plainDays };
+  }
+  return null;
+}
+
+function looksLikeKintaiGrid(grid) {
+  return (grid || []).some((row) => (row || []).some((c) => /^215\d{3}$/.test(normalizePasteCell(c))));
+}
+
+/** 行内の 215xxx を探し [コード, 氏名, 種別, 種別名, …日] に正規化 */
+function normalizeByeLikeRow(row) {
+  const cells = (row || []).map((c) => normalizePasteCell(c));
+  if (cells.length < 4) return cells;
+  const typeIdx = cells.findIndex((c) => /^215\d{3}$/.test(c));
+  if (typeIdx === 2) return cells;
+  if (typeIdx > 2) {
+    const code = cells[0];
+    const name = cells.slice(1, typeIdx).join(' ').replace(/\s+/g, ' ').trim();
+    const typeCode = cells[typeIdx];
+    const typeName = cells[typeIdx + 1] || '';
+    return [code, name, typeCode, typeName].concat(cells.slice(typeIdx + 2));
+  }
+  const nameIdx = cells.findIndex((c, i) => i >= 2 && /^(休日・休暇|シフト)/.test(c));
+  if (nameIdx >= 2) {
+    const code = cells[0];
+    const name = cells.slice(1, nameIdx).join(' ').replace(/\s+/g, ' ').trim();
+    const typeName = cells[nameIdx];
+    const typeCode = /^シフト/.test(typeName) ? '215201' : '215001';
+    return [code, name, typeCode, typeName].concat(cells.slice(nameIdx + 1));
+  }
+  return cells;
+}
+
+function isByeTypeRow(row, kind) {
+  const code = normalizePasteCell(row?.[2]);
+  const name = normalizePasteCell(row?.[3]);
+  if (kind === 'shift') {
+    return code === '215201' || code === '215231' || /^シフト/.test(name);
+  }
+  return code === '215001' || code === '215013' || /^休日/.test(name) || /休暇/.test(name);
+}
+
 function statusBadgeClass(status) {
   switch (status) {
     case 'work': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
@@ -1112,6 +1366,9 @@ export default function App() {
   const [calendarProgress, setCalendarProgress] = useState(null); // { percent, label } | null
   const calendarJobRef = useRef(false);
   const [exportPanelOpen, setExportPanelOpen] = useState(false);
+  const [clonePanelOpen, setClonePanelOpen] = useState(false);
+  const [cloneText, setCloneText] = useState('');
+  const [cloneErr, setCloneErr] = useState('');
   const [leavePrefs, setLeavePrefs] = useState({ used: {}, hidden: [] });
   const [leaveQuery, setLeaveQuery] = useState('');
   const [ptoTemplateOpen, setPtoTemplateOpen] = useState(false);
@@ -1173,6 +1430,7 @@ export default function App() {
   const sheetLocked = monthlyLoading || monthlyRefreshing;
   const sheetCanEdit = canEdit && !sheetLocked;
   const weeklyCanEdit = canEdit && weeklyReady && !panelLoading;
+  const todayYmd = useMemo(() => tokyoTodayYmd(), [yearMonth]);
   const chat = useStoreChat({
     storeId,
     user,
@@ -1339,7 +1597,7 @@ export default function App() {
       else if (n <= 10) scale = 'md';
       else if (n <= 14) scale = 'sm';
       else scale = 'xs';
-      const rowHmm = Math.max(5.5, Math.min(9.5, (78 / n)));
+      const rowHmm = Math.max(7.8, Math.min(12.5, (102 / n)));
       document.documentElement.setAttribute('data-print-scale', scale);
       document.documentElement.style.setProperty('--print-emps', String(n));
       document.documentElement.style.setProperty('--print-row-h', `${rowHmm.toFixed(2)}mm`);
@@ -2392,6 +2650,382 @@ export default function App() {
     }
   }
 
+  function openClonePanel() {
+    setCloneText('');
+    setCloneErr('');
+    setClonePanelOpen(true);
+  }
+
+  function failClone(msg) {
+    setCloneErr(msg);
+    notify(msg, 'err');
+    return false;
+  }
+
+  function commitClonePatches(shiftPatchMap, touchedEmpIds) {
+    setShifts((prev) => {
+      const byKey = new Map();
+      (prev || []).forEach((s) => byKey.set(shiftKey(s.employee_id, s.date), { ...s }));
+      shiftPatchMap.forEach((item) => {
+        const base = byKey.get(shiftKey(item.employeeId, item.date)) || {
+          shift_id: '',
+          employee_id: item.employeeId,
+          date: item.date,
+          store_id: storeId,
+          status: 'undef',
+          start_time: '',
+          end_time: '',
+          leave_code: '',
+        };
+        let nextRow = { ...base, ...item.patch };
+        if (Object.prototype.hasOwnProperty.call(item.patch, 'leave_code') && item.patch.leave_code === '') {
+          nextRow = { ...nextRow, leave_code: '' };
+        }
+        if (nextRow.status === 'work') {
+          if (!nextRow.start_time) nextRow = { ...nextRow, start_time: '12:00' };
+          if (!nextRow.end_time) nextRow = { ...nextRow, end_time: '21:00' };
+        } else if (leaveCodeNeedsDummyShift(parseLeaveCode(nextRow.leave_code))) {
+          const tpl = resolvePtoTemplate(item.employeeId, employees.find((e) => e.employee_id === item.employeeId));
+          if (!nextRow.start_time) nextRow = { ...nextRow, start_time: tpl.start_time };
+          if (!nextRow.end_time) nextRow = { ...nextRow, end_time: tpl.end_time };
+        } else if (item.patch.status && item.patch.status !== 'work') {
+          nextRow = { ...nextRow, start_time: '', end_time: '' };
+        }
+        byKey.set(shiftKey(item.employeeId, item.date), nextRow);
+      });
+      let next = [...byKey.values()];
+      touchedEmpIds.forEach((eid) => {
+        next = applyAutoHouteiToShifts(next, eid, yearMonth, storeId, {}).shifts;
+      });
+      return next;
+    });
+    setDirtyKeys((prev) => {
+      const n = new Set(prev);
+      shiftPatchMap.forEach((_, key) => n.add(key));
+      return n;
+    });
+  }
+
+  /** 開いている年月へ貼り付け。月・日が合わなければダイアログ内にエラー */
+  function applyMonthClonePaste(rawText) {
+    if (!sheetCanEdit || busy) {
+      return failClone('いまは反映できません');
+    }
+    const text = rawText != null ? String(rawText) : cloneText;
+    if (!String(text || '').trim()) {
+      return failClone('貼り付けるデータがありません');
+    }
+    const grid = parseClonePasteGrid(text);
+    if (!grid.length) {
+      return failClone('貼り付けるデータがありません');
+    }
+
+    const [y, m] = String(yearMonth).split('-').map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const dateMeta = findDateHeaderMeta(grid);
+
+    // 日付ヘッダーがある場合: 開いている月と照合
+    let dayCols = null; // [{col, day}]
+    if (dateMeta) {
+      const badMonth = dateMeta.days.find((d) => d.month && d.month !== m);
+      if (badMonth) {
+        return failClone(`貼り付けの月が合いません（シートは${m}月 / 貼り付けに${badMonth.month}月）`);
+      }
+      dayCols = dateMeta.days
+        .filter((d) => d.day >= 1 && d.day <= daysInMonth)
+        .map((d) => ({ col: d.col, day: d.day }));
+      if (!dayCols.length) {
+        return failClone(`日付がこの月（${daysInMonth}日）と合いません`);
+      }
+    }
+
+    if (!employees.length) {
+      return failClone('スタッフ一覧がまだ読み込まれていません。少し待ってから再試行してください');
+    }
+
+    const shiftPatchMap = new Map();
+    const touchedEmpIds = new Set();
+    let matched = 0;
+    let skippedEmp = 0;
+    let cellCount = 0;
+    let skipCell = 0;
+    const unmatchedCodes = [];
+
+    const isKintai = looksLikeKintaiGrid(grid);
+    const byeShiftRows = grid.filter((row) => isByeTypeRow(row, 'shift'));
+    const byeLeaveRows = grid.filter((row) => isByeTypeRow(row, 'leave'));
+
+    if (isKintai || byeShiftRows.length || byeLeaveRows.length) {
+      // キンタイ形式: 日付データは常に列4以降（種別コードの後ろ）
+      const probe = byeShiftRows[0] || byeLeaveRows[0] || grid.find((r) => /^215\d{3}$/.test(normalizePasteCell(r?.[2])));
+      const dataCols = Math.max(0, (probe?.length || 0) - 4);
+      if (dataCols > 0 && dataCols !== daysInMonth) {
+        return failClone(`日数が合いません（この月は${daysInMonth}日 / 貼り付けは${dataCols}日分）`);
+      }
+      if (dateMeta?.days?.length) {
+        const badMonth = dateMeta.days.find((d) => d.month && d.month !== m);
+        if (badMonth) {
+          return failClone(`貼り付けの月が合いません（シートは${m}月 / 貼り付けに${badMonth.month}月）`);
+        }
+      }
+      dayCols = Array.from({ length: daysInMonth }, (_, i) => ({ col: 4 + i, day: i + 1 }));
+
+      const byKey = new Map();
+      const rows = [...byeLeaveRows, ...byeShiftRows];
+      rows.forEach((row) => {
+        const emp = findCloneEmployee(employees, row[0], row[1]);
+        if (!emp) {
+          skippedEmp += 1;
+          const code = normalizeStaffCode(row[0]);
+          if (code && !unmatchedCodes.includes(code)) unmatchedCodes.push(code);
+          return;
+        }
+        const slot = byKey.get(emp.employee_id) || { emp, leave: null, shift: null };
+        const typeCode = normalizePasteCell(row[2]);
+        if (isByeTypeRow(row, 'leave')) {
+          if (!slot.leave || typeCode === '215001') slot.leave = row;
+        }
+        if (isByeTypeRow(row, 'shift')) {
+          if (!slot.shift || typeCode === '215201') slot.shift = row;
+        }
+        byKey.set(emp.employee_id, slot);
+      });
+      if (!byKey.size) {
+        const storeCodes = (employees || [])
+          .map((e) => normalizeStaffCode(e.bye_code || e.employee_id))
+          .filter(Boolean)
+          .slice(0, 8)
+          .join(', ');
+        const pasteCodes = unmatchedCodes.slice(0, 8).join(', ') || '(取得できず)';
+        return failClone(
+          `一致するスタッフがいません。貼付コード: ${pasteCodes} ／ 店のコード例: ${storeCodes || '(未登録)'}。スタッフ設定の社員コードを確認してください`,
+        );
+      }
+      byKey.forEach((slot) => {
+        matched += 1;
+        dayCols.forEach(({ col, day }) => {
+          const leaveRaw = slot.leave ? slot.leave[col] : '';
+          const shiftRaw = slot.shift ? slot.shift[col] : '';
+          let parsed = null;
+          if (leaveRaw != null && String(leaveRaw).trim() !== '') {
+            parsed = parseShiftDraft(leaveRaw, slot.emp);
+          }
+          if (shiftRaw != null && String(shiftRaw).trim() !== '') {
+            const timeParsed = parseShiftDraft(shiftRaw, slot.emp);
+            if (timeParsed?.status === 'work') {
+              parsed = parsed
+                ? {
+                  ...parsed,
+                  start_time: timeParsed.start_time,
+                  end_time: timeParsed.end_time,
+                  status: (parsed.status === 'off' || parsed.status === 'undef') ? 'work' : parsed.status,
+                }
+                : timeParsed;
+              if (parsed && slot.leave && leaveRaw) {
+                const leaveParsed = parseShiftDraft(leaveRaw, slot.emp);
+                if (leaveParsed?.leave_code) {
+                  parsed = {
+                    ...parsed,
+                    leave_code: leaveParsed.leave_code,
+                    status: leaveParsed.status === 'work' ? 'work' : parsed.status,
+                  };
+                }
+              }
+            } else if (!parsed) {
+              parsed = timeParsed;
+            }
+          }
+          if (!parsed) {
+            if (String(leaveRaw || shiftRaw || '').trim()) skipCell += 1;
+            return;
+          }
+          if (parsed.status === 'undef' && !parsed.leave_code && !parsed.start_time) return;
+          const date = toYmDay(yearMonth, day);
+          const key = shiftKey(slot.emp.employee_id, date);
+          shiftPatchMap.set(key, { employeeId: slot.emp.employee_id, date, patch: parsed });
+          touchedEmpIds.add(slot.emp.employee_id);
+          cellCount += 1;
+        });
+      });
+      if (!shiftPatchMap.size) {
+        return failClone(`スタッフは${matched}人一致しましたが、勤務セルを読めませんでした（列ズレの可能性）`);
+      }
+    } else {
+      // 通常TSV: 社員コード / 氏名 / 日々
+      let start = 0;
+      if (dateMeta) start = dateMeta.rowIndex + 1;
+      else if (isCloneHeaderRow(grid[0])) start = 1;
+
+      const dataRows = grid.slice(start).filter((row) => (row || []).some((c) => String(c ?? '').trim()));
+      if (!dataRows.length) {
+        return failClone('スタッフ行がありません（社員コード・氏名付きの表を貼ってください）');
+      }
+
+      if (!dayCols) {
+        const probe = dataRows[0];
+        const pasteDays = Math.max(0, (probe?.length || 0) - 2);
+        if (pasteDays !== daysInMonth) {
+          return failClone(`日数が合いません（この月は${daysInMonth}日 / 貼り付けは${pasteDays}日分）`);
+        }
+        dayCols = Array.from({ length: daysInMonth }, (_, i) => ({ col: 2 + i, day: i + 1 }));
+      }
+
+      dataRows.forEach((row) => {
+        // 日付ヘッダー行はスキップ
+        if (row === grid[dateMeta?.rowIndex]) return;
+        if ((row || []).filter((c) => parseKintaiDayHeaderCell(c)).length >= 3) return;
+
+        let emp = findCloneEmployee(employees, row[0], row[1]);
+        let metaCols = 2;
+        if (!emp) {
+          emp = findCloneEmployee(employees, row[0], '');
+          if (emp) metaCols = 1;
+        }
+        if (!emp) {
+          emp = findCloneEmployee(employees, '', row[0]);
+          if (emp) metaCols = 1;
+        }
+        if (!emp) {
+          skippedEmp += 1;
+          return;
+        }
+        matched += 1;
+        const cols = dayCols.map((d) => (
+          dateMeta ? d : { col: metaCols + (d.day - 1), day: d.day }
+        ));
+        cols.forEach(({ col, day }) => {
+          const raw = row[col];
+          if (raw == null || String(raw).trim() === '') return;
+          const parsed = parseShiftDraft(raw, emp);
+          if (!parsed) {
+            skipCell += 1;
+            return;
+          }
+          const date = toYmDay(yearMonth, day);
+          const key = shiftKey(emp.employee_id, date);
+          shiftPatchMap.set(key, { employeeId: emp.employee_id, date, patch: parsed });
+          touchedEmpIds.add(emp.employee_id);
+          cellCount += 1;
+        });
+      });
+    }
+
+    if (!shiftPatchMap.size) {
+      return failClone(
+        skippedEmp
+          ? `一致するスタッフがいません（不一致 ${skippedEmp}行）。社員コードか氏名を含めてください`
+          : '反映できる勤務がありません。社員コード・氏名付きの表を貼ってください',
+      );
+    }
+
+    pushUndoSnapshot();
+    const h = historyRef.current;
+    h.applying = true;
+    commitClonePatches(shiftPatchMap, touchedEmpIds);
+    h.applying = false;
+
+    const notes = [`${matched}人・${cellCount}件を反映`];
+    if (skippedEmp) notes.push(`不一致 ${skippedEmp}行`);
+    if (skipCell) notes.push(`読取不可 ${skipCell}`);
+    setCloneErr('');
+    notify(notes.join(' · '), 'ok');
+    setCloneText('');
+    setClonePanelOpen(false);
+    return true;
+  }
+
+  async function duplicatePrevMonth() {
+    if (!sheetCanEdit || busy || !storeId || !yearMonth) {
+      notify('いまは複製できません', 'err');
+      return;
+    }
+    const prevYm = shiftYearMonth(yearMonth, -1);
+    const email = user?.email || '';
+    setBusy(true);
+    setBusyText('前月データを取得中…');
+    try {
+      let srcShifts = [];
+      let srcEmpList = [];
+      const cached = readMonthCache(storeId, prevYm);
+      if (cached && Array.isArray(cached.shifts)) {
+        srcShifts = cached.shifts;
+        srcEmpList = cached.employees || [];
+      } else {
+        if (!email) throw new Error('ログインが必要です');
+        const res = await api.getShifts(storeId, prevYm, email, false);
+        srcShifts = res?.shifts || [];
+        srcEmpList = res?.employees || [];
+        writeMonthCache(storeId, prevYm, {
+          employees: srcEmpList,
+          shifts: srcShifts,
+          memos: res?.memos || [],
+          canEdit: !!res?.canEdit,
+        });
+      }
+
+      const [py, pm] = String(prevYm).split('-').map(Number);
+      const [y, m] = String(yearMonth).split('-').map(Number);
+      const prevDays = new Date(py, pm, 0).getDate();
+      const currDays = new Date(y, m, 0).getDate();
+      const nDays = Math.min(prevDays, currDays);
+
+      const srcById = new Map();
+      (srcEmpList || []).forEach((e) => srcById.set(String(e.employee_id), e));
+
+      const idMap = new Map();
+      const uniqueSrcIds = new Set((srcShifts || []).map((s) => String(s.employee_id || '')).filter(Boolean));
+      uniqueSrcIds.forEach((sid) => {
+        const srcEmp = srcById.get(sid);
+        let dest = null;
+        if (srcEmp) {
+          dest = findCloneEmployee(employees, srcEmp.bye_code || srcEmp.employee_id, srcEmp.name);
+        }
+        if (!dest) {
+          dest = employees.find((e) => String(e.employee_id) === sid) || null;
+        }
+        if (dest) idMap.set(sid, dest);
+      });
+
+      pushUndoSnapshot();
+      const h = historyRef.current;
+      h.applying = true;
+      const shiftPatchMap = new Map();
+      const touchedEmpIds = new Set();
+      let cellCount = 0;
+
+      (srcShifts || []).forEach((s) => {
+        const dest = idMap.get(String(s.employee_id || ''));
+        if (!dest) return;
+        const day = Number(String(s.date || '').slice(-2));
+        if (!day || day > nDays) return;
+        const text = cloneCellText(s);
+        if (!text) return;
+        const parsed = parseShiftDraft(text, dest);
+        if (!parsed) return;
+        const date = toYmDay(yearMonth, day);
+        const key = shiftKey(dest.employee_id, date);
+        shiftPatchMap.set(key, { employeeId: dest.employee_id, date, patch: parsed });
+        touchedEmpIds.add(dest.employee_id);
+        cellCount += 1;
+      });
+
+      if (!shiftPatchMap.size) {
+        h.applying = false;
+        notify(`${formatYmJa(prevYm)}に複製できる勤務がありません`, 'err');
+        return;
+      }
+      commitClonePatches(shiftPatchMap, touchedEmpIds);
+      h.applying = false;
+      notify(`${formatYmJa(prevYm)}から ${touchedEmpIds.size}人・${cellCount}件を複製しました`, 'ok');
+      setClonePanelOpen(false);
+    } catch (e) {
+      notify(e.message || String(e), 'err');
+    } finally {
+      setBusy(false);
+      setBusyText('処理中…');
+    }
+  }
+
   async function syncCalendar() {
     if (!storeId || !yearMonth || !user?.email) {
       notify('店舗と年月を選んでください。', 'err');
@@ -2521,8 +3155,8 @@ export default function App() {
     else if (n <= 10) scale = 'md';
     else if (n <= 14) scale = 'sm';
     else scale = 'xs';
-    // 人数に応じて行の高さを決める（A4横1枚に収める）
-    const rowHmm = Math.max(5.5, Math.min(9.5, (78 / n)));
+    // 人数に応じて行高（区切り線の余白＋大きめ文字でも収まる）
+    const rowHmm = Math.max(7.8, Math.min(12.5, (102 / n)));
     document.documentElement.setAttribute('data-print-scale', scale);
     document.documentElement.style.setProperty('--print-emps', String(n));
     document.documentElement.style.setProperty('--print-row-h', `${rowHmm.toFixed(2)}mm`);
@@ -2563,7 +3197,7 @@ export default function App() {
     }, 80);
   }
 
-  /** 印刷セルの表示: 8-17 / 8:30-17 のように詰めて出す */
+  /** 印刷セル: 出勤は開始/終了の2行。休暇＋時間は1行にまとめる */
   function printCellContent(employeeId, date) {
     const s = getCellShift(employeeId, date);
     const status = s.status || 'undef';
@@ -2571,6 +3205,7 @@ export default function App() {
     const leaveName = leaveCodeLabel(leaveCode);
     const printLeave = leaveCodePrintLabel(leaveCode);
     const timeLine = formatPrintTimeRange(s.start_time, s.end_time);
+    const timeLines = formatPrintTimeLines(s.start_time, s.end_time);
 
     if (leaveName) {
       if (status === 'work' && timeLine) {
@@ -2578,8 +3213,8 @@ export default function App() {
       }
       return { lines: [printLeave || '公休'], leave: true };
     }
-    if (status === 'work' && timeLine) {
-      return { lines: [timeLine], leave: false };
+    if (status === 'work' && timeLines.length) {
+      return { lines: timeLines, leave: false };
     }
     if (status === 'pto') return { lines: ['有休'], leave: true };
     if (status === 'absent') return { lines: ['欠勤'], leave: true };
@@ -3970,71 +4605,70 @@ export default function App() {
 
               <div className="app-toolbar-right">
               {canEdit && (
-                <button
-                  type="button"
-                  disabled={busy || sheetLocked}
-                  onClick={copyByeBye}
-                  className="app-kintai-btn"
-                  title="キンタイコピー（押したら自動コピー）"
-                  aria-label="キンタイコピー"
-                >
-                  <svg viewBox="0 0 24 24" className="app-kintai-btn__icon" fill="none" aria-hidden="true">
-                    <rect x="8" y="4" width="11" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.7" />
-                    <path d="M6 8H5a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 5 21h9a1.5 1.5 0 0 0 1.5-1.5V18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                    <path d="M11 9h5M11 12h5M11 15h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                  <span>キンタイ</span>
-                </button>
-              )}
-              {canEdit && (
-                <div className="app-tpl-dock" role="group" aria-label="テンプレート">
+                <div className="app-icon-rail" role="toolbar" aria-label="操作">
                   <button
                     type="button"
+                    className="app-icon-badge"
+                    disabled={busy || sheetLocked}
+                    onClick={copyByeBye}
+                    title="キンタイコピー"
+                    aria-label="キンタイコピー"
+                  >
+                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                      <rect x="8" y="4" width="11" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.7" />
+                      <path d="M6 8H5a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 5 21h9a1.5 1.5 0 0 0 1.5-1.5V18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                      <path d="M11 9h5M11 12h5M11 15h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className={`app-icon-badge ${clonePanelOpen ? 'is-on' : ''}`}
+                    disabled={busy || sheetLocked}
+                    onClick={openClonePanel}
+                    title="シフト複製（コピペ）"
+                    aria-label="シフト複製"
+                    aria-expanded={clonePanelOpen}
+                  >
+                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                      <rect x="4" y="4" width="10" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.7" />
+                      <rect x="10" y="8" width="10" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.7" fill="var(--surface, #fff)" />
+                      <path d="M13 13h4M13 16h2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="app-icon-badge"
                     disabled={busy || sheetLocked}
                     onClick={applyWeeklyTemplateToMonth}
-                    className="app-tpl-dock__btn"
-                    title="週間テンプレートを表示中の月に反映"
+                    title="テンプレートを反映"
+                    aria-label="テンプレートを反映"
                   >
-                    反映
+                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                      <path d="M12 4v10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <path d="M8.5 10.5 12 14l3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M5 18h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
                   </button>
                   <button
                     type="button"
-                    disabled={busy || sheetLocked}
-                    onClick={clearMonthShifts}
-                    className="app-tpl-dock__btn app-tpl-dock__btn--danger"
-                    title="表示中の月のシフトをすべて白紙にする"
+                    className="app-icon-badge"
+                    disabled={busy}
+                    onClick={printShiftSheet}
+                    title="印刷"
+                    aria-label="印刷"
                   >
-                    白紙
+                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                      <path d="M7 8V4h10v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M7 16H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                      <path d="M7 12h10v8H7v-8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                    </svg>
                   </button>
-                </div>
-              )}
-              {canEdit && exportPanelOpen && (
-                <div className="app-cal-dock" role="group" aria-label="カレンダー">
+
+                  <span className="app-icon-rail__sep" aria-hidden="true" />
+
                   <button
                     type="button"
-                    disabled={busy || !!calendarProgress}
-                    onClick={syncCalendar}
-                    className="app-cal-dock__btn"
-                    title="カレンダー登録（自分のみ）"
-                  >
-                    登録
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy || !!calendarProgress}
-                    onClick={clearCalendar}
-                    className="app-cal-dock__btn app-cal-dock__btn--ghost"
-                    title="カレンダークリア（表示中の月・自分のみ）"
-                  >
-                    クリア
-                  </button>
-                </div>
-              )}
-              {canEdit && (
-                <div className="app-tool-group" role="toolbar" aria-label="編集">
-                  <button
-                    type="button"
-                    className="app-tool-btn"
+                    className="app-icon-badge"
                     disabled={busy || historyRef.current.past.length === 0}
                     onClick={undoEdit}
                     title="元に戻す (Ctrl+Z)"
@@ -4047,7 +4681,7 @@ export default function App() {
                   </button>
                   <button
                     type="button"
-                    className="app-tool-btn"
+                    className="app-icon-badge"
                     disabled={busy || historyRef.current.future.length === 0}
                     onClick={redoEdit}
                     title="やり直す (Ctrl+Y)"
@@ -4058,26 +4692,15 @@ export default function App() {
                       <path d="M19 8a7 7 0 1 0-2 6.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>
+
+                  <span className="app-icon-rail__sep" aria-hidden="true" />
+
                   <button
                     type="button"
-                    className="app-tool-btn"
-                    disabled={busy}
-                    onClick={printShiftSheet}
-                    title="A4横で掲示用に印刷"
-                    aria-label="印刷"
-                  >
-                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
-                      <path d="M7 8V4h10v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M7 16H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                      <path d="M7 12h10v8H7v-8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className={`app-tool-btn ${exportPanelOpen ? 'app-tool-btn--on' : ''}`}
+                    className={`app-icon-badge ${exportPanelOpen ? 'is-on' : ''}`}
                     disabled={busy}
                     onClick={() => setExportPanelOpen((v) => !v)}
-                    title={exportPanelOpen ? 'カレンダー操作を閉じる' : 'カレンダー登録・クリア'}
+                    title={exportPanelOpen ? 'カレンダーを閉じる' : 'カレンダー'}
                     aria-label="カレンダー"
                     aria-expanded={exportPanelOpen}
                   >
@@ -4086,8 +4709,58 @@ export default function App() {
                       <path d="M4 10h16M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                     </svg>
                   </button>
+                  {exportPanelOpen && (
+                    <>
+                      <button
+                        type="button"
+                        className="app-icon-badge"
+                        disabled={busy || !!calendarProgress}
+                        onClick={syncCalendar}
+                        title="カレンダーに登録"
+                        aria-label="カレンダーに登録"
+                      >
+                        <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                          <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                          <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                          <path d="M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        className="app-icon-badge"
+                        disabled={busy || !!calendarProgress}
+                        onClick={clearCalendar}
+                        title="カレンダーをクリア"
+                        aria-label="カレンダーをクリア"
+                      >
+                        <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                          <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                          <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                          <path d="M9.5 14.5l5 0M12 12v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+
+                  <span className="app-icon-rail__sep" aria-hidden="true" />
+
+                  <button
+                    type="button"
+                    className="app-icon-badge is-danger"
+                    disabled={busy || sheetLocked}
+                    onClick={clearMonthShifts}
+                    title="月を白紙にする"
+                    aria-label="月を白紙にする"
+                  >
+                    <svg viewBox="0 0 24 24" className="app-tool-icon" fill="none" aria-hidden="true">
+                      <path d="M6 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <path d="M9 7V5h6v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M8 7l.8 12h6.4L16 7" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                    </svg>
+                  </button>
                 </div>
               )}
+
               {canEdit && (saveState !== 'idle' || dirtyTotal > 0) && (
                 <span className={`app-save-badge ${
                   saveState === 'saving' || saveState === 'pending' ? 'text-[#1565c0] border-[#b8d4ea]'
@@ -4116,6 +4789,7 @@ export default function App() {
                   className="app-account-btn"
                   aria-expanded={accountOpen}
                   aria-haspopup="menu"
+                  title="アカウント"
                 >
                   <span className="app-account-avatar">{accountInitial}</span>
                   <svg className="app-account-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -4216,14 +4890,17 @@ export default function App() {
                     {visibleDays.map((day) => {
                       const date = toYmDay(yearMonth, day);
                       const wd = new Date(`${date}T00:00:00`).getDay();
+                      const isToday = date === todayYmd;
                       return (
                         <th
                           key={date}
-                          className={`${SHEET_DAY} px-0 py-2.5 text-center sheet-head`}
-                          style={wd === 0 ? { boxShadow: 'inset 0 -3px 0 #b71c1c' } : wd === 6 ? { boxShadow: 'inset 0 -3px 0 #1565c0' } : null}
+                          className={`${SHEET_DAY} px-0 py-2.5 text-center sheet-head ${isToday ? 'sheet-day-cell--today' : ''}`}
+                          style={wd === 0 ? { boxShadow: 'inset 0 -3px 0 #ff8a80' } : wd === 6 ? { boxShadow: 'inset 0 -3px 0 #90caf9' } : null}
                         >
-                          <div className="text-lg font-bold leading-none tabular-nums text-white">{day}</div>
-                          <div className="text-xs font-semibold mt-1 text-white/90">{WEEKDAY_LABELS[wd]}</div>
+                          <div className="sheet-head-day__num">{day}</div>
+                          <div className={`sheet-head-day__wd ${wd === 0 ? 'sheet-head-day__wd--sun' : wd === 6 ? 'sheet-head-day__wd--sat' : ''}`}>
+                            {WEEKDAY_LABELS[wd]}
+                          </div>
                         </th>
                       );
                     })}
@@ -4317,7 +4994,7 @@ export default function App() {
                               {(() => {
                                 const sum = empMonthSummaries.get(e.employee_id) || summarizeEmpMonth(e, shifts, yearMonth);
                                 return (
-                                  <div className="mt-1 px-1 py-0.5 text-[11px] leading-tight tabular-nums text-zinc-800 bg-[#fde8d4]">
+                                  <div className="sheet-name-summary">
                                     {isFullTimeEmp(e) ? (
                                       <>
                                         <div>{sum.shiftDays}日 ⇔ {sum.prescribedDays}日</div>
@@ -4357,17 +5034,23 @@ export default function App() {
                             bottom = String(s.end_time || '').slice(0, 5);
                           }
                           const isLeave = status === 'off' || status === 'pto' || status === 'absent' || leaveCode === 10 || leaveCode === 20;
-                          const fg = isLeave ? '#b71c1c' : '#1a2430';
-                          const holidayBg = (leaveCode === 10 || leaveCode === 20) ? 'bg-[#f2f2f2]' : (empIdx % 2 ? 'bg-[#f3f7fb]' : 'bg-white');
+                          const wd = new Date(`${date}T00:00:00`).getDay();
+                          const isToday = date === todayYmd;
+                          const dayTone = wd === 0 ? 'sheet-day-cell--sun' : wd === 6 ? 'sheet-day-cell--sat' : '';
+                          const zebra = empIdx % 2 ? 'bg-[#f3f7fb]' : 'bg-white';
+                          const holidayBg = (leaveCode === 10 || leaveCode === 20) ? 'bg-[#eceff1]' : zebra;
                           return (
                             <td
                               key={`${e.employee_id}-${date}`}
-                              className={`${SHEET_DAY} p-0 ${dirty ? 'bg-[#fff59d]' : holidayBg}`}
-                              style={{
-                                height: SHIFT_ROW_H,
-                                color: fg,
-                                ...(focused ? { boxShadow: CELL_FOCUS_RING } : null),
-                              }}
+                              className={[
+                                SHEET_DAY,
+                                'p-0',
+                                dirty ? 'sheet-day-cell--dirty' : holidayBg,
+                                dayTone,
+                                isToday ? 'sheet-day-cell--today' : '',
+                                focused ? 'sheet-day-cell--focus' : '',
+                              ].filter(Boolean).join(' ')}
+                              style={{ height: SHIFT_ROW_H }}
                             >
                               {editing ? (
                                 <input
@@ -4418,12 +5101,12 @@ export default function App() {
                                     });
                                   }}
                                   onKeyDown={(ev) => handleShiftCellKeyDown(ev, e.employee_id, date)}
-                                  className="sheet-cell-btn w-full px-1 flex flex-col items-center justify-center leading-none hover:bg-[#f7fafc] disabled:opacity-60 outline-none focus:outline-none focus-visible:outline-none"
+                                  className={`sheet-cell-btn w-full px-1 flex flex-col items-center justify-center leading-none disabled:opacity-60 outline-none focus:outline-none focus-visible:outline-none ${isLeave ? 'sheet-cell-btn--off' : ''}`}
                                   style={{ height: SHIFT_ROW_H }}
                                   title={leaveName ? `${leaveCode} ${leaveName}` : 'クリックで選択 / ダブルクリックで編集'}
                                 >
-                                  <span className={`font-bold leading-tight px-0.5 ${leaveName ? 'text-[13px]' : 'text-base tabular-nums'}`}>{top}</span>
-                                  {bottom ? <span className="text-[13px] font-semibold tabular-nums text-zinc-500 mt-0.5">{bottom}</span> : null}
+                                  <span className={`sheet-cell-top ${leaveName ? 'sheet-cell-top--leave' : 'sheet-cell-top--time'}`}>{top}</span>
+                                  {bottom ? <span className="sheet-cell-bottom">{bottom}</span> : null}
                                 </button>
                               )}
                             </td>
@@ -4457,14 +5140,20 @@ export default function App() {
                           const dirty = dirtyMemoKeys.has(shiftKey(e.employee_id, date));
                           const focused = focusCell?.employee_id === e.employee_id && focusCell?.date === date && focusCell?.layer === 'memo';
                           const editing = focused && focusCell?.editing;
+                          const wd = new Date(`${date}T00:00:00`).getDay();
+                          const dayTone = wd === 0 ? 'sheet-day-cell--sun' : wd === 6 ? 'sheet-day-cell--sat' : '';
                           return (
                             <td
                               key={`memo-${e.employee_id}-${date}`}
-                              className={`${SHEET_DAY} p-0 ${dirty ? 'bg-[#fff59d]' : 'bg-white'}`}
-                              style={{
-                                height: MEMO_ROW_H,
-                                ...(focused ? { boxShadow: CELL_FOCUS_RING } : null),
-                              }}
+                              className={[
+                                SHEET_DAY,
+                                'p-0',
+                                dirty ? 'sheet-day-cell--dirty' : 'bg-white',
+                                dayTone,
+                                date === todayYmd ? 'sheet-day-cell--today' : '',
+                                focused ? 'sheet-day-cell--focus' : '',
+                              ].filter(Boolean).join(' ')}
+                              style={{ height: MEMO_ROW_H }}
                             >
                               {editing ? (
                                 <textarea
@@ -4576,9 +5265,16 @@ export default function App() {
                                 key={`${e.employee_id}-${date}`}
                                 className={`print-board__cell ${cell.leave ? 'is-leave' : ''} ${!cell.leave && cell.lines.length ? 'is-work' : ''}`}
                               >
-                                {cell.lines.map((line, i) => (
-                                  <span key={i} className="print-board__line">{line}</span>
-                                ))}
+                                {!cell.leave && cell.lines.length === 2 ? (
+                                  <span className="print-board__time">
+                                    <span className="print-board__line is-start">{cell.lines[0]}</span>
+                                    <span className="print-board__line is-end">{cell.lines[1]}</span>
+                                  </span>
+                                ) : (
+                                  cell.lines.map((line, i) => (
+                                    <span key={i} className="print-board__line">{line}</span>
+                                  ))
+                                )}
                               </td>
                             );
                           })}
@@ -4590,6 +5286,67 @@ export default function App() {
               ))}
             </div>
             </Fragment>
+          )}
+
+          {clonePanelOpen && (
+            <div className="km-overlay" onClick={() => setClonePanelOpen(false)}>
+              <div className="km-dialog clone-dialog" onClick={(ev) => ev.stopPropagation()}>
+                <div className="km-dialog-head flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[18px] font-bold leading-tight">シフト複製</p>
+                  </div>
+                  <button type="button" onClick={() => setClonePanelOpen(false)} className="h-9 px-3 text-[13px] font-semibold bg-white/15 border border-white/40 text-white">
+                    閉じる
+                  </button>
+                </div>
+                <div className="km-dialog-body space-y-3">
+                  <button
+                    type="button"
+                    className={btnPrimary}
+                    disabled={busy || !sheetCanEdit}
+                    onClick={duplicatePrevMonth}
+                  >
+                    前月データを複製
+                  </button>
+                  <div className="border-t border-slate-200 pt-3 space-y-2">
+                    <p className="text-[13px] font-bold text-slate-700">こちらに貼り付けてください</p>
+                    {cloneErr ? (
+                      <p className="text-[13px] font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2">
+                        {cloneErr}
+                      </p>
+                    ) : null}
+                    <textarea
+                      className="clone-dialog__ta"
+                      value={cloneText}
+                      onChange={(e) => {
+                        setCloneText(e.target.value);
+                        if (cloneErr) setCloneErr('');
+                      }}
+                      onPaste={(ev) => {
+                        const text = ev.clipboardData?.getData('text/plain');
+                        if (text == null || text === '') return;
+                        ev.preventDefault();
+                        setCloneText(text);
+                        setCloneErr('');
+                        window.setTimeout(() => applyMonthClonePaste(text), 0);
+                      }}
+                      spellCheck={false}
+                      rows={10}
+                      placeholder=""
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className={btnSecondary}
+                      disabled={busy || !sheetCanEdit || !String(cloneText || '').trim()}
+                      onClick={() => applyMonthClonePaste(cloneText)}
+                    >
+                      表に反映
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {empEditor && (
