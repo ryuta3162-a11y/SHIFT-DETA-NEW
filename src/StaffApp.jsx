@@ -1,30 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BrandTitle } from './BrandTitle.jsx';
-import { APP_TAGLINE } from './appBrand.js';
 import { api } from './api.js';
 import { StoreChatPanel, useStoreChat } from './StoreChat.jsx';
 import { STAFF_TOKEN_KEY } from './staffAuth.js';
 
 const TABS = [
   { id: 'home', label: 'ホーム', icon: IconHome },
-  { id: 'hope', label: '希望', icon: IconHope },
   { id: 'schedule', label: '勤務', icon: IconSchedule },
+  { id: 'hope', label: '希望', icon: IconHope },
   { id: 'chat', label: 'チャット', icon: IconBoard },
 ];
 
 const WEEKDAY = ['日', '月', '火', '水', '木', '金', '土'];
 const STATUS_LABEL = { work: '出勤', off: '休み', pto: '有休', absent: '欠勤', undef: '未定' };
 
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 11) return 'おはようございます';
-  if (h < 17) return 'こんにちは';
-  return 'お疲れさまです';
-}
-
 function currentYm() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function todayYmd() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function shiftYm(ym, delta) {
@@ -36,7 +33,7 @@ function shiftYm(ym, delta) {
 function formatYmJa(ym) {
   const [y, m] = String(ym || '').split('-');
   if (!y || !m) return ym;
-  return `${y}年${Number(m)}月`;
+  return `${Number(m)}月`;
 }
 
 function formatDateJa(ymd) {
@@ -58,12 +55,12 @@ function empKey(id) {
 }
 
 function shiftLabel(shift) {
-  if (!shift) return '—';
+  if (!shift) return '未定';
   const st = String(shift.status || '');
   if (st === 'work' && shift.start_time && shift.end_time) {
     return `${shift.start_time}–${shift.end_time}`;
   }
-  return STATUS_LABEL[st] || '—';
+  return STATUS_LABEL[st] || '未定';
 }
 
 function buildTimeOptions(step = 30) {
@@ -91,7 +88,6 @@ function IconHope({ className = 'w-5 h-5' }) {
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.7" />
       <path d="M4 9.5h16M8 3.5v3M16 3.5v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.5 13.5h3M8.5 16.5h7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -125,38 +121,35 @@ function IconLogout({ className = 'w-5 h-5' }) {
 
 function MonthBar({ yearMonth, onChange }) {
   return (
-    <div className="staff-monthbar">
-      <button type="button" className="staff-monthbar__btn" onClick={() => onChange(shiftYm(yearMonth, -1))} aria-label="前月">‹</button>
-      <p className="staff-monthbar__label">{formatYmJa(yearMonth)}</p>
-      <button type="button" className="staff-monthbar__btn" onClick={() => onChange(shiftYm(yearMonth, 1))} aria-label="翌月">›</button>
+    <div className="sp-monthbar">
+      <button type="button" className="sp-monthbar__btn" onClick={() => onChange(shiftYm(yearMonth, -1))} aria-label="前月">‹</button>
+      <p className="sp-monthbar__label">{formatYmJa(yearMonth)}</p>
+      <button type="button" className="sp-monthbar__btn" onClick={() => onChange(shiftYm(yearMonth, 1))} aria-label="翌月">›</button>
     </div>
   );
 }
 
 function StaffHome({ user, storeName, onNavigate, unread }) {
   const features = [
-    { id: 'hope', title: '希望シフト', desc: '出勤・休みの希望を申請', icon: IconHope, tone: 'sky' },
-    { id: 'schedule', title: '勤務状況', desc: '自分と店舗メンバーの確定シフト', icon: IconSchedule, tone: 'violet' },
-    { id: 'chat', title: '店舗チャット', desc: '店長・スタッフと連絡', icon: IconBoard, tone: 'amber', badge: unread },
+    { id: 'schedule', title: '勤務', desc: 'みんなの出勤時間を見る', icon: IconSchedule, tone: 'blue' },
+    { id: 'hope', title: '希望', desc: '出勤・休みを申請する', icon: IconHope, tone: 'teal' },
+    { id: 'chat', title: 'チャット', desc: '店舗の連絡', icon: IconBoard, tone: 'slate', badge: unread },
   ];
   return (
-    <div className="staff-home">
-      <section className="staff-hero-card">
-        <p className="staff-hero-card__greet">{greeting()}</p>
-        <p className="staff-hero-card__name">{user?.name} さん</p>
-        <p className="staff-hero-card__store">{storeName}</p>
-        <p className="staff-hero-card__tagline">{APP_TAGLINE.replace(/\n/g, '')}</p>
+    <div className="sp-home">
+      <section className="sp-home__head">
+        <p className="sp-home__name">{user?.name}</p>
+        <p className="sp-home__store">{storeName || '所属店舗'}</p>
       </section>
-      <p className="staff-section-label">メニュー</p>
-      <div className="staff-feature-grid">
+      <div className="sp-home__grid">
         {features.map((f) => {
           const Icon = f.icon;
           return (
-            <button key={f.id} type="button" className={`staff-feature-card staff-feature-card--${f.tone}`} onClick={() => onNavigate(f.id)}>
-              <span className="staff-feature-card__icon"><Icon className="w-6 h-6" /></span>
-              <span className="staff-feature-card__title">{f.title}</span>
-              <span className="staff-feature-card__desc">{f.desc}</span>
-              {f.badge > 0 && <span className="staff-chip staff-chip--inline staff-chip--alert">{f.badge > 99 ? '99+' : f.badge}</span>}
+            <button key={f.id} type="button" className={`sp-navcard sp-navcard--${f.tone}`} onClick={() => onNavigate(f.id)}>
+              <span className="sp-navcard__icon"><Icon className="w-6 h-6" /></span>
+              <span className="sp-navcard__title">{f.title}</span>
+              <span className="sp-navcard__desc">{f.desc}</span>
+              {f.badge > 0 && <span className="sp-navcard__badge">{f.badge > 99 ? '99+' : f.badge}</span>}
             </button>
           );
         })}
@@ -170,7 +163,16 @@ function StaffSchedulePanel({ token, storeId, myId, yearMonth, onYearMonth }) {
   const [error, setError] = useState('');
   const [employees, setEmployees] = useState([]);
   const [shifts, setShifts] = useState([]);
-  const [filter, setFilter] = useState('all'); // all | me
+  const [selectedDay, setSelectedDay] = useState(() => {
+    const t = todayYmd();
+    return t.startsWith(yearMonth) ? t : `${yearMonth}-01`;
+  });
+  const [mode, setMode] = useState('day'); // day | me
+
+  useEffect(() => {
+    const t = todayYmd();
+    setSelectedDay(t.startsWith(yearMonth) ? t : `${yearMonth}-01`);
+  }, [yearMonth]);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,76 +200,130 @@ function StaffSchedulePanel({ token, storeId, myId, yearMonth, onYearMonth }) {
   const byEmpDay = useMemo(() => {
     const map = {};
     shifts.forEach((s) => {
-      const key = `${empKey(s.employee_id)}__${s.date}`;
-      map[key] = s;
+      map[`${empKey(s.employee_id)}__${s.date}`] = s;
     });
     return map;
   }, [shifts]);
 
-  const visibleEmps = useMemo(() => {
-    const list = employees.slice();
-    if (filter === 'me') {
-      return list.filter((e) => empKey(e.employee_id || e.bye_code) === myKey);
-    }
-    return list;
-  }, [employees, filter, myKey]);
-
-  const days = daysInYm(yearMonth);
   const dayList = useMemo(() => {
+    const days = daysInYm(yearMonth);
     const out = [];
     for (let d = 1; d <= days; d += 1) {
-      const ymd = `${yearMonth}-${String(d).padStart(2, '0')}`;
-      out.push(ymd);
+      out.push(`${yearMonth}-${String(d).padStart(2, '0')}`);
     }
     return out;
-  }, [yearMonth, days]);
+  }, [yearMonth]);
+
+  const dayBoard = useMemo(() => {
+    const rows = employees.map((emp) => {
+      const eid = emp.employee_id || emp.bye_code;
+      const shift = byEmpDay[`${empKey(eid)}__${selectedDay}`];
+      return { emp, eid, shift, isMe: empKey(eid) === myKey };
+    });
+    const rank = (row) => {
+      const st = row.shift?.status;
+      if (st === 'work') return 0;
+      if (st === 'off' || st === 'pto' || st === 'absent') return 1;
+      return 2;
+    };
+    return rows.sort((a, b) => {
+      const d = rank(a) - rank(b);
+      if (d) return d;
+      if (a.isMe !== b.isMe) return a.isMe ? -1 : 1;
+      return String(a.emp.name || '').localeCompare(String(b.emp.name || ''), 'ja');
+    });
+  }, [employees, byEmpDay, selectedDay, myKey]);
+
+  const myMonthRows = useMemo(() => {
+    return dayList.map((ymd) => ({
+      ymd,
+      shift: byEmpDay[`${myKey}__${ymd}`],
+    }));
+  }, [dayList, byEmpDay, myKey]);
+
+  const workCount = dayBoard.filter((r) => r.shift?.status === 'work').length;
 
   return (
-    <div className="staff-panel">
-      <MonthBar yearMonth={yearMonth} onChange={onYearMonth} />
-      <div className="staff-filter">
-        <button type="button" className={`staff-filter__btn${filter === 'me' ? ' is-on' : ''}`} onClick={() => setFilter('me')}>自分</button>
-        <button type="button" className={`staff-filter__btn${filter === 'all' ? ' is-on' : ''}`} onClick={() => setFilter('all')}>店舗全員</button>
+    <div className="sp-panel">
+      <div className="sp-toolbar">
+        <MonthBar yearMonth={yearMonth} onChange={onYearMonth} />
+        <div className="sp-seg">
+          <button type="button" className={`sp-seg__btn${mode === 'day' ? ' is-on' : ''}`} onClick={() => setMode('day')}>みんな</button>
+          <button type="button" className={`sp-seg__btn${mode === 'me' ? ' is-on' : ''}`} onClick={() => setMode('me')}>自分</button>
+        </div>
       </div>
-      {loading && <p className="staff-panel__status">読み込み中…</p>}
-      {error && <p className="staff-panel__error">{error}</p>}
-      {!loading && !error && visibleEmps.length === 0 && (
-        <p className="staff-panel__status">表示できるスタッフがいません。</p>
+
+      {mode === 'day' && (
+        <>
+          <div className="sp-daystrip" role="listbox" aria-label="日付">
+            {dayList.map((ymd) => {
+              const dayNum = Number(ymd.slice(8));
+              const wd = new Date(`${ymd}T00:00:00`).getDay();
+              const on = ymd === selectedDay;
+              const hasWork = employees.some((emp) => {
+                const s = byEmpDay[`${empKey(emp.employee_id || emp.bye_code)}__${ymd}`];
+                return s?.status === 'work';
+              });
+              return (
+                <button
+                  key={ymd}
+                  type="button"
+                  className={`sp-daychip${on ? ' is-on' : ''}${wd === 0 ? ' is-sun' : ''}${wd === 6 ? ' is-sat' : ''}`}
+                  onClick={() => setSelectedDay(ymd)}
+                >
+                  <span className="sp-daychip__wd">{WEEKDAY[wd]}</span>
+                  <span className="sp-daychip__n">{dayNum}</span>
+                  {hasWork && <span className="sp-daychip__dot" />}
+                </button>
+              );
+            })}
+          </div>
+          <div className="sp-dayhead">
+            <p className="sp-dayhead__date">{formatDateJa(selectedDay)}</p>
+            <p className="sp-dayhead__meta">出勤 {workCount}人</p>
+          </div>
+        </>
       )}
-      {!loading && !error && visibleEmps.map((emp) => {
-        const eid = emp.employee_id || emp.bye_code;
-        const isMe = empKey(eid) === myKey;
-        return (
-          <section key={eid} className={`staff-emp-card${isMe ? ' is-me' : ''}`}>
-            <header className="staff-emp-card__head">
-              <p className="staff-emp-card__name">{emp.name}{isMe ? '（自分）' : ''}</p>
-            </header>
-            <ul className="staff-day-list">
-              {dayList.map((ymd) => {
-                const shift = byEmpDay[`${empKey(eid)}__${ymd}`];
-                if (!shift || !shift.status || shift.status === 'undef') {
-                  if (filter === 'me') {
-                    return (
-                      <li key={ymd} className="staff-day-row is-empty">
-                        <span className="staff-day-row__date">{formatDateJa(ymd)}</span>
-                        <span className="staff-day-row__val">未定</span>
-                      </li>
-                    );
-                  }
-                  return null;
-                }
-                const work = shift.status === 'work';
-                return (
-                  <li key={ymd} className={`staff-day-row${work ? ' is-work' : ' is-off'}`}>
-                    <span className="staff-day-row__date">{formatDateJa(ymd)}</span>
-                    <span className="staff-day-row__val">{shiftLabel(shift)}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        );
-      })}
+
+      {loading && <p className="sp-status">読み込み中…</p>}
+      {error && <p className="sp-error">{error}</p>}
+
+      {!loading && !error && mode === 'day' && (
+        <ul className="sp-people">
+          {dayBoard.map(({ emp, eid, shift, isMe }) => {
+            const st = shift?.status || '';
+            const work = st === 'work';
+            return (
+              <li key={eid} className={`sp-person${isMe ? ' is-me' : ''}${work ? ' is-work' : ''}`}>
+                <div className="sp-person__left">
+                  <span className="sp-person__avatar">{String(emp.name || '?').replace(/\s/g, '').slice(0, 1)}</span>
+                  <div>
+                    <p className="sp-person__name">{emp.name}{isMe ? ' · 自分' : ''}</p>
+                    <p className="sp-person__sub">{STATUS_LABEL[st] || '未定'}</p>
+                  </div>
+                </div>
+                <p className={`sp-person__time${work ? ' is-work' : ''}`}>{shiftLabel(shift)}</p>
+              </li>
+            );
+          })}
+          {dayBoard.length === 0 && <li className="sp-status">スタッフがいません</li>}
+        </ul>
+      )}
+
+      {!loading && !error && mode === 'me' && (
+        <ul className="sp-mylist">
+          {myMonthRows.map(({ ymd, shift }) => {
+            const st = shift?.status || '';
+            if (!st || st === 'undef') return null;
+            return (
+              <li key={ymd} className={`sp-myrow${st === 'work' ? ' is-work' : ''}`}>
+                <span>{formatDateJa(ymd)}</span>
+                <strong>{shiftLabel(shift)}</strong>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
@@ -304,13 +360,9 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
   }, [token, storeId, yearMonth]);
 
   useEffect(() => {
-    if (!date) {
-      const d = new Date();
-      const ymd = `${yearMonth}-${String(Math.min(d.getDate(), daysInYm(yearMonth))).padStart(2, '0')}`;
-      if (ymd.startsWith(yearMonth)) setDate(ymd);
-      else setDate(`${yearMonth}-01`);
-    }
-  }, [yearMonth, date]);
+    const t = todayYmd();
+    setDate(t.startsWith(yearMonth) ? t : `${yearMonth}-01`);
+  }, [yearMonth]);
 
   async function submit(e) {
     e.preventDefault();
@@ -328,7 +380,7 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
         memo,
       });
       setMemo('');
-      setInfo('申請しました。店舗チャットにも通知されます。');
+      setInfo('申請しました');
       await reload();
     } catch (ex) {
       setError(ex.message || String(ex));
@@ -339,7 +391,6 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
 
   async function cancelHope(hopeId) {
     if (!window.confirm('この申請を取り消しますか？')) return;
-    setError('');
     try {
       await api.staffCancelHope({ token, store_id: storeId, hope_id: hopeId });
       await reload();
@@ -351,15 +402,14 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
   const maxDay = daysInYm(yearMonth);
 
   return (
-    <div className="staff-panel">
+    <div className="sp-panel">
       <MonthBar yearMonth={yearMonth} onChange={onYearMonth} />
-      <form className="staff-hope-form" onSubmit={submit}>
-        <p className="staff-section-label">新規申請</p>
-        <div className="staff-hope-kind">
-          <button type="button" className={`staff-filter__btn${kind === 'work' ? ' is-on' : ''}`} onClick={() => setKind('work')}>出勤希望</button>
-          <button type="button" className={`staff-filter__btn${kind === 'off' ? ' is-on' : ''}`} onClick={() => setKind('off')}>休み希望</button>
+      <form className="sp-hope" onSubmit={submit}>
+        <div className="sp-seg">
+          <button type="button" className={`sp-seg__btn${kind === 'work' ? ' is-on' : ''}`} onClick={() => setKind('work')}>出勤</button>
+          <button type="button" className={`sp-seg__btn${kind === 'off' ? ' is-on' : ''}`} onClick={() => setKind('off')}>休み</button>
         </div>
-        <label className="staff-field">
+        <label className="sp-field">
           <span>日付</span>
           <input
             type="date"
@@ -371,14 +421,14 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
           />
         </label>
         {kind === 'work' && (
-          <div className="staff-hope-times">
-            <label className="staff-field">
+          <div className="sp-hope__times">
+            <label className="sp-field">
               <span>開始</span>
               <select value={start} onChange={(ev) => setStart(ev.target.value)}>
                 {TIME_OPTIONS.map((t) => <option key={`s-${t}`} value={t}>{t}</option>)}
               </select>
             </label>
-            <label className="staff-field">
+            <label className="sp-field">
               <span>終了</span>
               <select value={end} onChange={(ev) => setEnd(ev.target.value)}>
                 {TIME_OPTIONS.map((t) => <option key={`e-${t}`} value={t}>{t}</option>)}
@@ -386,35 +436,30 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
             </label>
           </div>
         )}
-        <label className="staff-field">
-          <span>メモ（任意）</span>
-          <input type="text" value={memo} maxLength={200} placeholder="例: 午後から可" onChange={(ev) => setMemo(ev.target.value)} />
+        <label className="sp-field">
+          <span>メモ</span>
+          <input type="text" value={memo} maxLength={200} placeholder="任意" onChange={(ev) => setMemo(ev.target.value)} />
         </label>
-        {error && <p className="staff-panel__error">{error}</p>}
-        {info && <p className="staff-panel__ok">{info}</p>}
-        <button type="submit" className="staff-primary-btn" disabled={saving}>
-          {saving ? '送信中…' : '申請する'}
-        </button>
+        {error && <p className="sp-error">{error}</p>}
+        {info && <p className="sp-ok">{info}</p>}
+        <button type="submit" className="sp-submit" disabled={saving}>{saving ? '送信中…' : '申請する'}</button>
       </form>
 
-      <p className="staff-section-label">申請一覧</p>
-      {loading && <p className="staff-panel__status">読み込み中…</p>}
-      {!loading && hopes.length === 0 && <p className="staff-panel__status">この月の申請はまだありません。</p>}
-      <ul className="staff-hope-list">
+      <p className="sp-label">申請一覧</p>
+      {loading && <p className="sp-status">読み込み中…</p>}
+      {!loading && hopes.length === 0 && <p className="sp-status">まだありません</p>}
+      <ul className="sp-hope-list">
         {hopes.map((h) => (
-          <li key={h.hope_id} className="staff-hope-item">
+          <li key={h.hope_id} className="sp-hope-item">
             <div>
-              <p className="staff-hope-item__date">{formatDateJa(h.date)}</p>
-              <p className="staff-hope-item__body">
-                {h.kind === 'off' ? '休み希望' : `出勤 ${h.start_time}–${h.end_time}`}
-                {h.memo ? ` · ${h.memo}` : ''}
-              </p>
-              <p className="staff-hope-item__state">
-                {h.status === 'pending' ? '申請中' : h.status === 'accepted' ? '反映済み' : h.status}
+              <p className="sp-hope-item__date">{formatDateJa(h.date)}</p>
+              <p className="sp-hope-item__body">
+                {h.kind === 'off' ? '休み' : `${h.start_time}–${h.end_time}`}
+                {h.memo ? ` / ${h.memo}` : ''}
               </p>
             </div>
             {h.status === 'pending' && (
-              <button type="button" className="staff-hope-item__cancel" onClick={() => cancelHope(h.hope_id)}>取消</button>
+              <button type="button" className="sp-hope-item__cancel" onClick={() => cancelHope(h.hope_id)}>取消</button>
             )}
           </li>
         ))}
@@ -425,7 +470,7 @@ function StaffHopePanel({ token, storeId, yearMonth, onYearMonth }) {
 
 function StaffChatTab({ chat, storeId, storeName, user }) {
   return (
-    <div className="staff-chat-tab">
+    <div className="sp-chat">
       <StoreChatPanel
         open
         embedded
@@ -465,22 +510,10 @@ export function StaffApp({ user, storeId, storeName, onLogout }) {
   }, [tab]);
 
   let panel = (
-    <StaffHome
-      user={user}
-      storeName={storeName}
-      unread={chat.unread}
-      onNavigate={setTab}
-    />
+    <StaffHome user={user} storeName={storeName} unread={chat.unread} onNavigate={setTab} />
   );
   if (tab === 'hope') {
-    panel = (
-      <StaffHopePanel
-        token={token}
-        storeId={storeId}
-        yearMonth={yearMonth}
-        onYearMonth={setYearMonth}
-      />
-    );
+    panel = <StaffHopePanel token={token} storeId={storeId} yearMonth={yearMonth} onYearMonth={setYearMonth} />;
   } else if (tab === 'schedule') {
     panel = (
       <StaffSchedulePanel
@@ -496,18 +529,17 @@ export function StaffApp({ user, storeId, storeName, onLogout }) {
   }
 
   return (
-    <div className="staff-shell">
+    <div className={`staff-shell${tab === 'chat' ? ' is-chat' : ''}`}>
       <div className="staff-shell__bg" aria-hidden="true" />
       <header className="staff-header">
         <div className="staff-header__brand">
           <BrandTitle size="compact" />
-          <span className="staff-header__badge">アルバイト</span>
         </div>
         <button type="button" className="staff-header__logout" onClick={onLogout} aria-label="ログアウト">
           <IconLogout />
         </button>
       </header>
-      <main className="staff-main">{panel}</main>
+      <main className={`staff-main${tab === 'chat' ? ' is-chat' : ''}`}>{panel}</main>
       <nav className="staff-tabbar" aria-label="メインメニュー">
         {TABS.map((t) => {
           const Icon = t.icon;

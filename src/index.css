@@ -1,5 +1,4 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap");
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @layer base {
   html {
@@ -8,7 +7,7 @@
   body {
     @apply antialiased text-slate-900;
     background-color: #ffffff;
-    font-family: "Noto Sans JP", "Hiragino Sans", "Segoe UI", Meiryo, sans-serif;
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Segoe UI", Meiryo, sans-serif;
     letter-spacing: 0.01em;
   }
   .sheet-scroll {
@@ -2221,230 +2220,165 @@
     line-height: 1rem;
     text-align: center;
   }
-  .staff-chip--alert {
-    background: #ffebee;
-    color: #c62828;
-  }
-  .staff-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding-bottom: 0.5rem;
-  }
-  .staff-monthbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.35rem 0.15rem;
-  }
-  .staff-monthbar__label {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-  .staff-monthbar__btn {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #334155;
-  }
-  .staff-filter,
-  .staff-hope-kind {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .staff-filter__btn {
-    flex: 1;
-    padding: 0.55rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: #64748b;
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(148, 163, 184, 0.3);
-  }
-  .staff-filter__btn.is-on {
-    color: #1565c0;
-    background: rgba(21, 101, 192, 0.12);
-    border-color: rgba(21, 101, 192, 0.35);
-  }
-  .staff-panel__status {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #64748b;
-    text-align: center;
-    padding: 1.5rem 0.5rem;
-  }
-  .staff-panel__error {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #c62828;
-    line-height: 1.45;
-  }
-  .staff-panel__ok {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #1565c0;
-    line-height: 1.45;
-  }
-  .staff-emp-card {
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(148, 163, 184, 0.28);
-    border-radius: 1rem;
+  .staff-header__badge { display: none; }
+  .staff-main.is-chat {
+    padding: 0;
     overflow: hidden;
   }
-  .staff-emp-card.is-me {
-    border-color: rgba(21, 101, 192, 0.45);
-    box-shadow: 0 0 0 1px rgba(21, 101, 192, 0.12);
+  .staff-shell.is-chat .staff-shell__bg {
+    opacity: 0.35;
   }
-  .staff-emp-card__head {
-    padding: 0.7rem 0.9rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-    background: rgba(248, 250, 252, 0.9);
-  }
-  .staff-emp-card__name {
-    font-size: 0.92rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-  .staff-day-list {
-    list-style: none;
-    margin: 0;
-    padding: 0.25rem 0;
-  }
-  .staff-day-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.45rem 0.9rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-  .staff-day-row__date {
-    color: #475569;
-  }
-  .staff-day-row__val {
-    color: #0f172a;
-  }
-  .staff-day-row.is-work .staff-day-row__val {
-    color: #1565c0;
-  }
-  .staff-day-row.is-off .staff-day-row__val {
-    color: #64748b;
-  }
-  .staff-day-row.is-empty .staff-day-row__val {
-    color: #94a3b8;
-    font-weight: 600;
-  }
-  .staff-hope-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    padding: 0.9rem;
+
+  .sp-home { display: flex; flex-direction: column; gap: 1rem; }
+  .sp-home__head {
+    padding: 1.1rem 1rem;
     border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(148, 163, 184, 0.28);
-  }
-  .staff-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #64748b;
-  }
-  .staff-field input,
-  .staff-field select {
-    height: 2.5rem;
-    padding: 0 0.75rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #0f172a;
     background: #fff;
-  }
-  .staff-hope-times {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-  }
-  .staff-primary-btn {
-    margin-top: 0.25rem;
-    height: 2.75rem;
-    border-radius: 0.85rem;
-    background: #1565c0;
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 800;
-  }
-  .staff-primary-btn:disabled {
-    opacity: 0.55;
-  }
-  .staff-hope-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-  }
-  .staff-hope-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.85rem 0.95rem;
-    border-radius: 0.95rem;
-    background: rgba(255, 255, 255, 0.94);
     border: 1px solid rgba(148, 163, 184, 0.28);
   }
-  .staff-hope-item__date {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #0f172a;
+  .sp-home__name { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
+  .sp-home__store { margin-top: 0.25rem; font-size: 0.85rem; font-weight: 650; color: #64748b; }
+  .sp-home__grid { display: flex; flex-direction: column; gap: 0.7rem; }
+  .sp-navcard {
+    position: relative;
+    text-align: left;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.28);
   }
-  .staff-hope-item__body {
-    margin-top: 0.15rem;
-    font-size: 0.78rem;
-    font-weight: 650;
-    color: #475569;
+  .sp-navcard__icon {
+    display: inline-flex;
+    width: 2.4rem;
+    height: 2.4rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.7rem;
+    margin-bottom: 0.55rem;
   }
-  .staff-hope-item__state {
-    margin-top: 0.25rem;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: #1565c0;
+  .sp-navcard--blue .sp-navcard__icon { background: #e3f2fd; color: #1565c0; }
+  .sp-navcard--teal .sp-navcard__icon { background: #e0f2f1; color: #00796b; }
+  .sp-navcard--slate .sp-navcard__icon { background: #f1f5f9; color: #475569; }
+  .sp-navcard__title { display: block; font-size: 1rem; font-weight: 800; color: #0f172a; }
+  .sp-navcard__desc { display: block; margin-top: 0.2rem; font-size: 0.78rem; font-weight: 600; color: #64748b; }
+  .sp-navcard__badge {
+    position: absolute; top: 0.8rem; right: 0.8rem;
+    min-width: 1.2rem; padding: 0.1rem 0.35rem; border-radius: 9999px;
+    background: #e53935; color: #fff; font-size: 0.65rem; font-weight: 800; text-align: center;
   }
-  .staff-hope-item__cancel {
-    flex-shrink: 0;
-    padding: 0.4rem 0.7rem;
-    border-radius: 0.65rem;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #c62828;
-    background: #ffebee;
+
+  .sp-panel { display: flex; flex-direction: column; gap: 0.75rem; }
+  .sp-toolbar { display: flex; flex-direction: column; gap: 0.55rem; }
+  .sp-monthbar { display: flex; align-items: center; justify-content: space-between; }
+  .sp-monthbar__label { font-size: 1.05rem; font-weight: 800; color: #0f172a; }
+  .sp-monthbar__btn {
+    width: 2.2rem; height: 2.2rem; border-radius: 0.7rem;
+    background: #fff; border: 1px solid rgba(148, 163, 184, 0.35);
+    font-size: 1.2rem; font-weight: 700; color: #334155;
   }
-  .staff-chat-tab {
-    margin: -0.25rem -0.15rem 0;
-    min-height: calc(100dvh - 8.5rem);
+  .sp-seg { display: flex; gap: 0.4rem; background: #e8eef4; padding: 0.25rem; border-radius: 9999px; }
+  .sp-seg__btn {
+    flex: 1; padding: 0.5rem 0.7rem; border-radius: 9999px;
+    font-size: 0.8rem; font-weight: 800; color: #64748b; background: transparent;
+  }
+  .sp-seg__btn.is-on { background: #fff; color: #0f172a; box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
+  .sp-daystrip {
+    display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.15rem 0.1rem 0.4rem;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .sp-daystrip::-webkit-scrollbar { display: none; }
+  .sp-daychip {
+    position: relative; flex: 0 0 auto; width: 2.7rem; padding: 0.4rem 0.2rem;
+    border-radius: 0.85rem; background: #fff; border: 1px solid rgba(148,163,184,0.3);
+    display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+  }
+  .sp-daychip.is-on { background: #1565c0; border-color: #1565c0; color: #fff; }
+  .sp-daychip__wd { font-size: 0.62rem; font-weight: 800; opacity: 0.75; }
+  .sp-daychip__n { font-size: 0.95rem; font-weight: 800; }
+  .sp-daychip.is-sun:not(.is-on) .sp-daychip__wd,
+  .sp-daychip.is-sun:not(.is-on) .sp-daychip__n { color: #c62828; }
+  .sp-daychip.is-sat:not(.is-on) .sp-daychip__wd,
+  .sp-daychip.is-sat:not(.is-on) .sp-daychip__n { color: #1565c0; }
+  .sp-daychip__dot {
+    position: absolute; bottom: 0.25rem; width: 0.28rem; height: 0.28rem;
+    border-radius: 9999px; background: #42a5f5;
+  }
+  .sp-daychip.is-on .sp-daychip__dot { background: #fff; }
+  .sp-dayhead { display: flex; align-items: baseline; justify-content: space-between; padding: 0 0.15rem; }
+  .sp-dayhead__date { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
+  .sp-dayhead__meta { font-size: 0.75rem; font-weight: 700; color: #64748b; }
+  .sp-people, .sp-mylist, .sp-hope-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .sp-person {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.8rem 0.9rem; border-radius: 0.95rem; background: #fff;
+    border: 1px solid rgba(148,163,184,0.28);
+  }
+  .sp-person.is-me { border-color: rgba(21,101,192,0.45); }
+  .sp-person__left { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
+  .sp-person__avatar {
+    width: 2.1rem; height: 2.1rem; border-radius: 9999px; flex-shrink: 0;
+    display: grid; place-items: center; background: #e8eef4; color: #334155;
+    font-size: 0.85rem; font-weight: 800;
+  }
+  .sp-person.is-work .sp-person__avatar { background: #e3f2fd; color: #1565c0; }
+  .sp-person__name { font-size: 0.9rem; font-weight: 800; color: #0f172a; }
+  .sp-person__sub { margin-top: 0.1rem; font-size: 0.7rem; font-weight: 650; color: #94a3b8; }
+  .sp-person__time { font-size: 0.95rem; font-weight: 800; color: #64748b; white-space: nowrap; }
+  .sp-person__time.is-work { color: #1565c0; }
+  .sp-myrow {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0.9rem; border-radius: 0.85rem; background: #fff;
+    border: 1px solid rgba(148,163,184,0.28); font-size: 0.85rem; font-weight: 700; color: #475569;
+  }
+  .sp-myrow.is-work strong { color: #1565c0; }
+  .sp-status, .sp-label { font-size: 0.8rem; font-weight: 700; color: #64748b; text-align: center; padding: 0.5rem; }
+  .sp-label { text-align: left; padding: 0.2rem 0.1rem; letter-spacing: 0.04em; }
+  .sp-error { font-size: 0.8rem; font-weight: 700; color: #c62828; }
+  .sp-ok { font-size: 0.8rem; font-weight: 700; color: #1565c0; }
+  .sp-hope {
+    display: flex; flex-direction: column; gap: 0.65rem; padding: 0.95rem;
+    border-radius: 1rem; background: #fff; border: 1px solid rgba(148,163,184,0.28);
+  }
+  .sp-field { display: flex; flex-direction: column; gap: 0.28rem; font-size: 0.7rem; font-weight: 800; color: #64748b; }
+  .sp-field input, .sp-field select {
+    height: 2.55rem; padding: 0 0.75rem; border-radius: 0.75rem;
+    border: 1px solid rgba(148,163,184,0.4); font-size: 0.95rem; font-weight: 700; color: #0f172a; background: #fff;
+  }
+  .sp-hope__times { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+  .sp-submit {
+    height: 2.75rem; border-radius: 0.85rem; background: #1565c0; color: #fff;
+    font-size: 0.95rem; font-weight: 800;
+  }
+  .sp-submit:disabled { opacity: 0.55; }
+  .sp-hope-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    padding: 0.85rem 0.95rem; border-radius: 0.95rem; background: #fff;
+    border: 1px solid rgba(148,163,184,0.28);
+  }
+  .sp-hope-item__date { font-size: 0.88rem; font-weight: 800; color: #0f172a; }
+  .sp-hope-item__body { margin-top: 0.15rem; font-size: 0.78rem; font-weight: 650; color: #64748b; }
+  .sp-hope-item__cancel {
+    flex-shrink: 0; padding: 0.4rem 0.7rem; border-radius: 0.65rem;
+    font-size: 0.72rem; font-weight: 800; color: #c62828; background: #ffebee;
+  }
+
+  .sp-chat {
+    height: calc(100dvh - 7.1rem);
+    min-height: 20rem;
   }
   .store-chat-panel.is-embedded {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    width: 100%;
-    height: calc(100dvh - 8.5rem);
-    max-height: none;
-    border-radius: 1rem;
-    box-shadow: none;
+    position: relative !important;
+    inset: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
   }
 
   /* 笏笏 繧｢繝励Μ繧｢繧､繧ｳ繝ｳ・・NG・・笏笏 */

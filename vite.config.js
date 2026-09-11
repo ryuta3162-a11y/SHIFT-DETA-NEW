@@ -5,7 +5,9 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
   build: {
+    target: 'es2020',
     cssInlineLimit: 100000000,
     assetsInlineLimit: 100000000,
+    modulePreload: false,
   },
 })

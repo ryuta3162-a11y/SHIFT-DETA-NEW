@@ -98,7 +98,7 @@ export function StaffLoginPanel({
         </button>
       </div>
 
-      <h2 className="login-card-title">{phase === 'login' ? 'アルバイトログイン' : 'アルバイト登録'}</h2>
+      <h2 className="login-card-title">{phase === 'login' ? 'ログイン' : '登録'}</h2>
 
       {phase === 'login' ? (
         <form className="space-y-4 mt-5" onSubmit={handleLogin} autoComplete="on">

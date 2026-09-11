@@ -213,6 +213,7 @@ function buildShiftMenu_() {
     .addItem('シフト一覧を更新', 'menuRefreshShiftIndex')
     .addItem('店舗シフトを最新日付順に整える', 'menuSortStoreShiftSheets')
     .addItem('不要シートだけ削除', 'menuCleanupObsoleteSheets')
+    .addItem('雇用区分「パート」→「アルバイト」', 'menuUnifyEmploymentType')
     .addSeparator()
     .addItem('カレンダー権限を許可（初回）', 'authorizeCalendarOnce')
     .addToUi();
@@ -352,6 +353,52 @@ function menuPolishEmployeesSheet() {
   if (res !== ui.Button.YES) return;
   var summary = polishEmployeesSheet_();
   ui.alert('完了', summary, ui.ButtonSet.OK);
+}
+
+/**
+ * 雇用区分の「パート」を「アルバイト」に統一（社員行は触らない）
+ * clasp run / メニュー両用
+ */
+function unifyEmploymentTypes_() {
+  var sh = mustEmployeesSheet_();
+  var map = headerIndexMap_(getHeaders_(sh));
+  if (map.employment_type == null) throw new Error('雇用区分列がありません。');
+  var last = sh.getLastRow();
+  if (last < 2) return '変更なし（データ行なし）';
+  var range = sh.getRange(2, map.employment_type + 1, last - 1, 1);
+  var values = range.getValues();
+  var changed = 0;
+  for (var i = 0; i < values.length; i++) {
+    var v = String(values[i][0] || '').trim();
+    if (v === 'パート') {
+      values[i][0] = 'アルバイト';
+      changed++;
+    }
+  }
+  if (changed) range.setValues(values);
+  try {
+    var rule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['アルバイト', '社員'], true)
+      .setAllowInvalid(true)
+      .build();
+    range.setDataValidation(rule);
+  } catch (eVal) { /* ignore */ }
+  return '✓ パート → アルバイト に更新: ' + changed + '件';
+}
+
+function unifyPartToArbeitForDx() {
+  return unifyEmploymentTypes_();
+}
+
+function menuUnifyEmploymentType() {
+  var ui = SpreadsheetApp.getUi();
+  var res = ui.alert(
+    '雇用区分を統一',
+    '「パート」をすべて「アルバイト」に書き換えます。\n（「社員」はそのまま）\n実行しますか？',
+    ui.ButtonSet.YES_NO
+  );
+  if (res !== ui.Button.YES) return;
+  ui.alert('完了', unifyEmploymentTypes_(), ui.ButtonSet.OK);
 }
 
 /**
@@ -1757,6 +1804,7 @@ function handleStaffApiGet_(p, e) {
     var result;
     if (action === 'getBootstrap') result = getBootstrap();
     else if (action === 'loginWithEmail') result = loginWithEmail(p.email);
+    else if (action === 'resumeWorkspace') result = resumeWorkspace(p.email, p.storeId, p.yearMonth, p.skipAllStores);
     else if (action === 'staffVerifyIdentity') result = staffVerifyIdentity(p.byeCode, p.name);
     else if (action === 'staffSetPassword') result = staffSetPassword(p.byeCode, p.name, p.password);
     else if (action === 'staffLogin') result = staffLogin(p.byeCode, p.password);
@@ -1828,35 +1876,17 @@ function resolveAppTitle_() {
 }
 
 function getBootstrap() {
-  // 起動のたびに重い掃除・一覧再構築はしない（不要シートが残っているときだけ軽く削除）
-  try {
-    var ss = ss_();
-    var hit = false;
-    OBSOLETE_SHEETS.forEach(function (name) {
-      if (ss.getSheetByName(name)) hit = true;
-    });
-    ss.getSheets().forEach(function (sh) {
-      var n = sh.getName();
-      if (isYmShiftSheetName_(n) || isYmMemoSheetName_(n) || n === 'シフト' || n === 'シフトメモ') hit = true;
-    });
-    if (hit) cleanupObsoleteSheetsOnly_();
-  } catch (eClean) { /* ignore */ }
+  // 起動は極薄。店舗カタログは Script Cache 経由（無いときだけ読む）
   var allStores = [];
   try {
-    allStores = listAllStores_() || [];
+    allStores = listAllStoresCached_() || [];
   } catch (e) {
     allStores = [];
   }
-  if (!allStores.length) {
-    allStores = [
-      { store_id: 'S001', store_name: '経堂', area: '第7エリア', territory: '', sort_order: 0, active: true },
-      { store_id: 'S002', store_name: 'ひばりが丘', area: '第7エリア', territory: '', sort_order: 1, active: true }
-    ];
-  }
   return {
     ok: true,
-    appTitle: resolveAppTitle_(),
-    companyDomain: getSetting_('company_domain', 'okamoto-group.co.jp'),
+    appTitle: 'SHIFT:ONE',
+    companyDomain: 'okamoto-group.co.jp',
     sessionEmail: peekSessionEmail_(),
     serverYearMonth: Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM'),
     statuses: SHIFT_APP.STATUS.slice(),
@@ -1867,7 +1897,75 @@ function getBootstrap() {
 }
 
 function loginWithEmail(email) {
-  invalidateRequestCache_(['stores', 'knownStoreMap', 'employees']);
+  var res = buildLoginResult_(email, { ensureRegistered: true, includeAllStores: true, lookupProfile: true });
+  if (res && res.__acl) delete res.__acl;
+  return res;
+}
+
+/**
+ * 再訪用: ログイン情報 + 当月シフトを1往復で返す（運営利用の起動を速くする）
+ * skipAllStores: "1"/true なら全店舗カタログを省略（端末に店舗一覧がある再訪向け）
+ */
+function resumeWorkspace(email, storeId, yearMonth, skipAllStores) {
+  var skipCatalog = skipAllStores === true || skipAllStores === 1
+    || String(skipAllStores || '').toLowerCase() === '1'
+    || String(skipAllStores || '').toLowerCase() === 'true';
+
+  var login = buildLoginResult_(email, {
+    ensureRegistered: false,
+    includeAllStores: !skipCatalog,
+    lookupProfile: false
+  });
+
+  if (login.needsJurisdiction) {
+    return {
+      ok: true,
+      needsJurisdiction: true,
+      user: login,
+      storeId: '',
+      yearMonth: String(yearMonth || '').trim() || Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM'),
+      month: null
+    };
+  }
+
+  var stores = login.stores || [];
+  var sid = String(storeId || '').trim();
+  var allowed = false;
+  for (var i = 0; i < stores.length; i++) {
+    if (String(stores[i].store_id) === sid) { allowed = true; break; }
+  }
+  if (!allowed) sid = stores.length ? String(stores[0].store_id) : '';
+
+  var ym = String(yearMonth || '').trim();
+  if (!/^\d{4}-\d{2}$/.test(ym)) {
+    ym = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM');
+  }
+
+  var month = null;
+  if (sid) {
+    var acl = login.__acl || resolveAclCached_(login.email);
+    month = getShiftsCore_(sid, ym, login.email, acl, false);
+  }
+  if (login.__acl) delete login.__acl;
+
+  return {
+    ok: true,
+    needsJurisdiction: false,
+    user: login,
+    storeId: sid,
+    yearMonth: ym,
+    month: month
+  };
+}
+
+/**
+ * @param {object} opts
+ *   ensureRegistered: 社員登録シートへ行作成
+ *   includeAllStores: 全店舗カタログを返す（登録画面用）
+ *   lookupProfile: 従業員マスタから氏名補完
+ */
+function buildLoginResult_(email, opts) {
+  opts = opts || {};
   var normalized = normalizeEmail_(email);
   assertCompanyDomain_(normalized);
 
@@ -1876,42 +1974,117 @@ function loginWithEmail(email) {
     throw new Error('Googleログイン中のアカウント（' + active + '）と入力メールが一致しません。');
   }
 
-  // 初回登録＝メアドのみ（社員登録シートへ行を作成）
-  try { ensureManagerEmailRegistered_(normalized); } catch (eReg) { /* 後続で再試行 */ }
+  if (opts.ensureRegistered) {
+    try { ensureManagerEmailRegistered_(normalized); } catch (eReg) { /* 後続で再試行 */ }
+  }
 
-  var acl = resolveAcl_(normalized, { allowEmpty: true });
+  var acl = resolveAclCached_(normalized, { allowEmpty: true });
   var allStores = [];
-  try {
-    allStores = listAllStores_() || [];
-  } catch (eAll) {
-    allStores = [];
+  if (opts.includeAllStores !== false) {
+    try {
+      allStores = listAllStoresCached_() || [];
+    } catch (eAll) {
+      allStores = [];
+    }
+    if (!allStores.length) {
+      allStores = [
+        { store_id: 'S001', store_name: '経堂', area: '第7エリア', territory: '', sort_order: 0, active: true },
+        { store_id: 'S002', store_name: 'ひばりが丘', area: '第7エリア', territory: '', sort_order: 1, active: true }
+      ];
+    }
   }
-  if (!allStores.length) {
-    allStores = [
-      { store_id: 'S001', store_name: '経堂', area: '第7エリア', territory: '', sort_order: 0, active: true },
-      { store_id: 'S002', store_name: 'ひばりが丘', area: '第7エリア', territory: '', sort_order: 1, active: true }
-    ];
-  }
+
   var stores = listStoresForUser_(acl);
   var needsJur = !acl.isAdmin && stores.length === 0;
   var displayName = String(acl.displayName || '').trim();
   var byeCode = String(acl.byeCode || '').trim();
-  var profile = findEmployeeByEmail_(normalized);
-  if (!byeCode && profile && profile.bye_code) byeCode = String(profile.bye_code).trim();
+  if (opts.lookupProfile !== false && (!byeCode || !displayName)) {
+    var profile = findEmployeeByEmail_(normalized);
+    if (!byeCode && profile && profile.bye_code) byeCode = String(profile.bye_code).trim();
+    if (!displayName && profile && profile.name) displayName = String(profile.name).trim();
+  }
+
   return {
     ok: true,
     email: normalized,
-    name: needsJur ? displayName : (displayName || (profile ? profile.name : normalized.split('@')[0])),
+    name: needsJur ? displayName : (displayName || normalized.split('@')[0]),
     bye_code: byeCode,
     roleMax: acl.roleMax || '',
     isAdmin: acl.isAdmin,
     needsJurisdiction: needsJur,
     stores: stores,
     allStores: allStores,
-    areas: uniqueAreas_(allStores),
+    areas: uniqueAreas_(allStores.length ? allStores : stores),
     appTitle: resolveAppTitle_(),
     statuses: SHIFT_APP.STATUS.slice(),
-    weekdayLabels: SHIFT_APP.WEEKDAY_LABELS.slice()
+    weekdayLabels: SHIFT_APP.WEEKDAY_LABELS.slice(),
+    __acl: acl
+  };
+}
+
+function aclCacheKey_(email) {
+  return 'acl:v1:' + String(email || '').trim().toLowerCase();
+}
+
+function readAclCache_(email) {
+  try {
+    var raw = CacheService.getScriptCache().get(aclCacheKey_(email));
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (!obj || !obj.email) return null;
+    return obj;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeAclCache_(email, acl) {
+  try {
+    if (!acl) return;
+    var text = JSON.stringify(acl);
+    if (text.length > 90000) return;
+    CacheService.getScriptCache().put(aclCacheKey_(email), text, 180);
+  } catch (e) { /* ignore */ }
+}
+
+function invalidateAclCache_(email) {
+  try { CacheService.getScriptCache().remove(aclCacheKey_(email)); } catch (e) { /* ignore */ }
+}
+
+function resolveAclCached_(email, opt) {
+  var hit = readAclCache_(email);
+  if (hit) {
+    if (!(hit.needsJurisdiction && !(opt && opt.allowEmpty))) return hit;
+  }
+  var acl = resolveAcl_(email, opt);
+  writeAclCache_(email, acl);
+  return acl;
+}
+
+/** 手動計測用（Apps Script エディタから実行可） */
+function benchResumeWorkspace_() {
+  var email = peekSessionEmail_() || peekActiveUserEmail_();
+  if (!email) throw new Error('実行ユーザーのメールが取得できません');
+  var t0 = Date.now();
+  var loginOnly = buildLoginResult_(email, { ensureRegistered: false, includeAllStores: false, lookupProfile: false });
+  var t1 = Date.now();
+  var sid = (loginOnly.stores && loginOnly.stores[0]) ? loginOnly.stores[0].store_id : '';
+  var ym = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM');
+  var month = sid ? getShiftsCore_(sid, ym, loginOnly.email, loginOnly.__acl || resolveAclCached_(loginOnly.email), false) : null;
+  var t2 = Date.now();
+  var full = resumeWorkspace(email, sid, ym, true);
+  var t3 = Date.now();
+  return {
+    ok: true,
+    email: email,
+    storeId: sid,
+    yearMonth: ym,
+    msLoginBuild: t1 - t0,
+    msMonthRead: t2 - t1,
+    msResumeTotal: t3 - t0,
+    msResumeCall: t3 - t2,
+    shiftCount: month && month.shifts ? month.shifts.length : 0,
+    fromCache: !!(full.month && full.month.fromCache)
   };
 }
 
@@ -1930,7 +2103,8 @@ function saveJurisdiction(payload) {
   if (!byeCode) throw new Error('社員番号を入力してください。');
 
   invalidateRequestCache_(['stores', 'knownStoreMap']);
-  var all = listAllStores_() || [];
+  invalidateAclCache_(email);
+  var all = listAllStoresCached_() || [];
   var byId = {};
   var byName = {};
   all.forEach(function (s) {
@@ -1968,6 +2142,7 @@ function saveJurisdiction(payload) {
   }
 
   invalidateRequestCache_(['stores', 'knownStoreMap', 'employees']);
+  invalidateAclCache_(email);
   return loginWithEmail(email);
 }
 
@@ -2991,9 +3166,12 @@ function purgeWeeklyForEmployee_(storeId, employeeId) {
 function getShifts(storeId, yearMonth, userEmail, applyWeekly) {
   // 起動パスでは移行・一覧再構築を走らせない（重い／タイムアウトの原因）
   var email = resolveClientEmail_(userEmail);
-  var acl = resolveAcl_(email);
+  var acl = resolveAclCached_(email);
   assertStoreAccess_(acl, storeId, false);
+  return getShiftsCore_(storeId, yearMonth, email, acl, applyWeekly);
+}
 
+function getShiftsCore_(storeId, yearMonth, email, acl, applyWeekly) {
   var ym = String(yearMonth || '').trim();
   if (!/^\d{4}-\d{2}$/.test(ym)) throw new Error('年月は yyyy-MM 形式で指定してください。');
 
@@ -3003,6 +3181,15 @@ function getShifts(storeId, yearMonth, userEmail, applyWeekly) {
   else if (typeof applyWeekly === 'string') {
     var aw = String(applyWeekly).toLowerCase();
     if (aw === '1' || aw === 'true' || aw === 'yes') doApply = true;
+  }
+
+  if (!doApply) {
+    var cached = readShiftMonthCache_(storeId, ym);
+    if (cached) {
+      cached.canEdit = canEditStore_(acl, storeId);
+      cached.fromCache = true;
+      return cached;
+    }
   }
 
   var sh = mustShiftSheetForStore_(storeId);
@@ -3046,7 +3233,59 @@ function getShifts(storeId, yearMonth, userEmail, applyWeekly) {
     prefetchedMap: map
   });
   result.appliedFromWeekly = applied;
+  if (!doApply) writeShiftMonthCache_(storeId, ym, result);
   return result;
+}
+
+function shiftMonthCacheKey_(storeId, ym) {
+  return 'sm:' + String(storeId || '') + ':' + String(ym || '');
+}
+
+function readShiftMonthCache_(storeId, ym) {
+  try {
+    var raw = CacheService.getScriptCache().get(shiftMonthCacheKey_(storeId, ym));
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (!obj || !obj.ok || !Array.isArray(obj.employees) || !Array.isArray(obj.shifts)) return null;
+    return obj;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeShiftMonthCache_(storeId, ym, result) {
+  try {
+    var payload = {
+      ok: true,
+      storeId: result.storeId,
+      yearMonth: result.yearMonth,
+      canEdit: !!result.canEdit,
+      employees: result.employees || [],
+      shifts: result.shifts || [],
+      memos: result.memos || []
+    };
+    var text = JSON.stringify(payload);
+    // Script Cache は約100KB上限。大きい月はスキップ
+    if (text.length > 90000) return;
+    CacheService.getScriptCache().put(shiftMonthCacheKey_(storeId, ym), text, 180);
+  } catch (e) { /* ignore */ }
+}
+
+function invalidateShiftMonthCache_(storeId, ym) {
+  try {
+    var cache = CacheService.getScriptCache();
+    if (ym) {
+      cache.remove(shiftMonthCacheKey_(storeId, ym));
+      return;
+    }
+    // 年月不明時は近傍12か月を消す
+    var now = new Date();
+    for (var i = -6; i <= 6; i++) {
+      var d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      var keyYm = d.getFullYear() + '-' + pad2_(d.getMonth() + 1);
+      cache.remove(shiftMonthCacheKey_(storeId, keyYm));
+    }
+  } catch (eInv) { /* ignore */ }
 }
 
 function countFilledShiftsForYm_(values, map, storeId, ym) {
@@ -3200,7 +3439,23 @@ function readShifts_(storeId, ym, email, acl, opt) {
   for (var i = 0; i < values.length; i++) {
     var r = values[i];
     if (!shiftRowMatchesStore_(r, map, storeId)) continue;
-    var date = normalizeDate_(r[map.date]);
+    // Date 型だけ年月を先判定（シリアル番号などは normalize に任せる）
+    var rawDate = r[map.date];
+    if (Object.prototype.toString.call(rawDate) === '[object Date]' && !isNaN(rawDate.getTime())) {
+      if (rawDate.getFullYear() !== Number(ym.substring(0, 4)) || (rawDate.getMonth() + 1) !== Number(ym.substring(5, 7))) continue;
+    } else if (typeof rawDate === 'string') {
+      var rawStr = rawDate;
+      var yFast = ym.substring(0, 4);
+      var mNum = Number(ym.substring(5, 7));
+      var m2 = pad2_(mNum);
+      var maybeYm = rawStr.indexOf(ym) >= 0
+        || rawStr.indexOf(yFast + '/' + m2) >= 0
+        || rawStr.indexOf(yFast + '/' + mNum + '/') >= 0
+        || rawStr.indexOf(yFast + '-' + m2) >= 0;
+      // yyyy-MM / yyyy/M 形式で明らかに他月ならスキップ
+      if (!maybeYm && /^\d{4}[-/]\d{1,2}/.test(rawStr)) continue;
+    }
+    var date = normalizeDate_(rawDate);
     if (!date || date.substring(0, 7) !== ym) continue;
     // 従業員IDは従業員マスタの表記に揃える（先頭ゼロ落ちでも同じ人として扱う）
     var rowEmpId = resolveEmp(r[map.employee_id]);
@@ -3717,6 +3972,7 @@ function applyWeeklyToMonth_(storeId, ym, email, overwrite, opts) {
       sh.getRange(body.length + 2, 1, prevRows - body.length, Math.max(width, sh.getLastColumn())).clearContent();
     }
     invalidateRequestCache_(['employees']);
+    invalidateShiftMonthCache_(storeId, ym);
     return {
       created: created,
       filled: filledDays,
@@ -3895,6 +4151,8 @@ function upsertShift(payload) {
   if (rowIndex > 0) sh.getRange(rowIndex, 1, 1, colCount).setValues([rowVals]);
   else sh.appendRow(rowVals);
 
+  invalidateShiftMonthCache_(storeId, date.substring(0, 7));
+
   return {
     ok: true,
     shift: {
@@ -3966,6 +4224,7 @@ function clearMonthlyShifts(payload) {
       sh.getRange(body.length + 2, 1, prevRows - body.length, Math.max(width, sh.getLastColumn())).clearContent();
     }
     invalidateRequestCache_(['employees']);
+    invalidateShiftMonthCache_(storeId, ym);
   } finally {
     try { lock.releaseLock(); } catch (eRel) { /* ignore */ }
   }
@@ -4093,6 +4352,7 @@ function upsertShiftsBatch(payload) {
   }
 
   invalidateRequestCache_(['employees']);
+  invalidateShiftMonthCache_(storeId, ymBatch);
   // 一覧再構築・並べ替えはメニューから実行（毎回やると保存が固まる）
 
   return {
@@ -4135,6 +4395,9 @@ function deleteShift(shiftId, storeId, userEmail) {
         throw new Error('店舗が一致しないため削除できません。');
       }
       sh.deleteRow(r + 1);
+      var delDate = normalizeDate_(data[r][map.date]);
+      if (delDate) invalidateShiftMonthCache_(storeId, delDate.substring(0, 7));
+      else invalidateShiftMonthCache_(storeId, '');
       return { ok: true, deleted: id };
     }
   }
@@ -4530,7 +4793,7 @@ function resolveAclFromManagers_(email) {
   var map = headerIndexMap_(headers);
   var emailCol = map.email != null ? map.email : 0;
   var values = getDataRows_(sh);
-  var all = listAllStores_();
+  var all = listAllStoresCached_();
   var normalized = String(email || '').trim().toLowerCase();
 
   for (var i = 0; i < values.length; i++) {
@@ -4850,10 +5113,36 @@ function ensureRequestCache_() {
 function invalidateRequestCache_(keys) {
   var cache = ensureRequestCache_();
   (keys || []).forEach(function (k) {
-    if (k === 'stores') cache.stores = null;
-    else if (k === 'knownStoreMap') cache.knownStoreMap = null;
+    if (k === 'stores') {
+      cache.stores = null;
+      try { CacheService.getScriptCache().remove('allStores:v1'); } catch (eRm) { /* ignore */ }
+    } else if (k === 'knownStoreMap') cache.knownStoreMap = null;
     else if (k === 'employees') cache.employees = {};
   });
+}
+
+/** 店舗カタログ（リクエスト内＋ScriptCache 5分） */
+function listAllStoresCached_() {
+  var mem = ensureRequestCache_();
+  if (mem.stores && mem.stores.length) return mem.stores;
+  try {
+    var raw = CacheService.getScriptCache().get('allStores:v1');
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        mem.stores = parsed;
+        return parsed;
+      }
+    }
+  } catch (eRead) { /* ignore */ }
+  var stores = listAllStores_() || [];
+  try {
+    var text = JSON.stringify(stores);
+    if (text.length > 0 && text.length < 90000) {
+      CacheService.getScriptCache().put('allStores:v1', text, 300);
+    }
+  } catch (eWrite) { /* ignore */ }
+  return stores;
 }
 function findStoreCatalogSheet_() {
   var ss = ss_();
@@ -5137,7 +5426,7 @@ function uniqueTerritories_(stores, areaFilter) {
 }
 
 function listStoresForUser_(acl) {
-  var all = listAllStores_();
+  var all = listAllStoresCached_();
   if (acl.isAdmin) {
     return all.map(function (s) {
       return {
@@ -5278,7 +5567,7 @@ function listEmployeesDetailed_(storeId) {
   if (map.work_hours == null) map = ensureHeaderColumn_(sh, 'work_hours');
   requireHeaders_(map, ['name', 'primary_store_id']);
   var values = getDataRows_(sh);
-  var allStores = listAllStores_();
+  var allStores = listAllStoresCached_();
   var list = [];
   for (var i = 0; i < values.length; i++) {
     var row = values[i];

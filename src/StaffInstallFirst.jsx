@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppIconMark } from './AppIconMark.jsx';
 import { BrandTitle } from './BrandTitle.jsx';
-import { APP_TAGLINE } from './appBrand.js';
 import { IconLoginArrow } from './LoginHero.jsx';
 import { isInAppBrowser, isIos, isIosSafari } from './pwaEnv.js';
 
@@ -127,9 +126,6 @@ export function StaffInstallFirst() {
         <header className="staff-install-screen__hero">
           <AppIconMark size="hero" />
           <BrandTitle size="compact" />
-          <p className="staff-install-screen__lead">
-            {APP_TAGLINE.replace(/\n/g, '')}
-          </p>
         </header>
 
         <div className="staff-install-screen__card">

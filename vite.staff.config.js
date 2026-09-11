@@ -9,8 +9,18 @@ export default defineConfig({
   build: {
     outDir: 'dist-staff',
     emptyOutDir: true,
+    target: 'es2020',
+    cssCodeSplit: true,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       input: 'index.staff.html',
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) {
+            return 'react';
+          }
+        },
+      },
     },
   },
 });

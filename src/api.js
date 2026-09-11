@@ -1,6 +1,8 @@
 /** GAS API（GAS iframe / Vercel PWA 両対応） */
 
 const isGas = () => typeof google !== 'undefined' && google?.script?.run;
+/** GAS Web App 埋め込み時は true（単一スレッド競合を避ける判定用） */
+export const isGasHost = () => isGas();
 const PWA_HOST = import.meta.env.VITE_PWA_HOST === '1';
 const GAS_ENDPOINTS = [
   import.meta.env.VITE_GAS_ENDPOINT,
@@ -18,6 +20,7 @@ const HEAVY_ACTIONS = new Set([
   'upsertMemosBatch',
   'syncCalendarMonth',
   'clearCalendarMonth',
+  'resumeWorkspace',
 ]);
 const timeoutFor = (fnName) => (HEAVY_ACTIONS.has(fnName) ? 110000 : REQUEST_TIMEOUT_MS);
 
@@ -27,6 +30,14 @@ function actionParams(fnName, args) {
       return { action: 'getBootstrap' };
     case 'loginWithEmail':
       return { action: 'loginWithEmail', email: args[0] };
+    case 'resumeWorkspace':
+      return {
+        action: 'resumeWorkspace',
+        email: args[0],
+        storeId: args[1] || '',
+        yearMonth: args[2] || '',
+        skipAllStores: args[3] ? '1' : '0',
+      };
     case 'staffVerifyIdentity':
       return { action: 'staffVerifyIdentity', byeCode: args[0], name: args[1] };
     case 'staffSetPassword':
@@ -237,6 +248,8 @@ function run(fnName, ...args) {
 export const api = {
   getBootstrap: () => run('getBootstrap'),
   loginWithEmail: (email) => run('loginWithEmail', email),
+  resumeWorkspace: (email, storeId, yearMonth, skipAllStores) =>
+    run('resumeWorkspace', email, storeId || '', yearMonth || '', !!skipAllStores),
   staffVerifyIdentity: (byeCode, name) => run('staffVerifyIdentity', byeCode, name),
   staffSetPassword: (byeCode, name, password) => run('staffSetPassword', byeCode, name, password),
   staffLogin: (byeCode, password) => run('staffLogin', byeCode, password),

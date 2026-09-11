@@ -253,7 +253,7 @@ export function buildCellSharePayload(emp, date, shift, leaveLabelFn, dateLabelF
   };
 }
 
-export function useStoreChat({ storeId, user, enabled, sessionToken }) {
+export function useStoreChat({ storeId, user, enabled, sessionToken, pausePoll }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
@@ -306,13 +306,16 @@ export function useStoreChat({ storeId, user, enabled, sessionToken }) {
   }, [storeId, enabled, identity, token]);
 
   useEffect(() => {
-    if (!enabled || !storeId) return undefined;
+    if (!enabled || !storeId || pausePoll) return undefined;
+    const gas = typeof google !== 'undefined' && google?.script?.run;
+    // GAS はチャット輪詢が編集と競合しやすいので間隔を伸ばす
+    const ms = open ? (gas ? 30000 : 20000) : (gas ? 90000 : 60000);
     const id = window.setInterval(() => {
       load({ quiet: true });
-    }, open ? 12000 : 45000);
+    }, ms);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId, enabled, open, identity, token]);
+  }, [storeId, enabled, open, identity, token, pausePoll]);
 
   useEffect(() => {
     if (open) {

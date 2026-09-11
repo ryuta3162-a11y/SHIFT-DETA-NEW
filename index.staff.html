@@ -1,63 +1,29 @@
 <!doctype html>
-
 <html lang="ja">
-
   <head>
-
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
     <title>SHIFT:ONE</title>
-
     <meta name="theme-color" content="#051428" />
-
     <meta name="application-name" content="SHIFT:ONE" />
-
-    <meta name="msapplication-TileColor" content="#051428" />
-
-    <meta name="msapplication-TileImage" content="/icons/icon-256.png" />
-
     <meta name="apple-mobile-web-app-capable" content="yes" />
-
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
     <meta name="apple-mobile-web-app-title" content="SHIFT:ONE" />
-
     <link rel="manifest" href="/manifest.webmanifest" />
-
     <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
-
-    <link rel="icon" type="image/png" sizes="48x48" href="/icons/favicon-48.png" />
-
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-
-    <link rel="icon" type="image/png" sizes="256x256" href="/icons/icon-256.png" />
-
-    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
-
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
-
+    <style>
+      html,body,#root{margin:0;min-height:100%;background:#f4f7fb}
+      .boot{min-height:100dvh;display:grid;place-items:center;font-family:"Hiragino Sans","Segoe UI",Meiryo,sans-serif;color:#64748b;font-weight:700;font-size:14px}
+    </style>
     <script>
-
       if ('serviceWorker' in navigator) {
-
         navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function () {});
-
       }
-
     </script>
-
   </head>
-
   <body>
-
-    <div id="root"></div>
-
+    <div id="root"><div class="boot">読み込み中…</div></div>
     <script type="module" src="/src/staff-main.jsx"></script>
-
   </body>
-
 </html>
-
-

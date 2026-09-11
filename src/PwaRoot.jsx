@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { applyAccentTheme, readStoredAccentId } from './accentThemes.js';
 import { api } from './api.js';
-import { LoginLoadingPanel } from './LoginHero.jsx';
 import { isStandaloneApp } from './pwaEnv.js';
-import { StaffApp } from './StaffApp.jsx';
 import { StaffInstallFirst } from './StaffInstallFirst.jsx';
 import { StaffLoginShell } from './StaffLoginShell.jsx';
 import { STAFF_CODE_KEY, STAFF_TOKEN_KEY } from './staffAuth.js';
 
-/** PWA：アルバイト専用（インストール → ログイン → 閲覧） */
+const StaffApp = lazy(() => import('./StaffApp.jsx').then((m) => ({ default: m.StaffApp })));
+
+function initialPhase() {
+  if (!isStandaloneApp()) return 'install';
+  return localStorage.getItem(STAFF_TOKEN_KEY) ? 'loading' : 'login';
+}
+
+/** PWA：インストール → ログイン → 閲覧 */
 export default function PwaRoot() {
-  const [phase, setPhase] = useState('loading'); // loading | login | app
+  const [phase, setPhase] = useState(initialPhase); // install | loading | login | app
   const [user, setUser] = useState(null);
   const [storeId, setStoreId] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -24,18 +29,16 @@ export default function PwaRoot() {
   }, []);
 
   useEffect(() => {
-    if (!isStandaloneApp()) return undefined;
+    if (phase !== 'loading') return undefined;
     let cancelled = false;
     (async () => {
+      const staffToken = localStorage.getItem(STAFF_TOKEN_KEY) || '';
+      if (!staffToken) {
+        setPhase('login');
+        return;
+      }
       try {
-        await api.getBootstrap();
-        if (cancelled) return;
-        const staffToken = localStorage.getItem(STAFF_TOKEN_KEY) || '';
-        if (staffToken) {
-          await resumeStaffSession(staffToken);
-        } else {
-          setPhase('login');
-        }
+        await resumeStaffSession(staffToken);
       } catch (e) {
         if (cancelled) return;
         setLoginError(e.message || String(e));
@@ -43,7 +46,8 @@ export default function PwaRoot() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   function applyStaffUser(res) {
     localStorage.setItem(STAFF_TOKEN_KEY, res.sessionToken);
@@ -66,6 +70,7 @@ export default function PwaRoot() {
       localStorage.removeItem(STAFF_CODE_KEY);
       setLoginError(e.message || String(e));
       setPhase('login');
+      throw e;
     } finally {
       setBusy(false);
     }
@@ -120,28 +125,28 @@ export default function PwaRoot() {
     setPhase('login');
   }
 
-  if (!isStandaloneApp()) {
+  if (phase === 'install') {
     return <StaffInstallFirst />;
   }
 
   if (phase === 'loading') {
     return (
-      <div className="login-hero">
-        <div className="login-hero-inner login-hero-inner--splash">
-          <LoginLoadingPanel />
-        </div>
+      <div className="boot" style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', color: '#64748b', fontWeight: 700 }}>
+        ログイン中…
       </div>
     );
   }
 
   if (phase === 'app') {
     return (
-      <StaffApp
-        user={user}
-        storeId={storeId}
-        storeName={storeName}
-        onLogout={staffLogout}
-      />
+      <Suspense fallback={<div className="boot" style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', color: '#64748b', fontWeight: 700 }}>読み込み中…</div>}>
+        <StaffApp
+          user={user}
+          storeId={storeId}
+          storeName={storeName}
+          onLogout={staffLogout}
+        />
+      </Suspense>
     );
   }
 

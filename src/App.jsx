@@ -3,7 +3,7 @@ import { applyAccentTheme, readStoredAccentId } from './accentThemes.js';
 import { APP_TAGLINE } from './appBrand.js';
 import { IconLoginArrow, LoginBgDecor, LoginHeroCopy, LoginLoadingPanel } from './LoginHero.jsx';
 import { STAFF_TOKEN_KEY } from './staffAuth.js';
-import { api } from './api.js';
+import { api, isGasHost } from './api.js';
 import { readMonthCache, writeMonthCache, patchCachedEmployee } from './monthCache.js';
 import { StoreChatFab, StoreChatPanel, buildCellSharePayload, useStoreChat } from './StoreChat.jsx';
 import {
@@ -27,8 +27,70 @@ import {
 } from './leaveCodes.js';
 
 const EMAIL_KEY = 'shiftapp_user_email';
+const SESSION_KEY = 'shiftapp_session_v1';
 const STATUS_LABEL = { work: '出勤', off: '公休', pto: '有休', absent: '欠勤', undef: '未定' };
 const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
+
+/** Asia/Tokyo の yyyy-MM（ブート待ちなしで年月を決める） */
+function tokyoYearMonthNow() {
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+    }).format(new Date()).slice(0, 7);
+  } catch {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+}
+
+/** 再訪時に SHIFT:ONE を出さず月間へ直行するための端末セッション */
+function readSavedSession() {
+  try {
+    const email = localStorage.getItem(EMAIL_KEY) || '';
+    if (!email) return null;
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || s.email !== email || !Array.isArray(s.stores) || !s.stores.length) return null;
+    return s;
+  } catch {
+    return null;
+  }
+}
+
+function writeSavedSession(user, storeId) {
+  try {
+    if (!user?.email || !Array.isArray(user.stores) || !user.stores.length) return;
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      email: user.email,
+      name: user.name || '',
+      bye_code: user.bye_code || '',
+      roleMax: user.roleMax || '',
+      isAdmin: !!user.isAdmin,
+      stores: user.stores,
+      storeId: storeId || user.stores[0]?.store_id || '',
+      savedAt: Date.now(),
+    }));
+  } catch { /* ignore */ }
+}
+
+function clearSavedSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+}
+
+function sessionToUser(session) {
+  return {
+    email: session.email,
+    name: session.name || '',
+    bye_code: session.bye_code || '',
+    roleMax: session.roleMax || '',
+    isAdmin: !!session.isAdmin,
+    needsJurisdiction: false,
+    stores: session.stores || [],
+  };
+}
 /** 週間テンプレの並び順（月曜始まり）。weekday は 0=日〜6=土 */
 const WEEKDAY_TEMPLATE_ORDER = [1, 2, 3, 4, 5, 6, 0];
 /** 曜日ごとの文字色クラスを返す */
@@ -948,11 +1010,29 @@ const weeklySelCls = 'rounded-lg border border-slate-200 bg-white px-2 py-2 text
 const weeklyBulkBtnCls = 'px-3 py-1.5 rounded-lg text-[13px] font-bold border border-slate-300 bg-white text-slate-700 disabled:opacity-40';
 
 export default function App() {
-  const [authStep, setAuthStep] = useState('loading'); // loading | login | ready
+  const bootSession = useMemo(() => readSavedSession(), []);
+  const bootEmail = useMemo(() => {
+    try { return localStorage.getItem(EMAIL_KEY) || ''; } catch { return ''; }
+  }, []);
+  const [authStep, setAuthStep] = useState(() => (bootSession || bootEmail ? 'ready' : 'login'));
   const [settingsPanel, setSettingsPanel] = useState(null); // null | jurisdiction | employees | weekly
   const [meta, setMeta] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loginEmail, setLoginEmail] = useState('');
+  const [user, setUser] = useState(() => {
+    if (bootSession) return sessionToUser(bootSession);
+    if (bootEmail) {
+      return {
+        email: bootEmail,
+        name: '',
+        bye_code: '',
+        roleMax: '',
+        isAdmin: false,
+        needsJurisdiction: false,
+        stores: [],
+      };
+    }
+    return null;
+  });
+  const [loginEmail, setLoginEmail] = useState(() => bootSession?.email || bootEmail || '');
   const [loginError, setLoginError] = useState('');
   const [managerAuthMode, setManagerAuthMode] = useState('login'); // register | login
   const [regDisplayName, setRegDisplayName] = useState('');
@@ -971,18 +1051,24 @@ export default function App() {
   const progressHideTimer = useRef(null);
   const msgTimer = useRef(null);
 
-  const [storeId, setStoreId] = useState('');
-  const [yearMonth, setYearMonth] = useState('');
+  const [storeId, setStoreId] = useState(() => (
+    bootSession ? (bootSession.storeId || bootSession.stores?.[0]?.store_id || '') : ''
+  ));
+  const [yearMonth, setYearMonth] = useState(() => tokyoYearMonthNow());
 
   // jurisdiction form
-  const [displayName, setDisplayName] = useState('');
-  const [byeCode, setByeCode] = useState('');
+  const [displayName, setDisplayName] = useState(() => bootSession?.name || '');
+  const [byeCode, setByeCode] = useState(() => bootSession?.bye_code || '');
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedTerritory, setSelectedTerritory] = useState('');
   const [selectedStores, setSelectedStores] = useState([]);
 
   // employees
-  const [employees, setEmployees] = useState([]);
+  const [employees, setEmployees] = useState(() => {
+    if (!bootSession) return [];
+    const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+    return readMonthCache(sid, tokyoYearMonthNow())?.employees || [];
+  });
   const [empForm, setEmpForm] = useState({ employee_id: '', name: '', bye_code: '', employment_type: '社員', work_hours: 4 });
   const [empFormOpen, setEmpFormOpen] = useState(false);
 
@@ -995,9 +1081,21 @@ export default function App() {
   const [weeklyBulkStart, setWeeklyBulkStart] = useState('10:00');
 
   // monthly grid
-  const [shifts, setShifts] = useState([]);
-  const [memos, setMemos] = useState([]);
-  const [canEdit, setCanEdit] = useState(false);
+  const [shifts, setShifts] = useState(() => {
+    if (!bootSession) return [];
+    const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+    return readMonthCache(sid, tokyoYearMonthNow())?.shifts || [];
+  });
+  const [memos, setMemos] = useState(() => {
+    if (!bootSession) return [];
+    const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+    return readMonthCache(sid, tokyoYearMonthNow())?.memos || [];
+  });
+  const [canEdit, setCanEdit] = useState(() => {
+    if (!bootSession) return false;
+    const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+    return !!readMonthCache(sid, tokyoYearMonthNow())?.canEdit;
+  });
   const [dirtyKeys, setDirtyKeys] = useState(() => new Set());
   const [dirtyMemoKeys, setDirtyMemoKeys] = useState(() => new Set());
   const [focusCell, setFocusCell] = useState(null); // { employee_id, date, layer?: 'shift'|'memo', editing?: boolean }
@@ -1020,8 +1118,23 @@ export default function App() {
   const [ptoTemplateDraft, setPtoTemplateDraft] = useState({ start_time: '10:00', end_time: '19:00', break_minutes: 60 });
   const [ptoTemplateTick, setPtoTemplateTick] = useState(0);
   const [saveState, setSaveState] = useState('idle'); // idle | pending | saving | saved | error
-  const [monthlyLoading, setMonthlyLoading] = useState(false);
-  const [monthlyRefreshing, setMonthlyRefreshing] = useState(false);
+  const [monthlyLoading, setMonthlyLoading] = useState(() => {
+    if (bootSession) {
+      const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+      const cached = readMonthCache(sid, tokyoYearMonthNow());
+      return !(cached && cached.employees && cached.employees.length);
+    }
+    // 保存メールあり＝再訪。セッション前でも月間ロード画面から開始
+    return !!bootEmail;
+  });
+  const [monthlyRefreshing, setMonthlyRefreshing] = useState(() => {
+    if (!bootSession) return false;
+    const sid = bootSession.storeId || bootSession.stores?.[0]?.store_id || '';
+    const cached = readMonthCache(sid, tokyoYearMonthNow());
+    return !!(cached && cached.employees && cached.employees.length);
+  });
+  const [panelLoading, setPanelLoading] = useState(false);
+  const [weeklyReady, setWeeklyReady] = useState(false);
   const [empDragId, setEmpDragId] = useState(null);
   const [empDragOverId, setEmpDragOverId] = useState(null);
   const empDragRef = useRef(null);
@@ -1056,7 +1169,16 @@ export default function App() {
   const accountInitial = useMemo(() => initialOf(user?.name || user?.email), [user]);
   const domain = meta?.companyDomain || 'okamoto-group.co.jp';
   const storeName = user?.stores?.find((s) => s.store_id === storeId)?.store_name || '';
-  const chat = useStoreChat({ storeId, user, enabled: authStep === 'ready' && !!storeId });
+  /** 月間の最新取得が終わるまで編集させない（空欄誤操作防止） */
+  const sheetLocked = monthlyLoading || monthlyRefreshing;
+  const sheetCanEdit = canEdit && !sheetLocked;
+  const weeklyCanEdit = canEdit && weeklyReady && !panelLoading;
+  const chat = useStoreChat({
+    storeId,
+    user,
+    enabled: authStep === 'ready' && !!storeId,
+    pausePoll: dirtyKeys.size + dirtyMemoKeys.size > 0,
+  });
 
   useEffect(() => {
     applyAccentTheme(readStoredAccentId());
@@ -1139,7 +1261,7 @@ export default function App() {
   }, [authStep, user?.stores, storeId, yearMonth]);
 
   function scheduleWeeklySave() {
-    if (!canEdit) return;
+    if (!canEdit || !weeklyLoadedRef.current) return;
     if (weeklySaveTimer.current) clearTimeout(weeklySaveTimer.current);
     weeklySaveTimer.current = setTimeout(() => saveWeekly({ quiet: true }), 400);
   }
@@ -1197,7 +1319,7 @@ export default function App() {
 
   // タブのタイトルを店舗名と年月に合わせる
   useEffect(() => {
-    if (authStep !== 'app' || !yearMonth) return;
+    if (authStep !== 'ready' || !yearMonth) return;
     const [yStr, mStr] = String(yearMonth).split('-');
     const y = Number(yStr) || '';
     const m = Number(mStr) || '';
@@ -1208,7 +1330,7 @@ export default function App() {
 
   // Ctrl+P と印刷イベントに合わせて印刷用の設定を切り替える
   useEffect(() => {
-    if (authStep !== 'app') return undefined;
+    if (authStep !== 'ready') return undefined;
     const onBeforePrint = () => {
       if (!employees.length || !yearMonth) return;
       const n = Math.max(employees.length, 1);
@@ -1244,28 +1366,43 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
+    const saved = localStorage.getItem(EMAIL_KEY) || '';
+    const localYm = tokyoYearMonthNow();
+    setYearMonth((prev) => prev || localYm);
+    if (saved) setLoginEmail(saved);
+    localStorage.removeItem(STAFF_TOKEN_KEY);
+
     (async () => {
       try {
+        if (saved) {
+          // 再訪は 1 往復（権限+当月）で起動。getBootstrap は後追い
+          await login(saved, { serverYearMonth: localYm }, { quietResume: true });
+          if (cancelled) return;
+          api.getBootstrap()
+            .then((boot) => {
+              if (cancelled || !boot) return;
+              setMeta(boot);
+              if (boot.serverYearMonth) setYearMonth((ym) => ym || boot.serverYearMonth);
+            })
+            .catch(() => {});
+          return;
+        }
+
         const boot = await api.getBootstrap();
         if (cancelled) return;
         setMeta(boot);
-        setYearMonth(boot.serverYearMonth || '');
+        setYearMonth(boot.serverYearMonth || localYm);
         if (boot.sessionEmail) setLoginEmail(boot.sessionEmail);
-        // GAS 側で無効になったトークンは捨てる
-        localStorage.removeItem(STAFF_TOKEN_KEY);
-        const saved = localStorage.getItem(EMAIL_KEY) || '';
-        if (saved) {
-          await login(saved, boot);
-        } else {
-          setAuthStep('login');
-        }
+        setAuthStep('login');
       } catch (e) {
         if (cancelled) return;
         setLoginError(e.message || String(e));
         setAuthStep('login');
+        clearSavedSession();
       }
     })();
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** 画面上部に短いメッセージを出す */
@@ -1354,6 +1491,7 @@ export default function App() {
     resetWorkspaceState();
     setStoreId(sid);
     setAccountOpen(false);
+    if (user) writeSavedSession(user, sid);
     if (ym) await loadMonthly(sid, ym, { quiet: true });
   }
 
@@ -1369,27 +1507,72 @@ export default function App() {
     }
   }
 
-  async function login(email, bootMeta = meta) {
+  async function login(email, bootMeta = meta, opts = {}) {
+    const quietResume = !!opts.quietResume;
     setLoginError('');
-    setBusyText('ログイン中…');
-    setBusy(true);
-    startProgress();
+    if (!quietResume) {
+      setBusyText('ログイン中…');
+      setBusy(true);
+      startProgress();
+    }
     try {
       localStorage.removeItem(STAFF_TOKEN_KEY);
+      const preferred = storeIdRef.current;
+      const ymHint = (bootMeta || meta)?.serverYearMonth || yearMonth || tokyoYearMonthNow();
+
+      if (quietResume) {
+        const pack = await api.resumeWorkspace(email, preferred, ymHint, true);
+        if (pack.needsJurisdiction || pack.user?.needsJurisdiction) {
+          throw new Error('まだ登録が完了していません。「登録」タブから入力してください。');
+        }
+        const res = pack.user;
+        localStorage.setItem(EMAIL_KEY, res.email);
+        setUser((prev) => ({
+          ...res,
+          // 再訪では全店舗カタログを省略するため、端末に残っているものがあれば維持
+          allStores: (Array.isArray(res.allStores) && res.allStores.length)
+            ? res.allStores
+            : (prev?.allStores || []),
+          areas: (Array.isArray(res.areas) && res.areas.length)
+            ? res.areas
+            : (prev?.areas || []),
+        }));
+        const sid = pack.storeId || preferred || res.stores?.[0]?.store_id || '';
+        const ym = pack.yearMonth || ymHint;
+        setStoreId(sid);
+        setYearMonth(ym);
+        setAuthStep('ready');
+        setDisplayName(res.name || '');
+        setByeCode(res.bye_code || '');
+        setSettingsPanel(null);
+        writeSavedSession(res, sid);
+        if (sid && ym) {
+          await loadMonthly(sid, ym, {
+            quiet: true,
+            userEmail: res.email,
+            prefetched: pack.month || null,
+          });
+        }
+        return;
+      }
+
       const res = await api.loginWithEmail(email);
       if (res.needsJurisdiction) {
         throw new Error('まだ登録が完了していません。「登録」タブから入力してください。');
       }
       localStorage.setItem(EMAIL_KEY, res.email);
       setUser(res);
-      const firstStore = res.stores?.[0]?.store_id || '';
-      const ym = (bootMeta || meta)?.serverYearMonth || yearMonth;
+      const firstStore = (preferred && res.stores?.some((s) => s.store_id === preferred))
+        ? preferred
+        : (res.stores?.[0]?.store_id || '');
+      const ym = ymHint;
       setStoreId(firstStore);
       setYearMonth(ym);
       setAuthStep('ready');
       setDisplayName(res.name || '');
       setByeCode(res.bye_code || '');
       setSettingsPanel(null);
+      writeSavedSession(res, firstStore);
       if (firstStore && ym) {
         setBusy(false);
         await loadMonthly(firstStore, ym, { quiet: true, userEmail: res.email });
@@ -1398,9 +1581,13 @@ export default function App() {
       setLoginError(e.message || String(e));
       setAuthStep('login');
       localStorage.removeItem(EMAIL_KEY);
+      clearSavedSession();
+      setUser(null);
     } finally {
-      setBusy(false);
-      finishProgress();
+      if (!quietResume) {
+        setBusy(false);
+        finishProgress();
+      }
     }
   }
 
@@ -1443,6 +1630,7 @@ export default function App() {
       setYearMonth(ym);
       setAuthStep('ready');
       setSettingsPanel(null);
+      writeSavedSession(res, firstStore);
       if (firstStore && ym) {
         setBusy(false);
         await loadMonthly(firstStore, ym, { quiet: true, userEmail: res.email });
@@ -1452,6 +1640,7 @@ export default function App() {
       setLoginError(e.message || String(e));
       setAuthStep('login');
       localStorage.removeItem(EMAIL_KEY);
+      clearSavedSession();
     } finally {
       setBusy(false);
     }
@@ -1462,6 +1651,7 @@ export default function App() {
     if (weeklySaveTimer.current) clearTimeout(weeklySaveTimer.current);
     localStorage.removeItem(EMAIL_KEY);
     localStorage.removeItem(STAFF_TOKEN_KEY);
+    clearSavedSession();
     resetWorkspaceState();
     setUser(null);
     setStoreId('');
@@ -1746,14 +1936,17 @@ export default function App() {
       if (weeklyEditSeq.current === seqBefore) {
         weeklyRef.current = res.weekly || [];
         setWeekly(res.weekly || []);
+        weeklyLoadedRef.current = true;
+        setWeeklyReady(true);
+        if (!weeklyEmpIdRef.current && res.employees?.[0]) selectWeeklyEmp(res.employees[0].employee_id);
       }
-      weeklyLoadedRef.current = true;
-      if (!weeklyEmpIdRef.current && res.employees?.[0]) selectWeeklyEmp(res.employees[0].employee_id);
     };
     try {
       if (opts.quiet) await run();
       else await withBusy('読み込み中…', run);
     } catch (e) {
+      weeklyLoadedRef.current = false;
+      setWeeklyReady(false);
       notify(e.message || String(e), 'err');
     }
   }
@@ -1776,7 +1969,7 @@ export default function App() {
 
   /** 平日一括・全休など、まとめて設定する */
   function applyWeeklyBulk(kind) {
-    if (!weeklyEmpId || !canEdit) return;
+    if (!weeklyEmpId || !canEdit || !weeklyLoadedRef.current || !weeklyReady) return;
     const offPatch = { status: 'off', start_time: '', end_time: '', leave_code: '' };
     if (kind === 'all-off') {
       WEEKDAY_TEMPLATE_ORDER.forEach((wd) => setWeeklyCell(weeklyEmpId, wd, offPatch));
@@ -1806,6 +1999,7 @@ export default function App() {
   }
 
   function setWeeklyCell(empId, weekday, patch) {
+    if (!weeklyLoadedRef.current || !weeklyReady) return;
     const prev = weeklyRef.current || [];
     const idx = prev.findIndex((w) => w.employee_id === empId && Number(w.weekday) === weekday);
     let next;
@@ -2086,9 +2280,9 @@ export default function App() {
 
     const run = async () => {
       // 週間テンプレートの自動反映はしない（明示操作のときだけ）
-      const res = await api.getShifts(sid, ym, email, false);
-      applyPayload(res, { notifyOk: !fromCache });
-      scheduleMonthPrefetch(sid, ym, email);
+      const res = opts.prefetched || await api.getShifts(sid, ym, email, false);
+      applyPayload(res, { notifyOk: !fromCache && !opts.prefetched });
+      if (!opts.prefetched) scheduleMonthPrefetch(sid, ym, email);
     };
 
     try {
@@ -2114,6 +2308,8 @@ export default function App() {
 
   function scheduleMonthPrefetch(sid, ym, email) {
     if (!sid || !ym || !email) return;
+    // GAS は単一スレッド。前後月プリフェッチが保存・入力と競合して体感が遅くなる
+    if (isGasHost()) return;
     const neighbors = [shiftYearMonth(ym, -1), shiftYearMonth(ym, 1)];
     const kick = () => {
       neighbors.forEach((nym) => {
@@ -2558,12 +2754,12 @@ export default function App() {
     }
     selectShiftCell(eid, date);
     window.setTimeout(() => {
-      if (canEdit) openShiftEditor(eid, date);
+      if (sheetCanEdit) openShiftEditor(eid, date);
     }, 80);
   }
 
   function openShiftEditor(employeeId, date) {
-    if (!canEdit || busy) return;
+    if (!sheetCanEdit || busy) return;
     setEmpEditorId(null);
     setLeaveQuery('');
     setFocusCell({ employee_id: employeeId, date, layer: 'shift', editing: false });
@@ -2572,7 +2768,7 @@ export default function App() {
 
   /** セルを選択する（ダブルクリックで編集に入る） */
   function selectShiftCell(employeeId, date) {
-    if (!canEdit) return;
+    if (!sheetCanEdit) return;
     startTransition(() => {
       setEmpEditorId(null);
       setShiftEditor(null);
@@ -2587,7 +2783,7 @@ export default function App() {
   }
 
   function beginShiftEdit(employeeId, date, seed) {
-    if (!canEdit || busy) return;
+    if (!sheetCanEdit || busy) return;
     setEmpEditorId(null);
     setShiftEditor(null);
     const s = getCellShift(employeeId, date);
@@ -2664,7 +2860,7 @@ export default function App() {
   }
 
   function handleShiftCellKeyDown(ev, employeeId, date) {
-    if (!canEdit || busy) return;
+    if (!sheetCanEdit || busy) return;
     if (ev.key === 'Enter' || ev.key === 'F2') {
       ev.preventDefault();
       openShiftEditor(employeeId, date);
@@ -2731,7 +2927,7 @@ export default function App() {
    * 1行目から順に、対象スタッフの日付へ割り当てる
    */
   function applySpreadsheetPaste(text, origin = focusCell) {
-    if (!canEdit || busy || !origin || !employees.length || !visibleDays.length) return false;
+    if (!sheetCanEdit || busy || !origin || !employees.length || !visibleDays.length) return false;
     const grid = parseClipboardGrid(text);
     if (!grid.length) return false;
     pushUndoSnapshot();
@@ -2892,7 +3088,7 @@ export default function App() {
   }
 
   function handleSheetPaste(ev) {
-    if (!canEdit || busy || !focusCell) return;
+    if (!sheetCanEdit || busy || !focusCell) return;
     const text = ev.clipboardData?.getData('text/plain');
     if (text == null || text === '') return;
     const grid = parseClipboardGrid(text);
@@ -2910,7 +3106,7 @@ export default function App() {
   }
 
   function openEmpEditor(employeeId) {
-    if (!canEdit || busy) return;
+    if (!sheetCanEdit || busy) return;
     setShiftEditor(null);
     setFocusCell(null);
     setEmpEditorId(employeeId);
@@ -3542,33 +3738,37 @@ export default function App() {
       }
       return;
     }
-    // パネルを開くタイミングで必要なデータを読み込む
-    setSettingsPanel(panel);
+    // パネルを開くタイミングで必要なデータを読み込む（完了まで入力不可）
     if (panel === 'employees' || panel === 'weekly') {
+      if (panel === 'weekly') {
+        weeklyLoadedRef.current = false;
+        setWeeklyReady(false);
+        weeklyEditSeq.current += 1;
+        weeklyTouchedEmps.current = new Set();
+        weeklyRef.current = [];
+        setWeekly([]);
+        setWeeklyStatus('idle');
+        weeklyEmpIdRef.current = '';
+        setWeeklyEmpId('');
+      }
+      setPanelLoading(true);
+      setSettingsPanel(panel);
       startProgress();
-      const task = panel === 'employees'
-        ? loadEmployees(storeId, { quiet: true })
-        : loadWeekly(storeId, { quiet: true });
-      Promise.resolve(task).finally(() => finishProgress());
+      try {
+        if (panel === 'employees') await loadEmployees(storeId, { quiet: true });
+        else await loadWeekly(storeId, { quiet: true });
+      } finally {
+        finishProgress();
+        setPanelLoading(false);
+      }
+      return;
     }
+    setSettingsPanel(panel);
   }
 
   function closeSettings() {
     setSettingsPanel(null);
     setAccountOpen(false);
-  }
-
-  if (authStep === 'loading') {
-    return (
-      <div className="login-hero">
-        <div className="login-hero-bg" aria-hidden="true">
-          <LoginBgDecor />
-        </div>
-        <div className="login-hero-inner login-hero-inner--splash">
-          <LoginLoadingPanel />
-        </div>
-      </div>
-    );
   }
 
   if (authStep === 'login') {
@@ -3578,7 +3778,7 @@ export default function App() {
           <LoginBgDecor />
         </div>
         {busy && (
-          <div className="fixed inset-0 z-[100] bg-[#000b2b]/75 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] bg-[#000b2b] flex items-center justify-center p-6">
             <LoginLoadingPanel message={busyText || '処理中…'} />
           </div>
         )}
@@ -3772,7 +3972,7 @@ export default function App() {
               {canEdit && (
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || sheetLocked}
                   onClick={copyByeBye}
                   className="app-kintai-btn"
                   title="キンタイコピー（押したら自動コピー）"
@@ -3790,7 +3990,7 @@ export default function App() {
                 <div className="app-tpl-dock" role="group" aria-label="テンプレート">
                   <button
                     type="button"
-                    disabled={busy}
+                    disabled={busy || sheetLocked}
                     onClick={applyWeeklyTemplateToMonth}
                     className="app-tpl-dock__btn"
                     title="週間テンプレートを表示中の月に反映"
@@ -3799,7 +3999,7 @@ export default function App() {
                   </button>
                   <button
                     type="button"
-                    disabled={busy}
+                    disabled={busy || sheetLocked}
                     onClick={clearMonthShifts}
                     className="app-tpl-dock__btn app-tpl-dock__btn--danger"
                     title="表示中の月のシフトをすべて白紙にする"
@@ -3981,7 +4181,13 @@ export default function App() {
             </div>
           ) : (
             <Fragment>
-            <div ref={sheetAreaRef} className="flex-1 min-h-0 overflow-scroll sheet-scroll bg-white" onPaste={handleSheetPaste}>
+            <div ref={sheetAreaRef} className="relative flex-1 min-h-0 overflow-scroll sheet-scroll bg-white" onPaste={handleSheetPaste}>
+              {monthlyRefreshing ? (
+                <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-white/80 pointer-events-auto" aria-busy="true">
+                  <div className="h-9 w-9 rounded-full border-[3px] border-slate-200 border-t-[var(--acc-500)] animate-spin" />
+                  <p className="font-semibold text-sm text-slate-600">最新データを同期中…</p>
+                </div>
+              ) : null}
               <table className="sheet-table" style={{ tableLayout: 'fixed', width: sheetTableW }}>
                 <colgroup>
                   <col style={{ width: NAME_COL_W }} />
@@ -4089,7 +4295,7 @@ export default function App() {
                             )}
                             <button
                               type="button"
-                              disabled={!canEdit}
+                              disabled={!sheetCanEdit}
                               onPointerDown={(ev) => onEmpNamePointerDown(ev, e.employee_id)}
                               onDoubleClick={(ev) => {
                                 ev.preventDefault();
@@ -4193,7 +4399,7 @@ export default function App() {
                               ) : (
                                 <button
                                   type="button"
-                                  disabled={busy || !canEdit}
+                                  disabled={busy || !sheetCanEdit}
                                   tabIndex={0}
                                   data-shift-cell={`${e.employee_id}__${date}`}
                                   onClick={() => selectShiftCell(e.employee_id, date)}
@@ -4235,11 +4441,11 @@ export default function App() {
                         >
                           <button
                             type="button"
-                            disabled={!canEdit}
+                            disabled={!sheetCanEdit}
                             onPointerDown={(ev) => onEmpNamePointerDown(ev, e.employee_id)}
-                            className={`w-full h-full px-3 text-left text-[11px] font-bold tracking-wide text-zinc-500 hover:bg-[#eeeeee] disabled:opacity-60 outline-none select-none ${empDragId ? 'cursor-grabbing' : canEdit ? 'cursor-grab' : ''}`}
+                            className={`w-full h-full px-3 text-left text-[11px] font-bold tracking-wide text-zinc-500 hover:bg-[#eeeeee] disabled:opacity-60 outline-none select-none ${empDragId ? 'cursor-grabbing' : sheetCanEdit ? 'cursor-grab' : ''}`}
                             style={{ height: MEMO_ROW_H, touchAction: empDragId ? 'none' : 'manipulation' }}
-                            title={canEdit ? '長押しして上下に並べ替え' : ''}
+                            title={sheetCanEdit ? '長押しして上下に並べ替え' : ''}
                           >
                             メモ
                           </button>
@@ -4262,7 +4468,7 @@ export default function App() {
                             >
                               {editing ? (
                                 <textarea
-                                  disabled={busy || !canEdit}
+                                  disabled={busy || !sheetCanEdit}
                                   value={body}
                                   rows={MEMO_MAX_LINES}
                                   autoFocus
@@ -4294,7 +4500,7 @@ export default function App() {
                               ) : (
                                 <button
                                   type="button"
-                                  disabled={busy || !canEdit}
+                                  disabled={busy || !sheetCanEdit}
                                   onClick={() => {
                                     startTransition(() => {
                                       setShiftEditor(null);
@@ -4647,7 +4853,7 @@ export default function App() {
                   <div className="pt-1 border-t border-[#c5d4e0]">
                     <button
                       type="button"
-                      disabled={busy || !canEdit}
+                      disabled={busy || !sheetCanEdit}
                       onClick={() => shareCellToChat(shiftEditor.employee_id, shiftEditor.date)}
                       className="sheet-chip h-10 px-4 sheet-chip-off w-full"
                     >
@@ -4659,7 +4865,7 @@ export default function App() {
                     <p className="text-[16px] font-bold text-slate-800">MEMO</p>
                     <textarea
                       value={String(editorMemo?.body || '')}
-                      disabled={busy || !canEdit}
+                      disabled={busy || !sheetCanEdit}
                       onChange={(ev) => patchMemoLocal(shiftEditor.employee_id, shiftEditor.date, ev.target.value)}
                       rows={MEMO_MAX_LINES}
                       placeholder={'TF報告会15時参加\n18時経堂IN\n19時MT外部'}
@@ -4700,9 +4906,17 @@ export default function App() {
                     <button type="button" onClick={closeSettings} className="text-[14px] font-bold text-white/90 px-3 py-1 rounded-lg hover:bg-white/15">閉じる</button>
                   )}
                 </div>
-                <div className="km-dialog-body space-y-4">
+                <div className="km-dialog-body space-y-4 relative">
+                  {panelLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-16 text-slate-500" aria-busy="true">
+                      <div className="h-9 w-9 rounded-full border-[3px] border-slate-200 border-t-[var(--acc-500)] animate-spin" />
+                      <p className="font-semibold text-sm">
+                        {settingsPanel === 'weekly' ? '週間テンプレートを読み込み中…' : 'スタッフ情報を読み込み中…'}
+                      </p>
+                    </div>
+                  ) : null}
 
-                  {settingsPanel === 'jurisdiction' && (
+                  {!panelLoading && settingsPanel === 'jurisdiction' && (
                     <>
                       <div className="grid sm:grid-cols-2 gap-3">
                         <label className={labelCls}>
@@ -4763,7 +4977,7 @@ export default function App() {
                     </>
                   )}
 
-                  {settingsPanel === 'employees' && (
+                  {!panelLoading && settingsPanel === 'employees' && (
                     <>
                       {empFormOpen ? (
                         <div className="app-section-card space-y-4">
@@ -4881,9 +5095,14 @@ export default function App() {
                     </>
                   )}
 
-                  {settingsPanel === 'weekly' && (
+                  {!panelLoading && settingsPanel === 'weekly' && (
                     <>
-                      {!employees.length ? (
+                      {!weeklyReady ? (
+                        <div className="flex flex-col items-center justify-center gap-3 py-16 text-slate-500" aria-busy="true">
+                          <div className="h-9 w-9 rounded-full border-[3px] border-slate-200 border-t-[var(--acc-500)] animate-spin" />
+                          <p className="font-semibold text-sm">週間テンプレートを読み込み中…</p>
+                        </div>
+                      ) : !employees.length ? (
                         <p className={panelSubCls}>先に従業員を登録してください</p>
                       ) : (
                         <>
@@ -4897,18 +5116,18 @@ export default function App() {
                               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 space-y-2">
                                 <div className="flex flex-wrap items-center gap-2">
                                   <span className="text-[13px] font-bold text-slate-500">基本の勤務</span>
-                                  <select disabled={!canEdit} className={weeklySelCls} value={weeklyBulkStart} onChange={(e) => setWeeklyBulkStart(snapToStep(e.target.value, TIME_STEP_MIN))}>
+                                  <select disabled={!weeklyCanEdit} className={weeklySelCls} value={weeklyBulkStart} onChange={(e) => setWeeklyBulkStart(snapToStep(e.target.value, TIME_STEP_MIN))}>
                                     {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                   </select>
                                   <span className="text-slate-400 font-bold">〜</span>
                                   <span className="text-[15px] font-bold tabular-nums text-slate-800">{addHoursToHm(weeklyBulkStart, weeklySpan)}</span>
-                                  <select disabled={!canEdit} className={weeklySelCls} value={String(weeklySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="拘束時間（休憩込み）">
+                                  <select disabled={!weeklyCanEdit} className={weeklySelCls} value={String(weeklySpan)} onChange={(e) => setWeeklySpanH(Number(e.target.value))} title="拘束時間（休憩込み）">
                                     {WEEKLY_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}時間</option>)}
                                   </select>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
-                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('weekday')} className={weeklyBulkBtnCls}>平日を出勤</button>
-                                  <button type="button" disabled={!canEdit} onClick={() => applyWeeklyBulk('all-off')} className={weeklyBulkBtnCls}>全部休みに戻す</button>
+                                  <button type="button" disabled={!weeklyCanEdit} onClick={() => applyWeeklyBulk('weekday')} className={weeklyBulkBtnCls}>平日を出勤</button>
+                                  <button type="button" disabled={!weeklyCanEdit} onClick={() => applyWeeklyBulk('all-off')} className={weeklyBulkBtnCls}>全部休みに戻す</button>
                                 </div>
                               </div>
                               <div>
@@ -4925,22 +5144,22 @@ export default function App() {
                                     <div key={wd} className="grid grid-cols-[1.75rem_4.75rem_1fr] items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
                                       <div className={`text-[16px] font-black ${weekdayTextClass(wd)}`}>{label}</div>
                                       <div className="flex gap-1">
-                                        <button type="button" disabled={!canEdit} title="出勤" onClick={() => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(cell.start_time || weeklyBulkStart, daySpan))} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isWork ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-400 border-slate-200'}`}>出</button>
-                                        <button type="button" disabled={!canEdit} title="休み" onClick={() => setWeeklyLeave(weeklyEmpId, wd, leaveVal)} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isOff ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-400 border-slate-200'}`}>休</button>
+                                        <button type="button" disabled={!weeklyCanEdit} title="出勤" onClick={() => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(cell.start_time || weeklyBulkStart, daySpan))} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isWork ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-slate-400 border-slate-200'}`}>出</button>
+                                        <button type="button" disabled={!weeklyCanEdit} title="休み" onClick={() => setWeeklyLeave(weeklyEmpId, wd, leaveVal)} className={`h-9 w-9 rounded-lg text-[14px] font-black border ${isOff ? 'bg-slate-600 text-white border-slate-600' : 'bg-white text-slate-400 border-slate-200'}`}>休</button>
                                       </div>
                                       {isWork ? (
                                         <div className="flex items-center gap-1.5">
-                                          <select disabled={!canEdit} className={weeklySelCls} value={dayStart} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(e.target.value, daySpan))}>
+                                          <select disabled={!weeklyCanEdit} className={weeklySelCls} value={dayStart} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, weeklyWorkPatch(e.target.value, daySpan))}>
                                             {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                           </select>
                                           <span className="text-slate-400 font-bold">〜</span>
-                                          <select disabled={!canEdit} className={weeklySelCls} value={dayEnd} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, { status: 'work', start_time: dayStart, end_time: snapToStep(e.target.value, TIME_STEP_MIN), leave_code: '' })}>
+                                          <select disabled={!weeklyCanEdit} className={weeklySelCls} value={dayEnd} onChange={(e) => setWeeklyCell(weeklyEmpId, wd, { status: 'work', start_time: dayStart, end_time: snapToStep(e.target.value, TIME_STEP_MIN), leave_code: '' })}>
                                             {timeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
                                           </select>
                                           <span className="text-[12px] font-bold text-slate-400 tabular-nums">{spanHoursBetweenHm(dayStart, dayEnd)}h</span>
                                         </div>
                                       ) : (
-                                        <select disabled={!canEdit || !isOff} className={`${weeklySelCls} w-full max-w-[13rem] font-semibold`} value={leaveVal} onChange={(e) => setWeeklyLeave(weeklyEmpId, wd, e.target.value)}>
+                                        <select disabled={!weeklyCanEdit || !isOff} className={`${weeklySelCls} w-full max-w-[13rem] font-semibold`} value={leaveVal} onChange={(e) => setWeeklyLeave(weeklyEmpId, wd, e.target.value)}>
                                           <option value="">公休</option>
                                           {(leaveCodeGroups.used || []).map((c) => <option key={`u-${c.code}`} value={c.code}>{c.code} {c.name}</option>)}
                                           {(leaveCodeGroups.unused || []).map((c) => <option key={`n-${c.code}`} value={c.code}>{c.code} {c.name}</option>)}
@@ -4964,8 +5183,8 @@ export default function App() {
                             </p>
                             <div className="flex flex-wrap gap-2">
                               <button type="button" onClick={() => setSettingsPanel(null)} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700">閉じる</button>
-                              <button type="button" disabled={!canEdit || busy} onClick={() => saveWeeklyAndApply('all')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700 disabled:opacity-40">全員を反映</button>
-                              <button type="button" disabled={!canEdit || busy || !weeklyEmpId} onClick={() => saveWeeklyAndApply('employee')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">このスタッフを反映</button>
+                              <button type="button" disabled={!weeklyCanEdit || busy} onClick={() => saveWeeklyAndApply('all')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold border border-slate-300 bg-white text-slate-700 disabled:opacity-40">全員を反映</button>
+                              <button type="button" disabled={!weeklyCanEdit || busy || !weeklyEmpId} onClick={() => saveWeeklyAndApply('employee')} className="px-4 py-2.5 rounded-xl text-[15px] font-bold bg-[var(--acc-500)] text-white disabled:opacity-40">このスタッフを反映</button>
                             </div>
                           </div>
                         </>
